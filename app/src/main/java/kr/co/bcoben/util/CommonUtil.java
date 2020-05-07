@@ -139,4 +139,20 @@ public class CommonUtil {
         }
         return SAVE_PATH;
     }
+
+    // 아이디 유효성 검사
+    public static boolean isIdValid(String id) {
+        if (id.matches("^[a-zA-Z0-9|s]{6,}+$")) {
+            return true;
+        }
+        return false;
+    }
+
+    // 비밀번호 유효성 검사
+    public static boolean isPwValid(String pw) {
+        if (pw.matches("^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,}$")) {
+            return true;
+        }
+        return false;
+    }
 }
