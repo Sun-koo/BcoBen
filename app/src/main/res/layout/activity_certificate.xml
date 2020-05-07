@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context=".activity.LoginActivity">
+    tools:context=".activity.CertificateActivity">
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -22,29 +22,69 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
-        android:background="#F5F6FA">
+        android:background="#F5ECEB">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_centerVertical="true"
             android:layout_marginStart="100dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_title"
-                android:textSize="40dp"
-                android:textColor="#54586F"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/certificate_title"
+                android:textSize="40dp"
+                android:textColor="#54586F"/>
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="380dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="20dp"
-                android:text="@string/id"
+                android:layout_marginBottom="25dp"
+                android:text="@string/certificate_send_number"
                 android:textSize="18dp"
-                android:textColor="#ADAEBA"/>
+                android:textColor="#ffffff"
+                android:background="@drawable/btn_keycolor"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/certificate_input_number"
+                    android:textSize="18dp"
+                    android:textColor="#ADAEBA"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:text="@string/certificate_remain_time"
+                        android:textSize="15dp"
+                        android:textColor="#000000"/>
+                    <TextView
+                        android:id="@+id/txt_remain_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="05:00"
+                        android:textSize="15dp"
+                        android:textColor="#000000"/>
+                </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="600dp"
@@ -52,11 +92,11 @@
                 android:orientation="vertical"
                 android:background="@drawable/border_square_gray_box">
                 <EditText
-                    android:id="@+id/edt_id"
+                    android:id="@+id/edt_certificate_number"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:hint="@string/login_id_hint_text"
+                    android:hint="@string/certificate_hint_text"
                     android:textSize="18dp"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -66,62 +106,36 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="20dp"
-                android:text="@string/pw"
-                android:textSize="18dp"
-                android:textColor="#ADAEBA"/>
-
-            <LinearLayout
-                android:layout_width="600dp"
-                android:layout_height="60dp"
-                android:orientation="vertical"
-                android:background="@drawable/border_square_gray_box">
-                <EditText
-                    android:id="@+id/edt_pw"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="@string/login_pw_hint_text"
-                    android:textSize="18dp"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:maxLines="1"
-                    android:inputType="textPassword"/>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="30dp"
                 android:layout_marginStart="20dp"
-                android:text="@string/login_guide_text"
+                android:text="@string/certificate_guide_text"
                 android:textColor="#ADAEBA"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Button
-                    android:id="@+id/btn_exit"
+                    android:id="@+id/btn_back"
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:layout_alignParentStart="true"
-                    android:text="@string/exit"
+                    android:text="@string/back"
                     android:textSize="20dp"
                     android:background="@drawable/border_round_black_box"/>
 
                 <Button
-                    android:id="@+id/btn_login"
+                    android:id="@+id/btn_complete"
                     android:layout_width="150dp"
                     android:layout_height="50dp"
                     android:layout_alignParentEnd="true"
-                    android:text="@string/login"
+                    android:text="@string/certificate_complete"
                     android:textSize="20dp"
                     android:background="@drawable/border_round_black_box"/>
             </RelativeLayout>
+
         </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>
