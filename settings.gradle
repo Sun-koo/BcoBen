@@ -1,0 +1,2 @@
+rootProject.name='BcoBen'
+include ':app'
