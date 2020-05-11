@@ -3,4 +3,14 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+
+    <color name="whiteColor">#ffffff</color>
+    <color name="keyColor">#545871</color>
+    <color name="pastelBackgroundColor">#F5F6FA</color>
+    <color name="textGrayColor">#9597A6</color>
+    <color name="hintColor">#C5C9E3</color>
+    <color name="pinkBackgroundColor">#F7ECEB</color>
+    <color name="textDarkGrayColor">#B2B2B2</color>
+    <color name="pinkColor">#EBD0CE</color>
+    <color name="borderPinkColor">#E6DBDA</color>
 </resources>

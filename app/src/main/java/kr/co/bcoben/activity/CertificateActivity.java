@@ -2,6 +2,7 @@ package kr.co.bcoben.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +15,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import kr.co.bcoben.R;
+
+import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class CertificateActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -64,6 +67,17 @@ public class CertificateActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.btn_complete:
+                String number = edtNumber.getText().toString();
+
+                if (number.isEmpty()) {
+                    showToast(R.string.toast_input_certificate_number);
+                    return;
+                }
+
+                //TODO request confirm certificate number api
+                Intent intent = new Intent(CertificateActivity.this, MainActivity.class);
+                startActivity(intent);
+                finishAffinity();
                 break;
         }
     }

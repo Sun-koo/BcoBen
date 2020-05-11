@@ -16,8 +16,8 @@
     <string name="login_guide_text">계정정보 변경 시 관리자 페이지에서 진행하세요.</string>
     <string name="toast_input_id">아이디를 입력해주세요</string>
     <string name="toast_input_pw">비밀번호를 입력해주세요</string>
-    <string name="toast_invalid_id">아이디 양식이 맞지 않습니다. 확인해 주세요.</string>
-    <string name="toast_invalid_pw">비밀번호 양식이 맞지 않습니다. 확인해 주세요.</string>
+    <string name="toast_invalid_id">아이디 양식이 맞지 않습니다. 확인해 주세요</string>
+    <string name="toast_invalid_pw">비밀번호 양식이 맞지 않습니다. 확인해 주세요</string>
 
     <!--인증 번호 입력 화면-->
     <string name="certificate_title">휴대전화로 전송된\n인증 번호를 입력하세요.</string>
@@ -27,4 +27,16 @@
     <string name="certificate_hint_text">인증번호를 입력하세요</string>
     <string name="certificate_guide_text">인증번호 분실 시 관리자에게 직접 문의하세요</string>
     <string name="certificate_complete">인증완료</string>
+    <string name="toast_input_certificate_number">인증번호를 입력하세요</string>
+    <string name="toast_invalid_certificate_number">인증번호가 일치하지 않습니다</string>
+    <string name="toast_time_over_certificate_number">인증시간이 경과하였습니다. 재발송하세요</string>
+    
+    <!--홈 화면-->
+    <string name="main_project_text">Project</string>
+    <string name="main_logout">로그아웃</string>
+    <string name="main_version">버전</string>
+    <string name="main_update">업데이트</string>
+    <string name="main_research_list_title">조사 목록</string>
+    <string name="main_research_list_sub_title">(정밀안전진단)</string>
+    <string name="main_research_registration">조사 등록</string>
 </resources>

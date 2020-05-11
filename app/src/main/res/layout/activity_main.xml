@@ -1,9 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     tools:context=".activity.MainActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:background="@color/keyColor">
+
+        <ImageButton
+            android:id="@+id/ib_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:padding="6dp"
+            android:src="@drawable/home_logo"
+            android:background="@null"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="14dp"
+            android:layout_marginStart="27dp"
+            android:layout_marginEnd="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="@string/main_project_text"
+                android:textSize="12dp"
+                android:textColor="@color/textGrayColor"
+                android:textStyle="bold"/>
+
+            <ImageButton
+                android:id="@+id/ib_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:padding="3dp"
+                android:src="@drawable/add"
+                android:background="@null"/>
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_project"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/txt_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="14dp"
+            android:padding="3dp"
+            android:text="@string/main_logout"
+            android:textSize="20dp"
+            android:textColor="@color/whiteColor"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="27dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="44dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_gravity="center_vertical"
+                android:text="@string/main_version"
+                android:textSize="20dp"
+                android:textColor="@color/textDarkGrayColor"/>
+            <TextView
+                android:id="@+id/txt_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="1.0.0"
+                android:textSize="20dp"
+                android:textColor="@color/textDarkGrayColor"/>
+            <Button
+                android:id="@+id/btn_update"
+                android:layout_width="match_parent"
+                android:layout_height="31dp"
+                android:layout_marginStart="13dp"
+                android:text="@string/main_update"
+                android:textSize="16dp"
+                android:textColor="@color/keyColor"
+                android:background="@drawable/btn_round_white"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="5"
+        android:background="@color/pastelBackgroundColor">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="42dp"
+            android:layout_marginEnd="63dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_research_list_title"
+                    android:textSize="24dp"
+                    android:textColor="@color/textGrayColor"/>
+                <TextView
+                    android:id="@+id/txt_sub_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_research_list_sub_title"
+                    android:textSize="24dp"
+                    android:textColor="@color/textGrayColor"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/regist_layout"
+                android:layout_width="184dp"
+                android:layout_height="56dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/btn_round_pink">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerInParent="true"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="15dp"
+                        android:src="@drawable/pen"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/main_research_registration"
+                        android:textSize="18dp"
+                        android:textColor="@color/keyColor"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+        </RelativeLayout>
+        
+    </LinearLayout>
+
+</LinearLayout>
