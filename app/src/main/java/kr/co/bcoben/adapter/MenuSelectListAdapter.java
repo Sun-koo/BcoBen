@@ -1,7 +1,6 @@
 package kr.co.bcoben.adapter;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +17,12 @@ import java.util.ArrayList;
 
 import kr.co.bcoben.R;
 
-public class ProjectListAdapter extends RecyclerView.Adapter {
+public class MenuSelectListAdapter extends RecyclerView.Adapter {
 
     private Activity mActivity;
     private ArrayList<JSONObject> mList;
 
-    private int selectedIndex = 0;
-
-    public ProjectListAdapter(Activity activity, ArrayList<JSONObject> list) {
+    public MenuSelectListAdapter(Activity activity, ArrayList<JSONObject> list) {
         this.mActivity = activity;
         this.mList = list;
     }
@@ -33,35 +30,22 @@ public class ProjectListAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_project ,viewGroup, false);
-        return new ProjectListAdapter.ProjectHolder(view, i);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_menu_select_list ,viewGroup, false);
+        return new MenuSelectListAdapter.MenuSelectHolder(view, i);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         String name = mList.get(position).optString("name", "");
 
-        final ProjectListAdapter.ProjectHolder view = (ProjectListAdapter.ProjectHolder) holder;
+        final MenuSelectListAdapter.MenuSelectHolder view = (MenuSelectListAdapter.MenuSelectHolder) holder;
 
         view.txtName.setText(name);
-
-        if (position == selectedIndex) {
-            view.txtName.setTextColor(mActivity.getResources().getColor(R.color.keyColor));
-            view.selectLayout.setVisibility(View.VISIBLE);
-        } else {
-            view.txtName.setTextColor(mActivity.getResources().getColor(R.color.whiteColor));
-            view.selectLayout.setVisibility(View.INVISIBLE);
-        }
 
         view.listLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                view.selectLayout.setVisibility(View.VISIBLE);
-                view.txtName.setTextColor(mActivity.getResources().getColor(R.color.keyColor));
 
-                selectedIndex = position;
-
-                notifyDataSetChanged();
             }
         });
     }
@@ -75,17 +59,15 @@ public class ProjectListAdapter extends RecyclerView.Adapter {
         this.mList = mList;
     }
 
-    private class ProjectHolder extends RecyclerView.ViewHolder {
+    private class MenuSelectHolder extends RecyclerView.ViewHolder {
 
         LinearLayout listLayout;
-        RelativeLayout selectLayout;
         TextView txtName;
 
-        public ProjectHolder(View view, int position) {
+        public MenuSelectHolder(View view, int position) {
             super(view);
 
             listLayout = view.findViewById(R.id.list_layout);
-            selectLayout = view.findViewById(R.id.select_layout);
             txtName = view.findViewById(R.id.txt_name);
         }
     }

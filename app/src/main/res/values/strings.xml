@@ -39,4 +39,15 @@
     <string name="main_research_list_title">조사 목록</string>
     <string name="main_research_list_sub_title">(정밀안전진단)</string>
     <string name="main_research_registration">조사 등록</string>
+
+    <!--사이드 메뉴-->
+    <string name="side_menu_grade">진단등급</string>
+    <string name="side_menu_facility">시설물</string>
+    <string name="side_menu_facility_category">시설물 분류</string>
+    <string name="side_menu_architecture">구조형식</string>
+    <string name="side_menu_research_category">조사종류</string>
+    <string name="side_menu_research_button">조사 입력하기</string>
+    <string name="side_menu_please_select">선택하세요</string>
+    <string name="side_menu_detail_safe_check">정밀안전진단</string>
+    <string name="side_menu_hint_self">직접입력</string>
 </resources>

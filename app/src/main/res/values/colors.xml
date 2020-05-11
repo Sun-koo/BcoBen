@@ -6,9 +6,11 @@
 
     <color name="whiteColor">#ffffff</color>
     <color name="keyColor">#545871</color>
+    <color name="lightKeyColor">#636780</color>
     <color name="pastelBackgroundColor">#F5F6FA</color>
     <color name="textGrayColor">#9597A6</color>
     <color name="hintColor">#C5C9E3</color>
+    <color name="menuHintColor">#C3C3C3</color>
     <color name="pinkBackgroundColor">#F7ECEB</color>
     <color name="textDarkGrayColor">#B2B2B2</color>
     <color name="pinkColor">#EBD0CE</color>
