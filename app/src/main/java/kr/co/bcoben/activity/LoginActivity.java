@@ -1,22 +1,23 @@
 package kr.co.bcoben.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import kr.co.bcoben.R;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
-import static kr.co.bcoben.util.CommonUtil.isIdValid;
-import static kr.co.bcoben.util.CommonUtil.isPwValid;
 import static kr.co.bcoben.util.CommonUtil.showToast;
+import static kr.co.bcoben.util.ValidateUtil.StringPattern.ALPHA_NUM;
+import static kr.co.bcoben.util.ValidateUtil.StringPattern.CASE_ALPHA_NUM;
+import static kr.co.bcoben.util.ValidateUtil.stringPatternCheck;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
-    EditText edtId, edtPw;
+
+    private EditText edtId, edtPw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +26,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         edtId = findViewById(R.id.edt_id);
         edtPw = findViewById(R.id.edt_pw);
-        Button btnExit = findViewById(R.id.btn_exit);
-        Button btnLogin = findViewById(R.id.btn_login);
-
-        btnExit.setOnClickListener(this);
-        btnLogin.setOnClickListener(this);
     }
 
     @Override
@@ -68,12 +64,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return false;
         }
 
-        if (!isIdValid(id)) {
+        if (!stringPatternCheck(id, ALPHA_NUM, 6, -1)) {
             showToast(R.string.toast_invalid_id);
             return false;
         }
 
-        if (!isPwValid(pw)) {
+        if (!stringPatternCheck(pw, CASE_ALPHA_NUM, 10, -1)) {
             showToast(R.string.toast_invalid_pw);
             return false;
         }

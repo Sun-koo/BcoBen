@@ -15,9 +15,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="LockedOrientationActivity">
         <activity
-            android:name=".activity.CertificateActivity"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".activity.SplashActivity"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -31,6 +28,9 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activity.LoginActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activity.CertificateActivity"
             android:screenOrientation="landscape" />
     </application>
 
