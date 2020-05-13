@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/keyColor"
+    android:background="@color/colorPrimaryDark"
     android:id="@+id/list_layout">
 
     <RelativeLayout
@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="51dp"
             android:layout_marginStart="7dp"
-            android:background="@color/whiteColor"
+            android:background="@color/colorWhite"
             android:visibility="invisible"/>
 
         <TextView
@@ -26,6 +26,6 @@
             android:layout_centerVertical="true"
             android:text="서초구청"
             android:textSize="20dp"
-            android:textColor="@color/whiteColor"/>
+            android:textColor="@color/colorWhite"/>
     </RelativeLayout>
 </LinearLayout>

@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorPrimary">#636780</color>
+    <color name="colorPrimaryDark">#545871</color>
     <color name="colorAccent">#03DAC5</color>
 
-    <color name="whiteColor">#ffffff</color>
-    <color name="keyColor">#545871</color>
-    <color name="lightKeyColor">#636780</color>
-    <color name="pastelBackgroundColor">#F5F6FA</color>
-    <color name="textGrayColor">#9597A6</color>
-    <color name="hintColor">#C5C9E3</color>
-    <color name="menuHintColor">#C3C3C3</color>
-    <color name="pinkBackgroundColor">#F7ECEB</color>
-    <color name="textDarkGrayColor">#B2B2B2</color>
-    <color name="pinkColor">#EBD0CE</color>
-    <color name="borderPinkColor">#E6DBDA</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBackgroundNavy">#F5F6FA</color>
+    <color name="colorBackgroundPink">#F7ECEB</color>
+    <color name="colorBorderPink">#E6DBDA</color>
+    <color name="colorDividerMainItem">#F0F1F7</color>
+    <color name="colorDividerRegisterList">#9597A6</color>
+    <color name="colorButtonNavy">#545871</color>
+    <color name="colorButtonPink">#EBD0CE</color>
+
+    <color name="colorTextPrimary">#545871</color>
+    <color name="colorTextLabel">#9597A6</color>
+    <color name="colorTextLabelPink">#F7ECEB</color>
+    <color name="colorTextNavy">#636780</color>
+    <color name="colorTextGray">#B2B2B2</color>
+    <color name="colorTextLightGray">#A3A3A3</color>
+    <color name="colorHintBlue">#C5C9E3</color>
+    <color name="colorHintPink">#EBD0CE</color>
+    <color name="colorHintGray">#C3C3C3</color>
 </resources>

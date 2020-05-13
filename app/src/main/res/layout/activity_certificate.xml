@@ -1,157 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    tools:context=".activity.CertificateActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <data>
+        <variable
+            name="activity"
+            type="kr.co.bcoben.activity.CertificateActivity" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/keyColor">
+        android:orientation="horizontal"
+        tools:context=".activity.CertificateActivity">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/logo" />
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark">
 
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="3"
-        android:background="@color/pinkBackgroundColor">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="150dp"
-            android:orientation="vertical">
-
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/certificate_title"
-                android:textColor="@color/keyColor"
-                android:textSize="48dp"
-                android:textStyle="bold" />
+                android:layout_centerInParent="true"
+                android:src="@drawable/logo" />
+        </RelativeLayout>
 
-            <Button
-                android:id="@+id/btn_send"
-                android:layout_width="439dp"
-                android:layout_height="56dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginBottom="40dp"
-                android:background="@drawable/btn_keycolor"
-                android:text="@string/certificate_send_number"
-                android:textColor="@color/whiteColor"
-                android:textSize="20dp"
-                android:onClick="onClick"/>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="@color/colorBackgroundPink">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp">
+                android:layout_centerVertical="true"
+                android:layout_marginStart="150dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="10dp"
-                    android:text="@string/certificate_input_number"
-                    android:textColor="@color/textGrayColor"
-                    android:textSize="20dp" />
+                    android:text="@string/certificate_title"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="48dp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btn_send"
+                    android:layout_width="439dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginBottom="40dp"
+                    android:background="@drawable/btn_keycolor"
+                    android:text="@string/certificate_send_number"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20dp"
+                    android:onClick="onClick" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/certificate_input_number"
+                        android:textColor="@color/colorTextLabel"
+                        android:textSize="20dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:text="@string/certificate_remain_time"
+                            android:textColor="@color/colorTextLabel"
+                            android:textSize="16dp" />
+
+                        <TextView
+                            android:id="@+id/txt_remain_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="05:00"
+                            android:textColor="@color/colorTextLabel"
+                            android:textSize="16dp" />
+                    </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout
+                    android:layout_width="608dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/border_square_gray_box"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/edit_certificate_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:hint="@string/certificate_hint_text"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:textColorHint="@color/colorHintPink"
+                        android:textSize="20dp" />
+                </LinearLayout>
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:text="@string/certificate_remain_time"
-                        android:textColor="@color/keyColor"
-                        android:textSize="16dp" />
-
-                    <TextView
-                        android:id="@+id/txt_remain_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="05:00"
-                        android:textColor="@color/keyColor"
-                        android:textSize="16dp" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="608dp"
-                android:layout_height="56dp"
-                android:background="@drawable/border_square_gray_box"
-                android:orientation="vertical">
-
-                <EditText
-                    android:id="@+id/edt_certificate_number"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="@string/certificate_hint_text"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:textColorHint="@color/hintColor"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginBottom="34.5dp"
+                    android:text="@string/certificate_guide_text"
+                    android:textColor="@color/colorTextLabel"
                     android:textSize="20dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btn_back"
+                        android:layout_width="160dp"
+                        android:layout_height="56dp"
+                        android:layout_alignParentStart="true"
+                        android:background="@drawable/border_round_black_box"
+                        android:text="@string/back"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="24dp"
+                        android:onClick="onClick" />
+
+                    <Button
+                        android:id="@+id/btn_complete"
+                        android:layout_width="160dp"
+                        android:layout_height="56dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/border_round_black_box"
+                        android:text="@string/certificate_complete"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="24dp"
+                        android:onClick="onClick" />
+                </RelativeLayout>
+
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="21dp"
-                android:layout_marginBottom="34.5dp"
-                android:text="@string/certificate_guide_text"
-                android:textColor="@color/textGrayColor"
-                android:textSize="20dp" />
+        </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/btn_back"
-                    android:layout_width="160dp"
-                    android:layout_height="56dp"
-                    android:layout_alignParentStart="true"
-                    android:background="@drawable/border_round_black_box"
-                    android:text="@string/back"
-                    android:textColor="@color/keyColor"
-                    android:textSize="24dp"
-                    android:onClick="onClick"/>
-
-                <Button
-                    android:id="@+id/btn_complete"
-                    android:layout_width="160dp"
-                    android:layout_height="56dp"
-                    android:layout_alignParentEnd="true"
-                    android:background="@drawable/border_round_black_box"
-                    android:text="@string/certificate_complete"
-                    android:textColor="@color/keyColor"
-                    android:textSize="24dp"
-                    android:onClick="onClick"/>
-            </RelativeLayout>
-
-        </LinearLayout>
-
-    </RelativeLayout>
-
-</LinearLayout>
+    </LinearLayout>
+</layout>

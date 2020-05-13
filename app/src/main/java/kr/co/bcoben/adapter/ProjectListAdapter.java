@@ -1,7 +1,6 @@
 package kr.co.bcoben.adapter;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,10 +45,10 @@ public class ProjectListAdapter extends RecyclerView.Adapter {
         view.txtName.setText(name);
 
         if (position == selectedIndex) {
-            view.txtName.setTextColor(mActivity.getResources().getColor(R.color.keyColor));
+            view.txtName.setTextColor(mActivity.getResources().getColor(R.color.colorTextPrimary));
             view.selectLayout.setVisibility(View.VISIBLE);
         } else {
-            view.txtName.setTextColor(mActivity.getResources().getColor(R.color.whiteColor));
+            view.txtName.setTextColor(mActivity.getResources().getColor(R.color.colorWhite));
             view.selectLayout.setVisibility(View.INVISIBLE);
         }
 
@@ -57,7 +56,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 view.selectLayout.setVisibility(View.VISIBLE);
-                view.txtName.setTextColor(mActivity.getResources().getColor(R.color.keyColor));
+                view.txtName.setTextColor(mActivity.getResources().getColor(R.color.colorTextPrimary));
 
                 selectedIndex = position;
 

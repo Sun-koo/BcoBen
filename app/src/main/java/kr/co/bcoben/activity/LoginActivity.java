@@ -1,13 +1,11 @@
 package kr.co.bcoben.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.component.BaseActivity;
+import kr.co.bcoben.databinding.ActivityLoginBinding;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.showToast;
@@ -15,17 +13,16 @@ import static kr.co.bcoben.util.ValidateUtil.StringPattern.ALPHA_NUM;
 import static kr.co.bcoben.util.ValidateUtil.StringPattern.CASE_ALPHA_NUM;
 import static kr.co.bcoben.util.ValidateUtil.stringPatternCheck;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
-
-    private EditText edtId, edtPw;
+public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements View.OnClickListener{
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    protected int getLayoutResource() {
+        return R.layout.activity_login;
+    }
 
-        edtId = findViewById(R.id.edt_id);
-        edtPw = findViewById(R.id.edt_pw);
+    @Override
+    protected void initView() {
+        dataBinding.setActivity(this);
     }
 
     @Override
@@ -39,10 +36,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.btn_exit:
                 finishApp(this);
                 break;
-
             case R.id.btn_login:
-                String id = edtId.getText().toString();
-                String pw = edtPw.getText().toString();
+                String id = dataBinding.editId.getText().toString();
+                String pw = dataBinding.editPw.getText().toString();
 
                 if (checkValidInput(id, pw)) {
                     //TODO request login api
@@ -58,22 +54,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showToast(R.string.toast_input_id);
             return false;
         }
-
         if (pw.isEmpty()) {
             showToast(R.string.toast_input_pw);
             return false;
         }
-
         if (!stringPatternCheck(id, ALPHA_NUM, 6, -1)) {
             showToast(R.string.toast_invalid_id);
             return false;
         }
-
         if (!stringPatternCheck(pw, CASE_ALPHA_NUM, 10, -1)) {
             showToast(R.string.toast_invalid_pw);
             return false;
         }
-
         return true;
     }
 }
