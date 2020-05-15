@@ -30,7 +30,7 @@
     <string name="toast_input_certificate_number">인증번호를 입력하세요</string>
     <string name="toast_invalid_certificate_number">인증번호가 일치하지 않습니다</string>
     <string name="toast_time_over_certificate_number">인증시간이 경과하였습니다. 재발송하세요</string>
-    
+
     <!--홈 화면-->
     <string name="main_project_text">Project</string>
     <string name="main_logout">로그아웃</string>
@@ -50,4 +50,9 @@
     <string name="side_menu_please_select">선택하세요</string>
     <string name="side_menu_detail_safe_check">정밀안전진단</string>
     <string name="side_menu_hint_self">직접입력</string>
+    <string name="toast_input_grade">진단등급을 입력해주세요</string>
+    <string name="toast_input_facility">시설물을 입력해주세요</string>
+    <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>
+    <string name="toast_input_architecture">구조형식을 입력해주세요</string>
+    <string name="toast_input_research">조사종류를 입력해주세요</string>
 </resources>

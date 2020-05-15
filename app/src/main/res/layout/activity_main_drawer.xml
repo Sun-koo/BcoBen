@@ -74,8 +74,7 @@
                             android:layout_centerVertical="true"
                             android:layout_alignParentEnd="true"
                             android:textSize="16dp"
-                            android:textColor="@color/colorTextLabelPink"
-                            android:visibility="gone" />
+                            android:textColor="@color/colorTextLabelPink" />
                     </RelativeLayout>
 
                     <View
@@ -108,8 +107,7 @@
                             android:layout_centerVertical="true"
                             android:layout_alignParentEnd="true"
                             android:textSize="16dp"
-                            android:textColor="@color/colorTextLabelPink"
-                            android:visibility="gone" />
+                            android:textColor="@color/colorTextLabelPink" />
                     </RelativeLayout>
 
                     <View
@@ -142,8 +140,7 @@
                             android:layout_centerVertical="true"
                             android:layout_alignParentEnd="true"
                             android:textSize="16dp"
-                            android:textColor="@color/colorTextLabelPink"
-                            android:visibility="gone" />
+                            android:textColor="@color/colorTextLabelPink" />
                     </RelativeLayout>
 
                     <View
@@ -176,8 +173,7 @@
                             android:layout_centerVertical="true"
                             android:layout_alignParentEnd="true"
                             android:textSize="16dp"
-                            android:textColor="@color/colorTextLabelPink"
-                            android:visibility="gone" />
+                            android:textColor="@color/colorTextLabelPink" />
                     </RelativeLayout>
 
                     <View
@@ -202,6 +198,16 @@
                             android:text="@string/side_menu_research_category"
                             android:textSize="20dp"
                             android:textColor="@color/colorWhite" />
+
+                        <TextView
+                            android:id="@+id/txt_research"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="100dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:textSize="16dp"
+                            android:textColor="@color/colorTextLabelPink" />
                     </RelativeLayout>
 
                     <View
@@ -273,7 +279,8 @@
                         <RelativeLayout
                             android:id="@+id/layout_detail_safe_check"
                             android:layout_width="match_parent"
-                            android:layout_height="80dp">
+                            android:layout_height="80dp"
+                            android:onClick="onClick">
 
                             <TextView
                                 android:layout_width="wrap_content"
