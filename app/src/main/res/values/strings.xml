@@ -8,6 +8,7 @@
     <string name="exit">종료</string>
     <string name="login">로그인</string>
     <string name="back">뒤로</string>
+    <string name="close">닫기</string>
 
     <!--로그인 화면-->
     <string name="login_title">현장조사 시스템에\n로그인하세요.</string>
@@ -55,4 +56,7 @@
     <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>
     <string name="toast_input_architecture">구조형식을 입력해주세요</string>
     <string name="toast_input_research">조사종류를 입력해주세요</string>
+
+    <!--도면 리스트 화면-->
+    <string name="drawings_list_download_all">전체 다운로드</string>
 </resources>

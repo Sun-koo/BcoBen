@@ -23,10 +23,10 @@ import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 
-public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBinding> implements View.OnClickListener {
+public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBinding> implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    private List<String> items;
-    private String category;
+    private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
+    private String category, architecture, research, facility;
 
     @Override
     protected int getLayoutResource() {
@@ -37,33 +37,78 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     protected void initView() {
         dataBinding.setActivity(this);
 
-        items = new ArrayList<>();
+        listCategory = new ArrayList<>();
+        listArchitecture = new ArrayList<>();
+        listResearch = new ArrayList<>();
+        listFacility = new ArrayList<>();
+
         ArrayList<String> categoryList = getIntent().getStringArrayListExtra("category_list");
-        items = categoryList;
+        ArrayList<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
+        ArrayList<String> researchList = getIntent().getStringArrayListExtra("research_list");
+        ArrayList<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
+
+        listCategory = categoryList;
+        listArchitecture = architectureList;
+        listResearch = researchList;
+        listFacility = facilityList;
+
         category = getIntent().getStringExtra("category");
+        architecture = getIntent().getStringExtra("architecture");
+        research = getIntent().getStringExtra("research");
+        facility = getIntent().getStringExtra("facility");
 
-        initSpinner();
-
-        for (int i=0;i<categoryList.size();i++) {
-            String cate = categoryList.get(i);
-            if (cate.equals(category)) {
-                dataBinding.spCategory.setSelection(i);
-            }
-        }
+        initSpinner(dataBinding.spCategory, listCategory, category);
+        initSpinner(dataBinding.spArchitecture, listArchitecture, architecture);
+        initSpinner(dataBinding.spResearch, listResearch, research);
+        initSpinner(dataBinding.spFacility, listFacility, facility);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_home:
+            case R.id.btn_home: case R.id.btn_close:
                 finish();
+                break;
+
+            case R.id.btn_download_all:
                 break;
         }
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.e("aaa", "position: " + position);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.e("aaa", "not selected!");
+    }
+
+    private void initSpinner(Spinner spinner, ArrayList<String> list_data, String select_data) {
+        spinner.setAdapter(new CategorySpinnerAdapter(this, R.layout.item_spinner, R.id.txt_list, list_data));
+
+        spinner.setOnItemSelectedListener(this);
+
+        setSpinnerSelectedData(list_data, select_data, spinner);
+    }
+
+    private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, Spinner spinner) {
+        for (int i=0;i<list_data.size();i++) {
+            String cate = list_data.get(i);
+            if (cate.equals(select_data)) {
+                spinner.setSelection(i);
+            }
+        }
+    }
+
     public class CategorySpinnerAdapter extends ArrayAdapter<String> {
+
+        List<String> list;
+
         CategorySpinnerAdapter(Context context, int layout_resource_id, int tv_resource_id, List tv_list) {
             super(context, layout_resource_id, tv_resource_id, tv_list);
+            list = tv_list;
         }
 
         @Override
@@ -77,31 +122,14 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
             return getCustomView(position, convertView, parent);
         }
 
-        View getCustomView(int position, View converView, ViewGroup parent) {
+        View getCustomView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = getLayoutInflater();
             View row = inflater.inflate(R.layout.item_spinner, parent, false);
 
             TextView txtSelect = row.findViewById(R.id.txt_list);
-            txtSelect.setText(items.get(position));
+            txtSelect.setText(list.get(position));
 
             return row;
         }
-    }
-
-    private void initSpinner() {
-        dataBinding.spCategory.setAdapter(new CategorySpinnerAdapter(this, R.layout.item_spinner, R.id.txt_list, items));
-
-        dataBinding.spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("aaa", "position: " + position);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Log.e("aaa", "not selected!");
-            }
-        });
     }
 }

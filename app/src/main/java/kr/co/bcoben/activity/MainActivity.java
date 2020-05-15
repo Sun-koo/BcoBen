@@ -317,16 +317,27 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     private void goToDrawingsPage() {
         Intent intent = new Intent(MainActivity.this, DrawingsListActivity.class);
-        //TODO
-        ArrayList<String> items = new ArrayList<>();
-        for (int i = 0;i<listFacilityCategory.size();i++) {
-            String facilityCategory = listFacilityCategory.get(i).optString("name");
 
-            items.add(facilityCategory);
-        }
-        intent.putStringArrayListExtra("category_list", items);
+        intent.putStringArrayListExtra("category_list", getCategoryList(listFacilityCategory));
+        intent.putStringArrayListExtra("architecture_list", getCategoryList(listArchitecture));
+        intent.putStringArrayListExtra("research_list", getCategoryList(listResearch));
+        intent.putStringArrayListExtra("facility_list", getCategoryList(listFacility));
         intent.putExtra("category", dataBinding.mainDrawer.txtFacilityCategory.getText().toString());
+        intent.putExtra("architecture", dataBinding.mainDrawer.txtArchitecture.getText().toString());
+        intent.putExtra("research", dataBinding.mainDrawer.txtResearch.getText().toString());
+        intent.putExtra("facility", dataBinding.mainDrawer.txtFacility.getText().toString());
         startActivity(intent);
+    }
+
+    private ArrayList<String> getCategoryList(ArrayList<JSONObject> list_json) {
+        ArrayList<String> items = new ArrayList<>();
+        for (int i = 0;i<list_json.size();i++) {
+            String category = list_json.get(i).optString("name");
+
+            items.add(category);
+        }
+
+        return items;
     }
 
     //TODO request project list api
