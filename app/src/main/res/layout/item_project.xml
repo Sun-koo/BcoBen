@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark"
-    android:id="@+id/list_layout">
+    android:background="@color/colorPrimaryDark">
 
     <RelativeLayout
+        android:id="@+id/layout_project"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:id="@+id/select_layout"
-            android:layout_width="match_parent"
-            android:layout_height="51dp"
-            android:layout_marginStart="7dp"
-            android:background="@color/colorWhite"
-            android:visibility="invisible"/>
+        android:layout_height="51dp"
+        android:layout_marginStart="7dp"
+        android:background="@drawable/bg_project_list">
 
         <TextView
             android:id="@+id/txt_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="27dp"
-            android:layout_marginEnd="27dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:text="서초구청"
-            android:textSize="20dp"
-            android:textColor="@color/colorWhite"/>
+            android:textColor="@color/text_project_list"
+            android:textSize="20dp" />
     </RelativeLayout>
 </LinearLayout>

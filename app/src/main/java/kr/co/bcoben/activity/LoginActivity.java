@@ -21,9 +21,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
     }
 
     @Override
-    protected void initView() {
-        dataBinding.setActivity(this);
-    }
+    protected void initView() {}
 
     @Override
     public void onBackPressed() {
@@ -44,10 +42,12 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                     //TODO request login api
                     Intent intent = new Intent(LoginActivity.this, CertificateActivity.class);
                     startActivity(intent);
+                    overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
                 }
                 break;
         }
     }
+
     // 아이디, 비밀번호 유효성 검사
     private boolean checkValidInput(String id, String pw) {
         if (id.isEmpty()) {

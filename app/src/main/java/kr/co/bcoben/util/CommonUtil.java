@@ -21,6 +21,7 @@ import java.io.File;
 import java.security.MessageDigest;
 
 import kr.co.bcoben.AppApplication;
+import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
 
 public class CommonUtil {
@@ -138,5 +139,10 @@ public class CommonUtil {
             SAVE_PATH.mkdirs();
         }
         return SAVE_PATH;
+    }
+
+    // 앱 버전 가져오기
+    public static String getAppVersion() {
+        return BuildConfig.VERSION_NAME;
     }
 }

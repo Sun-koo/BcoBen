@@ -19,8 +19,10 @@ import kr.co.bcoben.adapter.MenuSelectListAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityMainBinding;
+import kr.co.bcoben.model.ProjectData;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
+import static kr.co.bcoben.util.CommonUtil.getAppVersion;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, DrawerLayout.DrawerListener {
 
@@ -35,7 +37,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // main
     private ProjectListAdapter projectListAdapter;
-    private ArrayList<JSONObject> listProject;
+    private ArrayList<ProjectData> projectList = new ArrayList<>();
+
+    // Dummy Data
+    private String[] projectName = {"서초구청", "성수초등학교", "프로젝트명"};
 
     @Override
     protected int getLayoutResource() {
@@ -44,8 +49,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     @Override
     protected void initView() {
-        dataBinding.setActivity(this);
-
         // side menu
         dataBinding.mainDrawer.layoutDrawer.addDrawerListener(this);
         setNavigationViewWidth();
@@ -67,12 +70,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.recyclerResearch.setAdapter(menuSelectListAdapter);
 
         // main
-        dataBinding.recyclerProject.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-        listProject = new ArrayList<>();
-        projectListAdapter = new ProjectListAdapter(this, listProject);
-
+        projectListAdapter = new ProjectListAdapter(this, projectList);
         dataBinding.recyclerProject.setAdapter(projectListAdapter);
+        dataBinding.recyclerProject.setLayoutManager(new LinearLayoutManager(this));
+
+        dataBinding.txtVersion.setText(getAppVersion());
 
         requestProjectList();
     }
@@ -114,7 +116,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             // main
             case R.id.btn_home:
                 break;
-            case R.id.btn_add:
+            case R.id.btn_add_project:
                 break;
             case R.id.txt_logout:
                 Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
@@ -216,33 +218,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //TODO request project list api
     private void requestProjectList() {
         //TODO add dummy data for test
-        listProject.clear();
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", "서초구청");
-            listProject.add(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        projectList.clear();
+        for (String name : projectName) {
+            ProjectData data = new ProjectData(name);
+            projectList.add(data);
         }
-
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", "성수초등학교");
-            listProject.add(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", "프로젝트명");
-            listProject.add(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        projectListAdapter.setList(listProject);
-        projectListAdapter.notifyDataSetChanged();
+        projectListAdapter.setList(projectList);
     }
 
     //TODO request facility list api

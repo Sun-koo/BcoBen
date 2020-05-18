@@ -23,11 +23,13 @@
     <string name="certificate_title">휴대전화로 전송된\n인증 번호를 입력하세요.</string>
     <string name="certificate_send_number">등록된 휴대전화로 인증번호 발송하기 ></string>
     <string name="certificate_input_number">인증번호 입력</string>
-    <string name="certificate_remain_time">남은 시간</string>
+    <string name="certificate_remain_time">남은 시간 %s</string>
+    <string name="certificate_remain_time_over">인증시간 초과</string>
     <string name="certificate_hint_text">인증번호를 입력하세요</string>
     <string name="certificate_guide_text">인증번호 분실 시 관리자에게 직접 문의하세요</string>
     <string name="certificate_complete">인증완료</string>
     <string name="toast_input_certificate_number">인증번호를 입력하세요</string>
+    <string name="toast_input_certificate_number_length">인증번호는 6자리입니다</string>
     <string name="toast_invalid_certificate_number">인증번호가 일치하지 않습니다</string>
     <string name="toast_time_over_certificate_number">인증시간이 경과하였습니다. 재발송하세요</string>
     

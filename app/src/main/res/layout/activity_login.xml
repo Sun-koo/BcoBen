@@ -3,43 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="activity"
-            type="kr.co.bcoben.activity.LoginActivity" />
-    </data>
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:baselineAligned="false"
-        android:orientation="horizontal"
+        android:fillViewport="true"
         tools:context=".activity.LoginActivity">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/colorPrimaryDark">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/logo" />
-        </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:background="@color/colorBackgroundNavy">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/logo" />
+            </RelativeLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="150dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:paddingTop="100dp"
+                android:paddingBottom="100dp"
+                android:paddingStart="150dp"
+                android:paddingEnd="300dp"
+                android:background="@color/colorBackgroundNavy"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
@@ -53,71 +51,57 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="23dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginStart="10dp"
                     android:text="@string/id"
                     android:textColor="@color/colorTextLabel"
                     android:textSize="20dp" />
 
-                <LinearLayout
-                    android:layout_width="608dp"
+                <EditText
+                    android:id="@+id/edit_id"
+                    android:layout_width="match_parent"
                     android:layout_height="56dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:background="@drawable/border_square_gray_box"
-                    android:orientation="vertical">
-
-                    <EditText
-                        android:id="@+id/edit_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:hint="@string/login_id_hint_text"
-                        android:inputType="textEmailAddress"
-                        android:maxLength="20"
-                        android:maxLines="1"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:textColorHint="@color/colorHintBlue"
-                        android:textSize="20dp" />
-                </LinearLayout>
+                    android:inputType="textEmailAddress"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:hint="@string/login_id_hint_text"
+                    android:textColorHint="@color/colorHintBlue"
+                    android:textSize="20dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="21dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
                     android:text="@string/pw"
                     android:textColor="@color/colorHintBlue"
                     android:textSize="20dp" />
 
-                <LinearLayout
-                    android:layout_width="608dp"
+                <EditText
+                    android:id="@+id/edit_pw"
+                    android:layout_width="match_parent"
                     android:layout_height="56dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:background="@drawable/border_square_gray_box"
-                    android:orientation="vertical">
-
-                    <EditText
-                        android:id="@+id/edit_pw"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:hint="@string/login_pw_hint_text"
-                        android:inputType="textPassword"
-                        android:maxLength="20"
-                        android:maxLines="1"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:textColorHint="@color/colorHintBlue"
-                        android:textSize="20dp" />
-                </LinearLayout>
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:hint="@string/login_pw_hint_text"
+                    android:textColorHint="@color/colorHintBlue"
+                    android:textSize="20dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginTop="23dp"
-                    android:layout_marginBottom="28.5dp"
+                    android:layout_marginBottom="28dp"
+                    android:layout_marginStart="10dp"
                     android:text="@string/login_guide_text"
                     android:textColor="@color/colorTextLabel"
                     android:textSize="16dp" />
@@ -149,7 +133,6 @@
                         android:textSize="24dp" />
                 </RelativeLayout>
             </LinearLayout>
-        </RelativeLayout>
-
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </layout>

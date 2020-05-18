@@ -28,10 +28,12 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activity.LoginActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.CertificateActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
 
 </manifest>
