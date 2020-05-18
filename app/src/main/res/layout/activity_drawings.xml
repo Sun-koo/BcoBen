@@ -3,11 +3,17 @@
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="activity"
+            type="kr.co.bcoben.activity.DrawingsActivity" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".activity.DrawingsListActivity">
+        tools:context=".activity.DrawingsActivity">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -160,37 +166,50 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/btn_close"
-                android:layout_width="80dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:text="@string/close"
-                android:textColor="@color/colorBackgroundNavy"
-                android:textSize="14dp"
-                android:onClick="onClick"/>
+                android:orientation="horizontal"
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:id="@+id/btn_save"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/save"
+                    android:textColor="@color/colorBackgroundNavy"
+                    android:textSize="14dp"
+                    android:onClick="onClick"/>
+
+                <TextView
+                    android:id="@+id/btn_close"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/close"
+                    android:textColor="@color/colorBackgroundNavy"
+                    android:textSize="14dp"
+                    android:onClick="onClick"/>
+
+            </LinearLayout>
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/btn_download_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="27dp"
-            android:padding="13dp"
-            android:text="@string/drawings_list_download_all"
-            android:textColor="@color/colorBlack"
-            android:textSize="14dp"
-            android:onClick="onClick"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_drawings"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="80dp"
-            android:paddingEnd="60dp">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:background="@color/colorPrimaryDark">
+
+            <ImageView
+                android:id="@+id/iv_drawings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="13dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/drawings_detail" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
