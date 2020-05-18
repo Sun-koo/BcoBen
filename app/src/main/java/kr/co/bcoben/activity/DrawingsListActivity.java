@@ -35,8 +35,6 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     @Override
     protected void initView() {
-        dataBinding.setActivity(this);
-
         listCategory = new ArrayList<>();
         listArchitecture = new ArrayList<>();
         listResearch = new ArrayList<>();
