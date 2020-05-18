@@ -23,6 +23,8 @@ import kr.co.bcoben.model.ProjectData;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.getAppVersion;
+import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
+import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, DrawerLayout.DrawerListener {
 
@@ -69,6 +71,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.recyclerArchitecture.setAdapter(menuSelectListAdapter);
         dataBinding.mainDrawer.recyclerResearch.setAdapter(menuSelectListAdapter);
 
+        initUI();
+
         // main
         projectListAdapter = new ProjectListAdapter(this, projectList);
         dataBinding.recyclerProject.setAdapter(projectListAdapter);
@@ -89,28 +93,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         switch (v.getId()) {
             // side menu
             case R.id.btn_input_research:
+                goToDrawingsPage();
                 break;
             case R.id.btn_next:
-                switch (currentStep) {
-                    case GRADE:
-                        requestFacilityList();
-                        showSelectedStep(CurrentStep.FACILITY);
-                        break;
-                    case FACILITY:
-                        requestFacilityCategoryList();
-                        showSelectedStep(CurrentStep.FACILITY_CATEGORY);
-                        break;
-                    case FACILITY_CATEGORY:
-                        requestArchitectureList();
-                        showSelectedStep(CurrentStep.ARCHITECTURE);
-                        break;
-                    case ARCHITECTURE:
-                        requestResearchList();
-                        showSelectedStep(CurrentStep.RESEARCH);
-                        break;
-                    case RESEARCH:
-                        break;
-                }
+                goToNextStep();
+                break;
+            case R.id.layout_detail_safe_check:
+                setSelectedText(getResources().getString(R.string.side_menu_detail_safe_check));
                 break;
 
             // main
@@ -186,7 +175,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void initUI() {
+        hideKeyboard(this);
+
         showSelectedStep(CurrentStep.GRADE);
+        dataBinding.mainDrawer.layoutFacility.setClickable(false);
+        dataBinding.mainDrawer.layoutFacilityCategory.setClickable(false);
+        dataBinding.mainDrawer.layoutArchitecture.setClickable(false);
+        dataBinding.mainDrawer.layoutResearch.setClickable(false);
+
+        dataBinding.mainDrawer.txtGrade.setText("");
+        dataBinding.mainDrawer.txtFacility.setText("");
+        dataBinding.mainDrawer.txtFacilityCategory.setText("");
+        dataBinding.mainDrawer.txtArchitecture.setText("");
     }
 
     private void showSelectedStep(CurrentStep step) {
@@ -213,6 +213,133 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.txtFacilityCategoryTitle.setTextColor(currentStep == CurrentStep.FACILITY_CATEGORY ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
         dataBinding.mainDrawer.txtArchitectureTitle.setTextColor(currentStep == CurrentStep.ARCHITECTURE ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
         dataBinding.mainDrawer.txtResearchTitle.setTextColor(currentStep == CurrentStep.RESEARCH ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
+    }
+
+    private void goToNextStep() {
+        switch (currentStep) {
+            case GRADE:
+                String grade = dataBinding.mainDrawer.editGradeSelf.getText().toString();
+
+                if (grade.isEmpty()) {
+                    showToast(R.string.toast_input_grade);
+                    return;
+                }
+                dataBinding.mainDrawer.txtGrade.setText(grade);
+                dataBinding.mainDrawer.layoutFacility.setClickable(true);
+                requestFacilityList();
+                showSelectedStep(CurrentStep.FACILITY);
+                break;
+
+            case FACILITY:
+                String facility = dataBinding.mainDrawer.editFacilitySelf.getText().toString();
+
+                if (facility.isEmpty()) {
+                    showToast(R.string.toast_input_facility);
+                    return;
+                }
+                dataBinding.mainDrawer.txtFacility.setText(facility);
+                dataBinding.mainDrawer.layoutFacilityCategory.setClickable(true);
+                requestFacilityCategoryList();
+                showSelectedStep(CurrentStep.FACILITY_CATEGORY);
+                break;
+
+            case FACILITY_CATEGORY:
+                String facilityCategory = dataBinding.mainDrawer.editFacilityCategorySelf.getText().toString();
+
+                if (facilityCategory.isEmpty()) {
+                    showToast(R.string.toast_input_facility_category);
+                    return;
+                }
+                dataBinding.mainDrawer.txtFacilityCategory.setText(facilityCategory);
+                dataBinding.mainDrawer.layoutArchitecture.setClickable(true);
+                requestArchitectureList();
+                showSelectedStep(CurrentStep.ARCHITECTURE);
+                break;
+
+            case ARCHITECTURE:
+                String architecture = dataBinding.mainDrawer.editArchitectureSelf.getText().toString();
+
+                if (architecture.isEmpty()) {
+                    showToast(R.string.toast_input_architecture);
+                    return;
+                }
+                dataBinding.mainDrawer.txtArchitecture.setText(architecture);
+                dataBinding.mainDrawer.layoutResearch.setClickable(true);
+                requestResearchList();
+                showSelectedStep(CurrentStep.RESEARCH);
+                break;
+
+            case RESEARCH:
+                String research = dataBinding.mainDrawer.editResearchSelf.getText().toString();
+
+                if (research.isEmpty()) {
+                    showToast(R.string.toast_input_research);
+                    return;
+                }
+
+                break;
+        }
+    }
+
+    public void setSelectedText(String value) {
+        switch (currentStep) {
+            case GRADE:
+                dataBinding.mainDrawer.txtGrade.setText(value);
+                dataBinding.mainDrawer.layoutFacility.setClickable(true);
+                requestFacilityList();
+                showSelectedStep(CurrentStep.FACILITY);
+                break;
+
+            case FACILITY:
+                dataBinding.mainDrawer.txtFacility.setText(value);
+                dataBinding.mainDrawer.layoutFacilityCategory.setClickable(true);
+                requestFacilityCategoryList();
+                showSelectedStep(CurrentStep.FACILITY_CATEGORY);
+                break;
+
+            case FACILITY_CATEGORY:
+                dataBinding.mainDrawer.txtFacilityCategory.setText(value);
+                dataBinding.mainDrawer.layoutArchitecture.setClickable(true);
+                requestArchitectureList();
+                showSelectedStep(CurrentStep.ARCHITECTURE);
+                break;
+
+            case ARCHITECTURE:
+                dataBinding.mainDrawer.txtArchitecture.setText(value);
+                dataBinding.mainDrawer.layoutResearch.setClickable(true);
+                requestResearchList();
+                showSelectedStep(CurrentStep.RESEARCH);
+                break;
+
+            case RESEARCH:
+                dataBinding.mainDrawer.txtResearch.setText(value);
+                break;
+        }
+    }
+
+    private void goToDrawingsPage() {
+        Intent intent = new Intent(MainActivity.this, DrawingsListActivity.class);
+
+        intent.putStringArrayListExtra("category_list", getCategoryList(listFacilityCategory));
+        intent.putStringArrayListExtra("architecture_list", getCategoryList(listArchitecture));
+        intent.putStringArrayListExtra("research_list", getCategoryList(listResearch));
+        intent.putStringArrayListExtra("facility_list", getCategoryList(listFacility));
+        intent.putExtra("category", dataBinding.mainDrawer.txtFacilityCategory.getText().toString());
+        intent.putExtra("architecture", dataBinding.mainDrawer.txtArchitecture.getText().toString());
+        intent.putExtra("research", dataBinding.mainDrawer.txtResearch.getText().toString());
+        intent.putExtra("facility", dataBinding.mainDrawer.txtFacility.getText().toString());
+        startActivity(intent);
+    }
+
+    private ArrayList<String> getCategoryList(ArrayList<JSONObject> list_json) {
+        ArrayList<String> items = new ArrayList<>();
+        for (int i = 0;i<list_json.size();i++) {
+            String category = list_json.get(i).optString("name");
+
+            items.add(category);
+        }
+
+        return items;
     }
 
     //TODO request project list api

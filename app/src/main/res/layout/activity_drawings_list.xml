@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="activity"
+            type="kr.co.bcoben.activity.DrawingsListActivity" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".activity.DrawingsListActivity">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:background="@color/colorPrimaryDark">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_alignParentStart="true">
+
+                <ImageButton
+                    android:id="@+id/btn_home"
+                    android:layout_width="25dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="20dp"
+                    android:background="@null"
+                    android:src="@drawable/home_logo"
+                    android:onClick="onClick"/>
+
+                <RelativeLayout
+                    android:layout_width="90dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="67dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/spinner_box">
+
+                    <Spinner
+                        android:id="@+id/sp_category"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:spinnerMode="dropdown"
+                        android:background="@null" />
+
+                    <ImageView
+                        android:id="@+id/iv_arrow_category"
+                        android:layout_width="7dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/dropdown"/>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_toStartOf="@id/iv_arrow_category"
+                        android:background="@color/colorBorderPink"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="90dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/spinner_box">
+
+                    <Spinner
+                        android:id="@+id/sp_architecture"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:spinnerMode="dropdown"
+                        android:background="@null" />
+
+                    <ImageView
+                        android:id="@+id/iv_arrow_architecture"
+                        android:layout_width="7dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/dropdown"/>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_toStartOf="@id/iv_arrow_architecture"
+                        android:background="@color/colorBorderPink"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="260dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/spinner_box">
+
+                    <Spinner
+                        android:id="@+id/sp_research"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:spinnerMode="dropdown"
+                        android:background="@null" />
+
+                    <ImageView
+                        android:id="@+id/iv_arrow_research"
+                        android:layout_width="7dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/dropdown"/>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_toStartOf="@id/iv_arrow_research"
+                        android:background="@color/colorBorderPink"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="145dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/spinner_box">
+
+                    <Spinner
+                        android:id="@+id/sp_facility"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:spinnerMode="dropdown"
+                        android:background="@null" />
+
+                    <ImageView
+                        android:id="@+id/iv_arrow_facility"
+                        android:layout_width="7dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/dropdown"/>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_toStartOf="@id/iv_arrow_facility"
+                        android:background="@color/colorBorderPink"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btn_close"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:gravity="center"
+                android:text="@string/close"
+                android:textColor="@color/colorBackgroundNavy"
+                android:textSize="14dp"
+                android:onClick="onClick"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/btn_download_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="27dp"
+            android:padding="13dp"
+            android:text="@string/drawings_list_download_all"
+            android:textColor="@color/colorBlack"
+            android:textSize="14dp"
+            android:onClick="onClick"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_drawings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="80dp"
+            android:paddingEnd="80dp">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+</layout>

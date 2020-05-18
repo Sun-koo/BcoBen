@@ -8,6 +8,7 @@
     <string name="exit">종료</string>
     <string name="login">로그인</string>
     <string name="back">뒤로</string>
+    <string name="close">닫기</string>
 
     <!--로그인 화면-->
     <string name="login_title">현장조사 시스템에\n로그인하세요.</string>
@@ -32,7 +33,7 @@
     <string name="toast_input_certificate_number_length">인증번호는 6자리입니다</string>
     <string name="toast_invalid_certificate_number">인증번호가 일치하지 않습니다</string>
     <string name="toast_time_over_certificate_number">인증시간이 경과하였습니다. 재발송하세요</string>
-    
+
     <!--홈 화면-->
     <string name="main_project_text">Project</string>
     <string name="main_logout">로그아웃</string>
@@ -52,4 +53,12 @@
     <string name="side_menu_please_select">선택하세요</string>
     <string name="side_menu_detail_safe_check">정밀안전진단</string>
     <string name="side_menu_hint_self">직접입력</string>
+    <string name="toast_input_grade">진단등급을 입력해주세요</string>
+    <string name="toast_input_facility">시설물을 입력해주세요</string>
+    <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>
+    <string name="toast_input_architecture">구조형식을 입력해주세요</string>
+    <string name="toast_input_research">조사종류를 입력해주세요</string>
+
+    <!--도면 리스트 화면-->
+    <string name="drawings_list_download_all">전체 다운로드</string>
 </resources>

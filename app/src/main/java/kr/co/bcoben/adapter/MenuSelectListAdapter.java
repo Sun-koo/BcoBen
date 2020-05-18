@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.activity.MainActivity;
 
 public class MenuSelectListAdapter extends RecyclerView.Adapter {
 
@@ -36,7 +37,7 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        String name = mList.get(position).optString("name", "");
+        final String name = mList.get(position).optString("name", "");
 
         final MenuSelectListAdapter.MenuSelectHolder view = (MenuSelectListAdapter.MenuSelectHolder) holder;
 
@@ -45,7 +46,8 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter {
         view.listLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MainActivity main = (MainActivity) mActivity;
+                main.setSelectedText(name);
             }
         });
     }

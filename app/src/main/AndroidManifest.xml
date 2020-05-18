@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="LockedOrientationActivity">
+        <activity android:name=".activity.DrawingsListActivity"></activity>
         <activity
             android:name=".activity.SplashActivity"
             android:screenOrientation="landscape">
