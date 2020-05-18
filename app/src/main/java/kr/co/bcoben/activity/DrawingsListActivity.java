@@ -3,6 +3,7 @@ package kr.co.bcoben.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,10 +16,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
 import kr.co.bcoben.databinding.ActivityMainBinding;
@@ -27,6 +32,9 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
+
+    private DrawingsListAdapter drawingsListAdapter;
+    private ArrayList<JSONObject> listDrawings;
 
     @Override
     protected int getLayoutResource() {
@@ -61,6 +69,14 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         initSpinner(dataBinding.spArchitecture, listArchitecture, architecture);
         initSpinner(dataBinding.spResearch, listResearch, research);
         initSpinner(dataBinding.spFacility, listFacility, facility);
+
+        dataBinding.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
+
+        listDrawings = new ArrayList<>();
+        drawingsListAdapter = new DrawingsListAdapter(this, listDrawings);
+        dataBinding.recyclerDrawings.setAdapter(drawingsListAdapter);
+
+        requestDrawingsList();
     }
 
     @Override
@@ -71,6 +87,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 break;
 
             case R.id.btn_download_all:
+                //TODO
                 break;
         }
     }
@@ -131,5 +148,33 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
             return row;
         }
+    }
+
+    //TODO request drawings list api
+    private void requestDrawingsList() {
+        listDrawings.clear();
+
+        for (int i = 0;i < 10;i++) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", "도면명");
+                jsonObject.put("is_download", true);
+                listDrawings.add(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", "도면명");
+                jsonObject.put("is_download", false);
+                listDrawings.add(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        drawingsListAdapter.setList(listDrawings);
+        drawingsListAdapter.notifyDataSetChanged();
     }
 }

@@ -23,4 +23,6 @@
     <color name="colorHintBlue">#C5C9E3</color>
     <color name="colorHintPink">#EBD0CE</color>
     <color name="colorHintGray">#C3C3C3</color>
+
+    <color name="colorTextDarkGray">#6A6A6A</color>
 </resources>
