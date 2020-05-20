@@ -5,6 +5,7 @@
     <!--공통-->
     <string name="id">아이디</string>
     <string name="pw">비밀번호</string>
+    <string name="phone_input">휴대전화번호 입력</string>
     <string name="exit">종료</string>
     <string name="login">로그인</string>
     <string name="back">뒤로</string>
@@ -15,7 +16,7 @@
     <string name="login_title">현장조사 시스템에\n로그인하세요.</string>
     <string name="login_id_hint_text">영문,숫자 조합 6자리 이상 입력</string>
     <string name="login_pw_hint_text">영문,숫자,대소문자 조합 10자리 이상 입력</string>
-    <string name="login_guide_text">계정정보 변경 시 관리자 페이지에서 진행하세요.</string>
+    <string name="login_pw_reset_text">비밀번호 재설정</string>
     <string name="toast_input_id">아이디를 입력해주세요</string>
     <string name="toast_input_pw">비밀번호를 입력해주세요</string>
     <string name="toast_invalid_id">아이디 양식이 맞지 않습니다. 확인해 주세요</string>
@@ -34,6 +35,16 @@
     <string name="toast_input_certificate_number_length">인증번호는 6자리입니다</string>
     <string name="toast_invalid_certificate_number">인증번호가 일치하지 않습니다</string>
     <string name="toast_time_over_certificate_number">인증시간이 경과하였습니다. 재발송하세요</string>
+
+    <!--비밀번호 재설정 인증 번호 입력 화면-->
+    <string name="reset_certificate_title">아이디, 휴대전화번호를 인증하세요.</string>
+    <string name="reset_certificate_send_number">인증번호 발송하기 ></string>
+    <string name="reset_certificate_id_hint_text">영문,숫자 조합 6자리 이상 입력</string>
+    <string name="reset_certificate_phone_hint_text">휴대전화번호를 입력하세요</string>
+    <string name="reset_certificate_hint_text">인증번호를 입력하세요</string>
+    <string name="reset_certificate_input_number">인증번호 입력</string>
+    <string name="reset_certificate_guide_text">인증번호 분실 시 관리자에게 직접 문의하세요</string>
+    <string name="reset_certificate_complete">인증완료</string>
 
     <!--홈 화면-->
     <string name="main_project_text">Project</string>

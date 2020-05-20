@@ -31,6 +31,12 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_reset_pw:
+                //TODO move to reset pw page
+                Intent intent_reset_certificate = new Intent(LoginActivity.this, ResetCertificateActivity.class);
+                startActivity(intent_reset_certificate);
+                overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+                break;
             case R.id.btn_exit:
                 finishApp(this);
                 break;
@@ -40,8 +46,8 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
 
                 if (checkValidInput(id, pw)) {
                     //TODO request login api
-                    Intent intent = new Intent(LoginActivity.this, CertificateActivity.class);
-                    startActivity(intent);
+                    Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
+                    startActivity(intent_login);
                     overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
                 }
                 break;

@@ -1,11 +1,7 @@
 package kr.co.bcoben.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.os.Bundle;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
