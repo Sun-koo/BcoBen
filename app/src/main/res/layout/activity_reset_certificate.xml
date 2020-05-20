@@ -30,8 +30,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="70dp"
-                android:paddingBottom="70dp"
                 android:paddingStart="150dp"
                 android:paddingEnd="60dp"
                 android:background="@color/colorBackgroundPink"
@@ -133,7 +131,8 @@
                         android:layout_marginEnd="10dp"
                         android:text="@string/certificate_remain_time"
                         android:textColor="@color/colorTextLabel"
-                        android:textSize="16dp" />
+                        android:textSize="16dp"
+                        android:visibility="gone"/>
 
                 </RelativeLayout>
 
@@ -141,6 +140,7 @@
                     android:id="@+id/edit_certificate_number"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
+                    android:layout_marginEnd="70dp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:background="@drawable/border_square_gray_box"
@@ -163,7 +163,8 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="70dp">
 
                     <Button
                         android:id="@+id/btn_back"

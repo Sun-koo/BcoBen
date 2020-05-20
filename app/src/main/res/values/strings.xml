@@ -45,6 +45,16 @@
     <string name="reset_certificate_input_number">인증번호 입력</string>
     <string name="reset_certificate_guide_text">인증번호 분실 시 관리자에게 직접 문의하세요</string>
     <string name="reset_certificate_complete">인증완료</string>
+    <string name="toast_input_phone">휴대전화번호를 입력해주세요</string>
+    <string name="toast_invalid_phone">휴대전화번호 양식이 맞지 않습니다. 확인해 주세요</string>
+    <string name="toast_send_number">인증번호가 발송되었습니다</string>
+
+    <!--비밀번호 재설정 화면-->
+    <string name="reset_pw_title">사용할\n비밀번호를 재설정 하세요.</string>
+    <string name="reset_pw_input_pw">비밀번호 입력</string>
+    <string name="reset_pw_re_input_pw">비밀번호 재입력</string>
+    <string name="reset_pw_hint_text">영문,숫자,대소문자 조합 10자리 이상 입력</string>
+    <string name="toast_not_equal_pw">입력된 비밀번호가 상이합니다</string>
 
     <!--홈 화면-->
     <string name="main_project_text">Project</string>

@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="LockedOrientationActivity">
-        <activity android:name=".activity.ResetCertificateActivity"></activity>
+        <activity android:name=".activity.ResetPwActivity"></activity>
+        <activity android:name=".activity.ResetCertificateActivity" />
         <activity android:name=".activity.DrawingsActivity" />
         <activity android:name=".activity.DrawingsListActivity" />
         <activity
