@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        tools:context=".activity.LoginActivity">
+        tools:context=".activity.ResetPwActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +35,7 @@
                 android:paddingTop="100dp"
                 android:paddingBottom="100dp"
                 android:paddingStart="150dp"
-                android:paddingEnd="300dp"
+                android:paddingEnd="200dp"
                 android:background="@color/colorBackgroundNavy"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
@@ -43,7 +43,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_title"
+                    android:text="@string/reset_pw_title"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="48dp"
                     android:textStyle="bold" />
@@ -54,31 +54,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="10dp"
-                    android:text="@string/id"
-                    android:textColor="@color/colorTextLabel"
-                    android:textSize="20dp" />
-
-                <EditText
-                    android:id="@+id/edit_id"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:background="@drawable/border_square_gray_box"
-                    android:inputType="textEmailAddress"
-                    android:maxLength="20"
-                    android:maxLines="1"
-                    android:hint="@string/login_id_hint_text"
-                    android:textColorHint="@color/colorHintBlue"
-                    android:textSize="20dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/pw"
+                    android:text="@string/reset_pw_input_pw"
                     android:textColor="@color/colorTextLabel"
                     android:textSize="20dp" />
 
@@ -92,26 +68,38 @@
                     android:inputType="textPassword"
                     android:maxLength="20"
                     android:maxLines="1"
-                    android:hint="@string/login_pw_hint_text"
+                    android:hint="@string/reset_pw_hint_text"
                     android:textColorHint="@color/colorHintBlue"
                     android:textSize="20dp" />
 
                 <TextView
-                    android:id="@+id/btn_reset_pw"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="13dp"
-                    android:layout_marginBottom="18dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:text="@string/login_pw_reset_text"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="16dp"
-                    android:onClick="onClick"/>
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/reset_pw_re_input_pw"
+                    android:textColor="@color/colorTextLabel"
+                    android:textSize="20dp" />
+
+                <EditText
+                    android:id="@+id/edit_pw_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:background="@drawable/border_square_gray_box"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:hint="@string/reset_pw_hint_text"
+                    android:textColorHint="@color/colorHintBlue"
+                    android:textSize="20dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="70dp">
 
                     <Button
                         android:id="@+id/btn_exit"
