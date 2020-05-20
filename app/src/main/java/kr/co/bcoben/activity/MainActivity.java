@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.MenuSelectListAdapter;
@@ -20,6 +23,8 @@ import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 import kr.co.bcoben.model.ProjectData;
+import kr.co.bcoben.model.ProjectListData;
+import kr.co.bcoben.model.ProjectResearchData;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.getAppVersion;
@@ -39,10 +44,24 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // main
     private ProjectListAdapter projectListAdapter;
-    private ArrayList<ProjectData> projectList = new ArrayList<>();
+    private List<ProjectListData> projectList = new ArrayList<>();
+    private List<ProjectData> projectDataList = new ArrayList<>();
 
     // Dummy Data
     private String[] projectName = {"서초구청", "성수초등학교", "프로젝트명"};
+    private String[] projectFacility = {"본관동", "별관동", "기숙사동", "대극장"};
+    private String[] projectResearchFacCate = {"건축", "지하도상가", "교량", "터널", "지하차도", "복개구조물", "항만", "항만외곽", "댐"};
+    private String[] projectResearchArch = {"RC조", "S조", "SRC조", "조적도", "RC교", "T Beam교", "프리플렉스교", "사장교", "현수교"};
+    private String[] projectResearchTitle = {
+            "비파괴, 장비조사 | 지반(BH)",
+            "비파괴, 장비조사 | 기울기(SL)",
+            "비파괴, 장비조사 | 기초(BF)",
+            "비파괴, 장비조사 | 탄산화(NE)",
+            "비파괴, 장비조사 | 강재부식(MC)",
+            "비파괴, 장비조사 | 내화피복(FC)",
+            "비파괴, 장비조사 | 철근탐사(RL)",
+            "외관조사"
+    };
 
     @Override
     protected int getLayoutResource() {
@@ -347,10 +366,27 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         //TODO add dummy data for test
         projectList.clear();
         for (String name : projectName) {
-            ProjectData data = new ProjectData(name);
+            ProjectListData data = new ProjectListData(name);
             projectList.add(data);
         }
         projectListAdapter.setList(projectList);
+    }
+
+    //TODO request project data list api
+    private void requestProjectDataList() {
+        //TODO add dummy data for test
+        projectDataList.clear();
+        for (String facility : projectFacility) {
+            List<ProjectResearchData> researchDataList = new ArrayList<>();
+            for (int i = 0; i < projectResearchFacCate.length; i++) {
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.MONTH, c.get(Calendar.MONTH) - i);
+                c.set(Calendar.DATE, c.get(Calendar.DATE) - (i * 2));
+                researchDataList.add(new ProjectResearchData(projectResearchFacCate[i], projectResearchArch[i], projectResearchTitle[i], c.getTime(), (i + 1) * 3 + 2, 3));
+            }
+            ProjectData data = new ProjectData(facility, researchDataList);
+            projectDataList.add(data);
+        }
     }
 
     //TODO request facility list api

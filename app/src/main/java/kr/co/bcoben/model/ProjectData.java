@@ -1,23 +1,29 @@
 package kr.co.bcoben.model;
 
+import java.util.List;
+
+/**
+ * 메인화면 프로젝트 데이터
+ */
 public class ProjectData {
-    private String projectName;
-    private boolean selected = false;
+    private String facility;
+    private List<ProjectResearchData> researchList;
 
-    public ProjectData(String projectName) {
-        this.projectName = projectName;
+    public ProjectData(String facility, List<ProjectResearchData> researchList) {
+        this.facility = facility;
+        this.researchList = researchList;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getFacility() {
+        return facility;
     }
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setFacility(String facility) {
+        this.facility = facility;
     }
-    public boolean isSelected() {
-        return selected;
+    public List<ProjectResearchData> getResearchList() {
+        return researchList;
     }
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setResearchList(List<ProjectResearchData> researchList) {
+        this.researchList = researchList;
     }
 }

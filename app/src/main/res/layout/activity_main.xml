@@ -23,7 +23,7 @@
                 android:layout_marginStart="20dp"
                 android:onClick="onClick"
                 android:padding="6dp"
-                android:src="@drawable/home_logo"
+                android:src="@drawable/ic_main_home"
                 android:background="@null" />
 
             <RelativeLayout
@@ -51,7 +51,7 @@
                     android:layout_alignParentEnd="true"
                     android:onClick="onClick"
                     android:padding="3dp"
-                    android:src="@drawable/add"
+                    android:src="@drawable/ic_project_add"
                     android:background="@null" />
             </RelativeLayout>
 

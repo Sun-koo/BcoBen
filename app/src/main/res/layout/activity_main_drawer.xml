@@ -261,7 +261,7 @@
                             android:layout_alignParentEnd="true"
                             android:onClick="onClick"
                             android:background="@null"
-                            android:src="@drawable/next" />
+                            android:src="@drawable/btn_next" />
                     </RelativeLayout>
 
                     <View

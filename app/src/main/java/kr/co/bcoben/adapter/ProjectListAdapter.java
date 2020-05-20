@@ -10,16 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.co.bcoben.R;
-import kr.co.bcoben.model.ProjectData;
+import kr.co.bcoben.model.ProjectListData;
 
 public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.ProjectHolder> {
 
     private Activity activity;
-    private ArrayList<ProjectData> list;
+    private List<ProjectListData> list;
 
-    public ProjectListAdapter(Activity activity, ArrayList<ProjectData> list) {
+    public ProjectListAdapter(Activity activity, List<ProjectListData> list) {
         this.activity = activity;
         this.list = list;
     }
@@ -40,7 +41,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     public int getItemCount() {
         return list.size();
     }
-    public void setList(ArrayList<ProjectData> list) {
+    public void setList(List<ProjectListData> list) {
         this.list = list;
         notifyDataSetChanged();
     }
@@ -56,14 +57,14 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             txtName = view.findViewById(R.id.txt_name);
         }
 
-        void onBind(final ProjectData item) {
+        void onBind(final ProjectListData item) {
             txtName.setText(item.getProjectName());
             view.setSelected(item.isSelected());
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    for (ProjectData data : list) {
+                    for (ProjectListData data : list) {
                         data.setSelected(false);
                     }
                     item.setSelected(true);

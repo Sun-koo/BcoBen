@@ -33,7 +33,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="20dp"
                     android:background="@null"
-                    android:src="@drawable/home_logo"
+                    android:src="@drawable/ic_main_home"
                     android:onClick="onClick"/>
 
                 <RelativeLayout
@@ -60,7 +60,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:src="@drawable/dropdown"/>
+                        android:src="@drawable/ic_spinner_off"/>
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -92,7 +92,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:src="@drawable/dropdown"/>
+                        android:src="@drawable/ic_spinner_off"/>
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -124,7 +124,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:src="@drawable/dropdown"/>
+                        android:src="@drawable/ic_spinner_off"/>
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -156,7 +156,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:src="@drawable/dropdown"/>
+                        android:src="@drawable/ic_spinner_off"/>
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
