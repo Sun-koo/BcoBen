@@ -12,6 +12,8 @@ import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import com.github.chrisbanes.photoview.OnPhotoTapListener;
+import com.github.chrisbanes.photoview.OnViewTapListener;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import java.util.ArrayList;
@@ -39,6 +41,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         photoViewAttacher = new PhotoViewAttacher(dataBinding.ivDrawings);
         photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_XY);
         photoViewAttacher.setMaximumScale(6);
+
+        photoViewAttacher.setOnPhotoTapListener(new OnPhotoTapListener() {
+            @Override
+            public void onPhotoTap(ImageView view, float x, float y) {
+                dataBinding.layoutTable.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -67,6 +76,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 photoViewAttacher.setScale(scale);
 
                 showScaleView();
+                break;
+
+            // table
+            case R.id.btn_select:
+                break;
+
+            case R.id.btn_delete:
                 break;
         }
     }

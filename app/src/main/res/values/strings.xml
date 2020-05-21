@@ -11,6 +11,9 @@
     <string name="back">뒤로</string>
     <string name="close">닫기</string>
     <string name="save">저장하기</string>
+    <string name="select">선택</string>
+    <string name="cancel">취소</string>
+    <string name="delete">삭제</string>
 
     <!--로그인 화면-->
     <string name="login_title">현장조사 관리자 시스템에\n로그인하세요.</string>
@@ -95,4 +98,12 @@
     <string name="drawings_select_dialog_input">현재 도면 내 입력</string>
     <string name="drawings_select_dialog_reset_input">현재 도면 초기화 후 입력</string>
     <string name="drawings_select_dialog_other_select">다른 도면 선택</string>
+
+    <!--집계표-->
+    <string name="table_title">집계표</string>
+    <string name="table_column1">번호</string>
+    <string name="table_column2">범례</string>
+    <string name="table_column3">부재/방향/결함내용</string>
+    <string name="table_column4">측정(값)</string>
+    <string name="table_column5">개소</string>
 </resources>
