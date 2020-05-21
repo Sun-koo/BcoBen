@@ -5,12 +5,20 @@ import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import java.util.ArrayList;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.component.BaseActivity;
+import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
@@ -18,17 +26,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
-    private static final int NONE = 0;
-    private static final int DRAG = 1;
-    private static final int ZOOM = 2;
-    private int mode = NONE;
-
-    private Matrix matrix = new Matrix();
-    private Matrix savedMatrix = new Matrix();
-
-    private PointF start = new PointF();
-    private PointF mid = new PointF();
-    private float oldDist = 1f;
+    private PhotoViewAttacher photoViewAttacher;
+    private float scale;
 
     @Override
     protected int getLayoutResource() {
@@ -37,57 +36,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void initView() {
-        dataBinding.ivDrawings.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ImageView iv = (ImageView) v;
-                iv.setScaleType(ImageView.ScaleType.MATRIX);
-                float scale;
-
-                dumpEvent(event);
-                // Handle touch events here...
-
-                switch (event.getAction() & event.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:   // first finger down only
-                        savedMatrix.set(matrix);
-                        start.set(event.getX(), event.getY());
-                        mode = DRAG;
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_POINTER_UP:
-                        mode = NONE;
-                        break;
-
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        oldDist = spacing(event);
-                        if (oldDist > 5f) {
-                            savedMatrix.set(matrix);
-                            midPoint(mid, event);
-                            mode = ZOOM;
-                        }
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        if (mode == DRAG) {
-                            matrix.set(savedMatrix);
-                            matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
-
-                        } else if (mode == ZOOM) {
-                            float newDist = spacing(event);
-                            if (newDist > 5f) {
-                                matrix.set(savedMatrix);
-                                scale = newDist / oldDist;
-                                matrix.postScale(scale, scale, mid.x, mid.y);
-                            }
-                        }
-                        break;
-                }
-                iv.setImageMatrix(matrix);
-
-                return true;
-            }
-        });
+        photoViewAttacher = new PhotoViewAttacher(dataBinding.ivDrawings);
+        photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_XY);
+        photoViewAttacher.setMaximumScale(6);
     }
 
     @Override
@@ -98,46 +49,123 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
 
             case R.id.btn_save:
+                //TODO For Test
+                showDrawingsSelectDialog();
+                break;
+
+            case R.id.btn_zoom_in:
+                scale = calculateScale(photoViewAttacher.getScale());
+                scale = (scale + 0.5f) > 6 ? 6f : scale + 0.5f;
+                photoViewAttacher.setScale(scale);
+
+                showScaleView();
+                break;
+
+            case R.id.btn_zoom_out:
+                scale = calculateScale(photoViewAttacher.getScale());
+                scale = (scale - 0.5f) < 1 ? 1f : scale - 0.5f;
+                photoViewAttacher.setScale(scale);
+
+                showScaleView();
                 break;
         }
     }
 
-    private float spacing(MotionEvent event) {
-        float x = event.getX(0) - event.getX(1);
-        float y = event.getY(0) - event.getY(1);
-        return (float) Math.sqrt(x * x + y * y);
-    }
-
-    private void midPoint(PointF point, MotionEvent event) {
-        float x = event.getX(0) + event.getX(1);
-        float y = event.getY(0) + event.getY(1);
-        point.set(x / 2, y / 2);
-    }
-
-    private void dumpEvent(MotionEvent event) {
-        String names[] = {"DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE", "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?"};
-        StringBuilder sb = new StringBuilder();
-        int action = event.getAction();
-        int actionCode = action & MotionEvent.ACTION_MASK;
-        sb.append("event ACTION_").append(names[actionCode]);
-
-        if (actionCode == MotionEvent.ACTION_POINTER_DOWN || actionCode == MotionEvent.ACTION_POINTER_UP) {
-            sb.append("(pid ").append(action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
-            sb.append(")");
-        }
-
-        sb.append("[");
-        for (int i = 0;i < event.getPointerCount();i++) {
-            sb.append("#").append(i);
-            sb.append("(pid ").append(event.getPointerId(i));
-            sb.append(")=").append((int) event.getX(i));
-            sb.append(",").append((int) event.getY(i));
-
-            if (i + 1 < event.getPointerCount()) {
-                sb.append(";");
+    // 도면 선택 다이얼로그 출력
+    private void showDrawingsSelectDialog() {
+        final DrawingsSelectDialog dialog = new DrawingsSelectDialog(this);
+        dialog.selectInputListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
             }
-            sb.append("]");
-            Log.d("Touch Events ------", sb.toString());
+        });
+        dialog.selectResetInputListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.selectOtherListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+    //TODO Pinch Zoom 으로 바뀐 Scale을 0.5단위로 맞추기 위해 구현
+    private float calculateScale(float scale) {
+        if (scale > 1f && scale < 1.5f) {
+            return 1.5f;
+        } else if (scale > 1.5f && scale < 2f) {
+            return 2f;
+        } else if (scale > 2f && scale < 2.5f) {
+            return 2.5f;
+        } else if (scale > 2.5f && scale < 3f) {
+            return 3f;
+        } else if (scale > 3f && scale < 3.5f) {
+            return 3.5f;
+        } else if (scale > 3.5f && scale < 4f) {
+            return 4f;
+        } else if (scale > 4f && scale < 4.5f) {
+            return 4.5f;
+        } else if (scale > 4.5f && scale < 5f) {
+            return 5f;
+        } else if (scale > 5f && scale < 5.5f) {
+            return 5.5f;
+        } else if (scale > 5.5f && scale < 6f) {
+            return 6f;
+        } else {
+            return scale;
         }
+    }
+
+    // 현재 줌 배수 출력
+    private void showScaleView() {
+        dataBinding.layoutScale.setVisibility(View.VISIBLE);
+        dataBinding.txtScale.setText("x"+ scale +"배");
+
+        final Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(1000);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                dataBinding.layoutScale.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new DecelerateInterpolator());
+        fadeIn.setDuration(1000);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                dataBinding.layoutScale.startAnimation(fadeOut);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        dataBinding.layoutScale.startAnimation(fadeIn);
     }
 }

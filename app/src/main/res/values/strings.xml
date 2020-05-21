@@ -83,4 +83,16 @@
 
     <!--도면 리스트 화면-->
     <string name="drawings_list_download_all">전체 다운로드</string>
+
+    <!--도면 상세 화면-->
+    <string name="drawings_memo">메모</string>
+    <string name="drawings_recode">녹음</string>
+    <string name="drawings_picture">사진</string>
+    <string name="drawings_input">입력</string>
+
+    <!--도면 선택 다이얼로그-->
+    <string name="drawings_select_dialog_title">도면을 선택하세요</string>
+    <string name="drawings_select_dialog_input">현재 도면 내 입력</string>
+    <string name="drawings_select_dialog_reset_input">현재 도면 초기화 후 입력</string>
+    <string name="drawings_select_dialog_other_select">다른 도면 선택</string>
 </resources>
