@@ -106,4 +106,10 @@
     <string name="table_column3">부재/방향/결함내용</string>
     <string name="table_column4">측정(값)</string>
     <string name="table_column5">개소</string>
+
+    <!--조사 데이터 등록 팝업-->
+    <string name="popup_reg_research_input">입력</string>
+    <string name="popup_reg_research_picture">사진</string>
+    <string name="popup_reg_research_recode">음성</string>
+    <string name="popup_reg_research_memo">메모</string>
 </resources>

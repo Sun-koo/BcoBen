@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -174,5 +175,18 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
         drawingsListAdapter.setList(listDrawings);
         drawingsListAdapter.notifyDataSetChanged();
+    }
+
+    public void sendSpinnerData() {
+        Intent intent = new Intent(DrawingsListActivity.this, DrawingsActivity.class);
+        intent.putStringArrayListExtra("category_list", listCategory);
+        intent.putStringArrayListExtra("architecture_list", listArchitecture);
+        intent.putStringArrayListExtra("research_list", listResearch);
+        intent.putStringArrayListExtra("facility_list", listFacility);
+        intent.putExtra("category", category);
+        intent.putExtra("architecture", architecture);
+        intent.putExtra("research", research);
+        intent.putExtra("facility", facility);
+        startActivity(intent);
     }
 }

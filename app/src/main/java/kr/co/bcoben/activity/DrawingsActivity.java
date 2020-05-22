@@ -1,35 +1,55 @@
 package kr.co.bcoben.activity;
 
+import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.OnViewTapListener;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.adapter.TableListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 
-public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
+public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
     private PhotoViewAttacher photoViewAttacher;
     private float scale;
+
+    private TableListAdapter tableListAdapter;
+    private ArrayList<JSONObject> listTableData;
 
     @Override
     protected int getLayoutResource() {
@@ -38,6 +58,33 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void initView() {
+        // Spinner
+        listCategory = new ArrayList<>();
+        listArchitecture = new ArrayList<>();
+        listResearch = new ArrayList<>();
+        listFacility = new ArrayList<>();
+
+        ArrayList<String> categoryList = getIntent().getStringArrayListExtra("category_list");
+        ArrayList<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
+        ArrayList<String> researchList = getIntent().getStringArrayListExtra("research_list");
+        ArrayList<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
+
+        listCategory = categoryList;
+        listArchitecture = architectureList;
+        listResearch = researchList;
+        listFacility = facilityList;
+
+        category = getIntent().getStringExtra("category");
+        architecture = getIntent().getStringExtra("architecture");
+        research = getIntent().getStringExtra("research");
+        facility = getIntent().getStringExtra("facility");
+
+        initSpinner(dataBinding.spCategory, listCategory, category);
+        initSpinner(dataBinding.spArchitecture, listArchitecture, architecture);
+        initSpinner(dataBinding.spResearch, listResearch, research);
+        initSpinner(dataBinding.spFacility, listFacility, facility);
+
+        // 도면 이미지
         photoViewAttacher = new PhotoViewAttacher(dataBinding.ivDrawings);
         photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_XY);
         photoViewAttacher.setMaximumScale(6);
@@ -48,6 +95,22 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 dataBinding.layoutTable.setVisibility(View.VISIBLE);
             }
         });
+
+        // 집계표
+        dataBinding.checkboxNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                tableListAdapter.setAllChecked(isChecked);
+            }
+        });
+
+        dataBinding.recyclerTable.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        listTableData = new ArrayList<>();
+        tableListAdapter = new TableListAdapter(this, listTableData);
+        dataBinding.recyclerTable.setAdapter(tableListAdapter);
+
+        requestTableDataList();
     }
 
     @Override
@@ -78,12 +141,88 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 showScaleView();
                 break;
 
+            case R.id.btn_new:
+                dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
+                break;
+
             // table
             case R.id.btn_select:
+                String btnText = dataBinding.btnSelect.getText().toString();
+
+                dataBinding.btnSelect.setText(btnText.equals(getString(R.string.select)) ? R.string.cancel : R.string.select);
+                dataBinding.txtNumber.setVisibility(btnText.equals(getString(R.string.select)) ? View.GONE : View.VISIBLE);
+                dataBinding.checkboxNumber.setVisibility(btnText.equals(getString(R.string.select)) ? View.VISIBLE : View.GONE);
+                dataBinding.btnDelete.setVisibility(btnText.equals(getString(R.string.select)) ? View.VISIBLE : View.GONE);
+
+                tableListAdapter.setCheckable(btnText.equals(getString(R.string.select)));
                 break;
 
             case R.id.btn_delete:
+                //TODO delete api and table data list refresh
                 break;
+
+            // popup
+            case R.id.btn_popup_close:
+                dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.e("aaa", "position: " + position);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.e("aaa", "not selected!");
+    }
+
+    private void initSpinner(Spinner spinner, ArrayList<String> list_data, String select_data) {
+        spinner.setAdapter(new CategorySpinnerAdapter(this, R.layout.item_spinner, R.id.txt_list, list_data));
+
+        spinner.setOnItemSelectedListener(this);
+
+        setSpinnerSelectedData(list_data, select_data, spinner);
+    }
+
+    private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, Spinner spinner) {
+        for (int i=0;i<list_data.size();i++) {
+            String cate = list_data.get(i);
+            if (cate.equals(select_data)) {
+                spinner.setSelection(i);
+            }
+        }
+    }
+
+    public class CategorySpinnerAdapter extends ArrayAdapter<String> {
+
+        List<String> list;
+
+        CategorySpinnerAdapter(Context context, int layout_resource_id, int tv_resource_id, List tv_list) {
+            super(context, layout_resource_id, tv_resource_id, tv_list);
+            list = tv_list;
+        }
+
+        @Override
+        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        View getCustomView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.item_spinner, parent, false);
+
+            TextView txtSelect = row.findViewById(R.id.txt_list);
+            txtSelect.setText(list.get(position));
+
+            return row;
         }
     }
 
@@ -183,5 +322,27 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         });
 
         dataBinding.layoutScale.startAnimation(fadeIn);
+    }
+
+    //TODO request table data list api
+    private void requestTableDataList() {
+        listTableData.clear();
+
+        for (int i = 0;i < 5;i++) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("number", i + 1);
+                jsonObject.put("legend", "icon");
+                jsonObject.put("content", "균열(수직균열)");
+                jsonObject.put("value", "폭(10)");
+                jsonObject.put("count", 3);
+                listTableData.add(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        tableListAdapter.setList(listTableData);
+        tableListAdapter.notifyDataSetChanged();
     }
 }
