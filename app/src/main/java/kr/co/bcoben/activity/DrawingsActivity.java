@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.adapter.RecodeListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.DrawingsSelectDialog;
@@ -45,11 +47,22 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
+    // image
     private PhotoViewAttacher photoViewAttacher;
     private float scale;
 
+    // table
     private TableListAdapter tableListAdapter;
     private ArrayList<JSONObject> listTableData;
+
+    // popup
+    private enum CurrentTab {
+        INPUT, PICTURE, RECODE, MEMO
+    }
+
+    private boolean isRecoding = false;
+    private RecodeListAdapter recodeListAdapter;
+    private ArrayList<JSONObject> listRecodingData;
 
     @Override
     protected int getLayoutResource() {
@@ -111,6 +124,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.recyclerTable.setAdapter(tableListAdapter);
 
         requestTableDataList();
+
+        // popup
+        dataBinding.researchPopup.recodeView.recyclerRecode.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        listRecodingData = new ArrayList<>();
+        recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
+        dataBinding.researchPopup.recodeView.recyclerRecode.setAdapter(recodeListAdapter);
     }
 
     @Override
@@ -164,6 +184,49 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             // popup
             case R.id.btn_popup_close:
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                break;
+
+            case R.id.layout_input_tab:
+                setSelectedTab(CurrentTab.INPUT);
+                break;
+
+            case R.id.layout_picture_tab:
+                setSelectedTab(CurrentTab.PICTURE);
+                break;
+
+            case R.id.layout_recode_tab:
+                setSelectedTab(CurrentTab.RECODE);
+                break;
+
+            case R.id.layout_memo_tab:
+                setSelectedTab(CurrentTab.MEMO);
+                break;
+
+            case R.id.btn_reg:
+                //TODO
+                dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                break;
+
+            case R.id.btn_recode:
+                isRecoding = true;
+                dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.GONE);
+                dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.VISIBLE);
+                dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
+                dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
+                break;
+
+            case R.id.btn_recode_stop:
+                if (isRecoding) {
+                    dataBinding.researchPopup.recodeView.btnRecodeStop.setText(R.string.popup_reg_research_recode_save);
+                } else {
+                    dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
+                    dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
+                    //TODO get recoded real data
+                    getRecodeDataList();
+                    dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
+                }
+
+                isRecoding = !isRecoding;
                 break;
         }
     }
@@ -344,5 +407,46 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
         tableListAdapter.setList(listTableData);
         tableListAdapter.notifyDataSetChanged();
+    }
+
+    // popup tab update isSelected
+    private void setSelectedTab(CurrentTab tab) {
+        dataBinding.researchPopup.layoutInputTab.setBackground(tab == CurrentTab.INPUT ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
+        dataBinding.researchPopup.txtInputTab.setTextColor(tab == CurrentTab.INPUT ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+
+        dataBinding.researchPopup.layoutPictureTab.setBackground(tab == CurrentTab.PICTURE ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
+        dataBinding.researchPopup.txtPictureTab.setTextColor(tab == CurrentTab.PICTURE ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+
+        dataBinding.researchPopup.layoutRecodeTab.setBackground(tab == CurrentTab.RECODE ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
+        dataBinding.researchPopup.txtRecodeTab.setTextColor(tab == CurrentTab.RECODE ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+
+        dataBinding.researchPopup.layoutMemoTab.setBackground(tab == CurrentTab.MEMO ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
+        dataBinding.researchPopup.txtMemoTab.setTextColor(tab == CurrentTab.MEMO ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+
+        dataBinding.researchPopup.layoutInput.setVisibility(tab == CurrentTab.INPUT ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutInputPicture.setVisibility((tab == CurrentTab.INPUT || tab == CurrentTab.PICTURE) ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutRecode.setVisibility(tab == CurrentTab.RECODE ? View.VISIBLE : View.GONE);
+    }
+
+    //TODO get recoding data
+    private void getRecodeDataList() {
+        listRecodingData.clear();
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", "11 음성녹음-1");
+            jsonObject.put("time", "03:20");
+            listRecodingData.add(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        recodeListAdapter.setList(listRecodingData);
+        recodeListAdapter.notifyDataSetChanged();
+    }
+
+    public void startRecodePlay() {
+        dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
+        dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.VISIBLE);
     }
 }

@@ -14,7 +14,7 @@ import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class CertificateActivity extends BaseActivity<ActivityCertificateBinding> implements View.OnClickListener {
 
-    private static int AUTH_RESTRICT_TIME = 300;
+    private static int AUTH_RESTRICT_TIME = 180;
     private int authTimerCount = AUTH_RESTRICT_TIME;
 
     private Handler authHandler = new Handler();

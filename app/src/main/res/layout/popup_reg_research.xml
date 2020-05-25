@@ -11,8 +11,9 @@
         
         <LinearLayout
             android:layout_width="376dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
             android:layout_marginEnd="10dp"
             android:orientation="vertical"
             android:background="@drawable/background_gray_popup">
@@ -38,6 +39,7 @@
                         android:paddingBottom="10dp"
                         android:paddingStart="17dp"
                         android:paddingEnd="17dp"
+                        android:onClick="onClick"
                         android:background="@drawable/background_keycolor_tab">
 
                         <TextView
@@ -58,6 +60,7 @@
                         android:paddingBottom="10dp"
                         android:paddingStart="17dp"
                         android:paddingEnd="17dp"
+                        android:onClick="onClick"
                         android:background="@drawable/background_gray_tab">
 
                         <TextView
@@ -78,6 +81,7 @@
                         android:paddingBottom="10dp"
                         android:paddingStart="17dp"
                         android:paddingEnd="17dp"
+                        android:onClick="onClick"
                         android:background="@drawable/background_gray_tab">
 
                         <TextView
@@ -98,6 +102,7 @@
                         android:paddingBottom="10dp"
                         android:paddingStart="17dp"
                         android:paddingEnd="17dp"
+                        android:onClick="onClick"
                         android:background="@drawable/background_gray_tab">
 
                         <TextView
@@ -124,6 +129,390 @@
                     android:onClick="onClick"/>
 
             </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="17dp"
+                android:background="@color/colorDividerPopup"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="17dp"
+                android:orientation="vertical">
+                
+                <ScrollView
+                    android:id="@+id/layout_input_picture"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/layout_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:id="@+id/layout_sub_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_sub_title"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_direction"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_direction"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_defect_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_defect_content"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_architecture"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_architecture"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_length"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_length"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <EditText
+                                    android:id="@+id/edit_length"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:background="@null"
+                                    android:inputType="number"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_width"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_width"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <EditText
+                                    android:id="@+id/edit_width"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:background="@null"
+                                    android:inputType="number"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_height"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_height"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <EditText
+                                    android:id="@+id/edit_height"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:background="@null"
+                                    android:inputType="number"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/layout_count"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="7dp"
+                                android:background="@drawable/background_white_popup_menu">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp"
+                                    android:layout_marginStart="25dp"
+                                    android:text="@string/popup_reg_research_input_count"
+                                    android:textColor="@color/colorBlack"
+                                    android:textSize="13dp"/>
+
+                                <EditText
+                                    android:id="@+id/edit_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="47dp"
+                                    android:background="@null"
+                                    android:inputType="number"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/layout_picture"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="34dp"
+                            android:background="@drawable/background_keycolor_popup_menu">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:layout_marginBottom="14dp"
+                                android:layout_marginStart="25dp"
+                                android:text="@string/popup_reg_research_picture"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="13dp"/>
+
+                            <TextView
+                                android:id="@+id/txt_picture"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="14dp"
+                                android:layout_marginBottom="14dp"
+                                android:layout_marginEnd="47dp"
+                                android:text="@string/popup_reg_research_picture_hint"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="13dp"/>
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:id="@+id/layout_picture_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="9dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/popup_reg_research_picture_count_title"/>
+
+                                <TextView
+                                    android:id="@+id/txt_picture_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="(0건)"/>
+
+                            </LinearLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_picture"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                            </androidx.recyclerview.widget.RecyclerView>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    
+                </ScrollView>
+
+                <LinearLayout
+                    android:id="@+id/layout_recode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <include
+                        android:id="@+id/recode_view"
+                        layout="@layout/popup_reg_research_recode"
+                        android:layout_width="match_parent"
+                        android:layout_height="348dp"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_reg"
+                    android:layout_width="match_parent"
+                    android:layout_height="41dp"
+                    android:layout_marginTop="17dp"
+                    android:text="@string/popup_reg_research_reg"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="16dp"
+                    android:background="@drawable/btn_round_pink"/>
+
+            </LinearLayout>
 
         </LinearLayout>
         

@@ -38,4 +38,7 @@
     <color name="colorBackgroundPopup">#F4F4F4</color>
     <color name="colorBorderPopup">#CBCBCB</color>
     <color name="colorTextGrayPopup">#A9AAAC</color>
+    <color name="colorDividerPopup">#ADADAD</color>
+    <color name="colorBorderPopupMenu">#E2E2E2</color>
+    <color name="colorTextHintPopupMenu">#888888</color>
 </resources>
