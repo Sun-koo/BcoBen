@@ -1,9 +1,17 @@
 package kr.co.bcoben.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Typeface;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,9 +21,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -23,6 +33,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
@@ -36,11 +48,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.adapter.PictureListAdapter;
 import kr.co.bcoben.adapter.RecodeListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
 import kr.co.bcoben.component.BaseActivity;
+import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
+
+import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -60,9 +76,15 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         INPUT, PICTURE, RECODE, MEMO
     }
 
+    private PictureListAdapter pictureListAdapter;
+    private ArrayList<JSONObject> listPictureData;
+
     private boolean isRecoding = false;
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
+
+    private CanvasView canvasView;
+    private GestureDetectorCompat mDetector;
 
     @Override
     protected int getLayoutResource() {
@@ -126,11 +148,27 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         requestTableDataList();
 
         // popup
+        // 사진 탭
+        dataBinding.researchPopup.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+
+        listPictureData = new ArrayList<>();
+        pictureListAdapter = new PictureListAdapter(this, listPictureData);
+        dataBinding.researchPopup.recyclerPicture.setAdapter(pictureListAdapter);
+        // 음성 탭
         dataBinding.researchPopup.recodeView.recyclerRecode.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         listRecodingData = new ArrayList<>();
         recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
         dataBinding.researchPopup.recodeView.recyclerRecode.setAdapter(recodeListAdapter);
+        // 메모 탭
+        mDetector = new GestureDetectorCompat(this, new TapAndDragGestureListener());
+        dataBinding.researchPopup.memoView.layoutGuideContainer.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mDetector.onTouchEvent(event);
+                return onTouchEvent(event);
+            }
+        });
     }
 
     @Override
@@ -162,7 +200,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
 
             case R.id.btn_new:
+                //for test
                 dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
+                getPictureDataList();
                 break;
 
             // table
@@ -184,6 +224,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             // popup
             case R.id.btn_popup_close:
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                initPopupView();
                 break;
 
             case R.id.layout_input_tab:
@@ -409,6 +450,19 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         tableListAdapter.notifyDataSetChanged();
     }
 
+    private void initPopupView() {
+        setSelectedTab(CurrentTab.INPUT);
+        dataBinding.researchPopup.layoutPictureList.setVisibility(View.GONE);
+        dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
+        dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
+        dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.memoView.editMemo.setVisibility(View.GONE);
+        dataBinding.researchPopup.memoView.editMemo.getText().clear();
+        dataBinding.researchPopup.memoView.layoutCanvas.clear();
+    }
+
     // popup tab update isSelected
     private void setSelectedTab(CurrentTab tab) {
         dataBinding.researchPopup.layoutInputTab.setBackground(tab == CurrentTab.INPUT ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
@@ -426,6 +480,25 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.layoutInput.setVisibility(tab == CurrentTab.INPUT ? View.VISIBLE : View.GONE);
         dataBinding.researchPopup.layoutInputPicture.setVisibility((tab == CurrentTab.INPUT || tab == CurrentTab.PICTURE) ? View.VISIBLE : View.GONE);
         dataBinding.researchPopup.layoutRecode.setVisibility(tab == CurrentTab.RECODE ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutMemo.setVisibility(tab == CurrentTab.MEMO ? View.VISIBLE : View.GONE);
+    }
+
+    //TODO get picture data
+    private void getPictureDataList() {
+        listPictureData.clear();
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("img_url", "https://www.dropbox.com/s/puuidymupu4tmon/sample_img.png?dl=0");
+            listPictureData.add(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        pictureListAdapter.setList(listPictureData);
+        pictureListAdapter.notifyDataSetChanged();
+
+        dataBinding.researchPopup.layoutPictureList.setVisibility(View.VISIBLE);
     }
 
     //TODO get recoding data
@@ -448,5 +521,37 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     public void startRecodePlay() {
         dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
         dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.VISIBLE);
+    }
+
+    private void updateMemoView(boolean isDrawing) {
+        dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.GONE);
+
+        if (isDrawing) {
+            dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
+            dataBinding.researchPopup.memoView.layoutCanvas.setDrawer(CanvasView.Drawer.PEN);
+            dataBinding.researchPopup.memoView.layoutCanvas.setBaseColor(getResources().getColor(R.color.colorWhite));
+            dataBinding.researchPopup.memoView.layoutCanvas.setPaintStyle(Paint.Style.STROKE);
+            dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeColor(getResources().getColor(R.color.colorBlack));
+            dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeWidth(8);
+
+        } else {
+            dataBinding.researchPopup.memoView.editMemo.setVisibility(View.VISIBLE);
+            showKeyboard(this, dataBinding.researchPopup.memoView.editMemo);
+        }
+    }
+    // 메모 영역 화면 탭 했을 경우와 드로잉 제스쳐를 구분하기 위해 리스너 추가
+    class TapAndDragGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            updateMemoView(false);
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            updateMemoView(true);
+            return true;
+        }
     }
 }

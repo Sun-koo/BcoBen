@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="37dp"
-        android:paddingBottom="55dp"
+        android:paddingBottom="37dp"
         android:background="#99000000">
         
         <LinearLayout
@@ -300,8 +300,8 @@
 
                                 <EditText
                                     android:id="@+id/edit_length"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
@@ -311,7 +311,8 @@
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp" />
+                                    android:textSize="13dp"
+                                    android:textAlignment="viewEnd"/>
 
                             </RelativeLayout>
 
@@ -334,8 +335,8 @@
 
                                 <EditText
                                     android:id="@+id/edit_width"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
@@ -345,7 +346,8 @@
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp" />
+                                    android:textSize="13dp"
+                                    android:textAlignment="viewEnd"/>
 
                             </RelativeLayout>
 
@@ -368,8 +370,8 @@
 
                                 <EditText
                                     android:id="@+id/edit_height"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
@@ -379,7 +381,8 @@
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp" />
+                                    android:textSize="13dp"
+                                    android:textAlignment="viewEnd"/>
 
                             </RelativeLayout>
 
@@ -402,8 +405,8 @@
 
                                 <EditText
                                     android:id="@+id/edit_count"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
@@ -413,7 +416,8 @@
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp" />
+                                    android:textSize="13dp"
+                                    android:textAlignment="viewEnd"/>
 
                             </RelativeLayout>
 
@@ -492,6 +496,7 @@
                     android:id="@+id/layout_recode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:visibility="gone">
 
                     <include
@@ -499,6 +504,21 @@
                         layout="@layout/popup_reg_research_recode"
                         android:layout_width="match_parent"
                         android:layout_height="348dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_memo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <include
+                        android:id="@+id/memo_view"
+                        layout="@layout/popup_reg_research_memo"
+                        android:layout_width="match_parent"
+                        android:layout_height="443dp"/>
 
                 </LinearLayout>
 

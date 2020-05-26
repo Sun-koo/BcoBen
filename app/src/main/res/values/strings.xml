@@ -136,4 +136,8 @@
     <string name="popup_reg_research_recode_backwards">-10초</string>
     <string name="popup_reg_research_recode_forward">+10초</string>
     <string name="popup_reg_research_recode_save">저장</string>
+
+    <!--조사 데이터 등록 팝업 메모 Tab-->
+    <string name="popup_reg_research_memo_guide_text">화면을 탭하여 입력하거나, 직접 드로잉하세요.</string>
+    <string name="popup_reg_research_memo_canvas_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>
 </resources>
