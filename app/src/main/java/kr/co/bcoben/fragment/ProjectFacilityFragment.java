@@ -13,19 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.model.ProjectData;
 import kr.co.bcoben.model.ProjectResearchData;
 
 public class ProjectFacilityFragment extends Fragment {
 
-    private static final String ARG_PARAM = "project research data";
+    private static final String ARG_PARAM = "project_data";
 
-    private List<ProjectResearchData> dataList;
+    private ProjectData projectData;
 
     // TODO: Rename and change types and number of parameters
-    public static ProjectFacilityFragment newInstance(List<ProjectResearchData> list) {
+    public static ProjectFacilityFragment newInstance(ProjectData data) {
         ProjectFacilityFragment fragment = new ProjectFacilityFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM, (ArrayList<? extends Parcelable>) list);
+        args.putParcelable(ARG_PARAM, data);
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,7 +35,7 @@ public class ProjectFacilityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            dataList = getArguments().getParcelableArrayList(ARG_PARAM);
+            projectData = getArguments().getParcelable(ARG_PARAM);
         }
     }
 

@@ -44,12 +44,12 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                 String id = dataBinding.editId.getText().toString();
                 String pw = dataBinding.editPw.getText().toString();
 
-                if (checkValidInput(id, pw)) {
+//                if (checkValidInput(id, pw)) {
                     //TODO request login api
                     Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
                     startActivity(intent_login);
                     overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
-                }
+//                }
                 break;
         }
     }
