@@ -11,6 +11,9 @@
     <string name="back">뒤로</string>
     <string name="close">닫기</string>
     <string name="save">저장하기</string>
+    <string name="select">선택</string>
+    <string name="cancel">취소</string>
+    <string name="delete">삭제</string>
 
     <!--로그인 화면-->
     <string name="login_title">현장조사 관리자 시스템에\n로그인하세요.</string>
@@ -83,4 +86,58 @@
 
     <!--도면 리스트 화면-->
     <string name="drawings_list_download_all">전체 다운로드</string>
+
+    <!--도면 상세 화면-->
+    <string name="drawings_memo">메모</string>
+    <string name="drawings_recode">녹음</string>
+    <string name="drawings_picture">사진</string>
+    <string name="drawings_input">입력</string>
+
+    <!--도면 선택 다이얼로그-->
+    <string name="drawings_select_dialog_title">도면을 선택하세요</string>
+    <string name="drawings_select_dialog_input">현재 도면 내 입력</string>
+    <string name="drawings_select_dialog_reset_input">현재 도면 초기화 후 입력</string>
+    <string name="drawings_select_dialog_other_select">다른 도면 선택</string>
+
+    <!--집계표-->
+    <string name="table_title">집계표</string>
+    <string name="table_column1">번호</string>
+    <string name="table_column2">범례</string>
+    <string name="table_column3">부재/방향/결함내용</string>
+    <string name="table_column4">측정(값)</string>
+    <string name="table_column5">개소</string>
+
+    <!--조사 데이터 등록 팝업-->
+    <string name="popup_reg_research_input">입력</string>
+    <string name="popup_reg_research_picture">사진</string>
+    <string name="popup_reg_research_recode">음성</string>
+    <string name="popup_reg_research_memo">메모</string>
+    <string name="popup_reg_research_reg">등록하기</string>
+
+    <!--조사 데이터 등록 팝업 입력 Tab-->
+    <string name="popup_reg_research_input_sub_title">부제</string>
+    <string name="popup_reg_research_input_direction">방향</string>
+    <string name="popup_reg_research_input_defect_content">결함내용</string>
+    <string name="popup_reg_research_input_architecture">구조&amp;비구조&amp;마감재</string>
+    <string name="popup_reg_research_input_length">길이</string>
+    <string name="popup_reg_research_input_width">가로</string>
+    <string name="popup_reg_research_input_height">세로</string>
+    <string name="popup_reg_research_input_count">개소</string>
+    <string name="popup_reg_research_input_hint1">선택하세요</string>
+    <string name="popup_reg_research_input_hint2">입력하세요</string>
+
+    <!--조사 데이터 등록 팝업 사진 Tab-->
+    <string name="popup_reg_research_picture_hint">등록하세요</string>
+    <string name="popup_reg_research_picture_count_title">등록 항목</string>
+
+    <!--조사 데이터 등록 팝업 음성 Tab-->
+    <string name="popup_reg_research_recode_click">클릭하여 녹음하세요</string>
+    <string name="popup_reg_research_recode_stop">일시중지</string>
+    <string name="popup_reg_research_recode_backwards">-10초</string>
+    <string name="popup_reg_research_recode_forward">+10초</string>
+    <string name="popup_reg_research_recode_save">저장</string>
+
+    <!--조사 데이터 등록 팝업 메모 Tab-->
+    <string name="popup_reg_research_memo_guide_text">화면을 탭하여 입력하거나, 직접 드로잉하세요.</string>
+    <string name="popup_reg_research_memo_canvas_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>
 </resources>

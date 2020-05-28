@@ -26,4 +26,20 @@
     <color name="colorHintGray">#C3C3C3</color>
 
     <color name="colorTextDarkGray">#6A6A6A</color>
+    <color name="colorBorderGray">#BEBEBE</color>
+    <color name="colorBorderLightGray">#B9B9B9</color>
+
+    <color name="colorCircleGray">#6F6F6F</color>
+    <color name="colorCircleRed">#FF0000</color>
+    <color name="colorCircleBlue">#0034A8</color>
+    <color name="colorCircleBlack">#000000</color>
+    <color name="colorBackgroundPrimary">#8C545871</color>
+    <color name="colorTableLineGray">#D9D9D9</color>
+
+    <color name="colorBackgroundPopup">#F4F4F4</color>
+    <color name="colorBorderPopup">#CBCBCB</color>
+    <color name="colorTextGrayPopup">#A9AAAC</color>
+    <color name="colorDividerPopup">#ADADAD</color>
+    <color name="colorBorderPopupMenu">#E2E2E2</color>
+    <color name="colorTextHintPopupMenu">#888888</color>
 </resources>

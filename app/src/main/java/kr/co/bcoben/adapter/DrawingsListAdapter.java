@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsActivity;
+import kr.co.bcoben.activity.DrawingsListActivity;
 import kr.co.bcoben.activity.MainActivity;
 
 public class DrawingsListAdapter extends RecyclerView.Adapter {
@@ -98,8 +99,7 @@ public class DrawingsListAdapter extends RecyclerView.Adapter {
         view.listLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mActivity, DrawingsActivity.class);
-                mActivity.startActivity(intent);
+                ((DrawingsListActivity) mActivity).sendSpinnerData();
             }
         });
     }
