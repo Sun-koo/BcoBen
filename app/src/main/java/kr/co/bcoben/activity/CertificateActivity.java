@@ -62,11 +62,11 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
             case R.id.btn_complete:
                 String number = dataBinding.editCertificateNumber.getText().toString();
 
-                if (checkValidInput(number)) {
+//                if (checkValidInput(number)) {
                     Intent intent = new Intent(CertificateActivity.this, MainActivity.class);
                     startActivity(intent);
                     finishAffinity();
-                }
+//                }
                 break;
         }
     }

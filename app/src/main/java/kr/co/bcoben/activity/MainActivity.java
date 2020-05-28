@@ -19,6 +19,7 @@ import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.MenuSelectListAdapter;
+import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityMainBinding;
@@ -44,6 +45,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // main
     private ProjectListAdapter projectListAdapter;
+    private ProjectDataPageAdapter projectPageAdapter;
     private List<ProjectListData> projectList = new ArrayList<>();
     private List<ProjectData> projectDataList = new ArrayList<>();
 
@@ -60,6 +62,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             "비파괴, 장비조사 | 강재부식(MC)",
             "비파괴, 장비조사 | 내화피복(FC)",
             "비파괴, 장비조사 | 철근탐사(RL)",
+            "비파괴, 장비조사 | 코아채취(CO)",
             "외관조사"
     };
 
@@ -72,6 +75,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     protected void initView() {
         // side menu
         dataBinding.mainDrawer.layoutDrawer.addDrawerListener(this);
+        dataBinding.mainDrawer.layoutDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         setNavigationViewWidth();
 
         dataBinding.mainDrawer.recyclerFacility.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -96,10 +100,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         projectListAdapter = new ProjectListAdapter(this, projectList);
         dataBinding.recyclerProject.setAdapter(projectListAdapter);
         dataBinding.recyclerProject.setLayoutManager(new LinearLayoutManager(this));
-
         dataBinding.txtVersion.setText(getAppVersion());
 
+        projectPageAdapter = new ProjectDataPageAdapter(getSupportFragmentManager(), getLifecycle(), projectDataList);
+        dataBinding.mainDrawer.mainContents.pagerProjectData.setAdapter(projectPageAdapter);
+
         requestProjectList();
+        requestProjectDataList();
     }
 
     @Override
@@ -386,7 +393,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
             ProjectData data = new ProjectData(facility, researchDataList);
             projectDataList.add(data);
+
+            dataBinding.mainDrawer.mainContents.tabProjectFacility.addTab(dataBinding.mainDrawer.mainContents.tabProjectFacility.newTab().setText(facility));
         }
+        projectPageAdapter.setProjectDataList(projectDataList);
     }
 
     //TODO request facility list api
