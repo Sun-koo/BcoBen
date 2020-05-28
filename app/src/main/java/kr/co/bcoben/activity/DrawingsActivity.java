@@ -7,6 +7,11 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Typeface;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.AudioTrack;
+import android.media.MediaRecorder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -44,6 +49,7 @@ import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +85,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private PictureListAdapter pictureListAdapter;
     private ArrayList<JSONObject> listPictureData;
 
+    short[] bufferRecord, bufferStore;
+    int bufferRecordSize, bufferTrackSize;
+    int samplingRate = 44100;
+    int bufferShortSize = samplingRate * 6;
+    ShortBuffer shortBuffer = ShortBuffer.allocate(bufferShortSize);
+    AudioTrack audioTrack;
+    AudioRecord audioRecord;
     private boolean isRecoding = false;
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
@@ -243,21 +256,39 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 setSelectedTab(CurrentTab.MEMO);
                 break;
 
+            case R.id.layout_sub_title:
+                dataBinding.researchPopup.layoutSubTitle.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
+                break;
+
+            case R.id.layout_direction:
+                dataBinding.researchPopup.layoutDirection.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
+                break;
+
+            case R.id.layout_defect_content:
+                dataBinding.researchPopup.layoutDefectContent.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
+                break;
+
+            case R.id.layout_architecture:
+                dataBinding.researchPopup.layoutArchitecture.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
+                break;
+
             case R.id.btn_reg:
                 //TODO
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
                 break;
 
             case R.id.btn_recode:
-                isRecoding = true;
                 dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.GONE);
                 dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.VISIBLE);
                 dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
                 dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
+
+                startRecoding();
                 break;
 
             case R.id.btn_recode_stop:
                 if (isRecoding) {
+                    stopRecoding();
                     dataBinding.researchPopup.recodeView.btnRecodeStop.setText(R.string.popup_reg_research_recode_save);
                 } else {
                     dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
@@ -501,6 +532,58 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.layoutPictureList.setVisibility(View.VISIBLE);
     }
 
+    private void startRecoding() {
+        isRecoding = true;
+        bufferStore = new short[samplingRate];
+        bufferTrackSize = bufferStore.length;
+        // 녹음용 버퍼 사이즈 구하기 및 버퍼 초기화
+        bufferRecordSize = AudioRecord.getMinBufferSize(samplingRate,
+        AudioFormat.CHANNEL_IN_STEREO,
+        AudioFormat.ENCODING_PCM_16BIT) * 2;
+        bufferRecord = new short[bufferRecordSize];
+
+        //AudioRecord 초기화
+        audioRecord=null;
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
+                samplingRate,
+                AudioFormat.CHANNEL_IN_STEREO,
+                AudioFormat.ENCODING_PCM_16BIT,bufferRecord.length);
+
+        //AudioTrack 초기화
+//        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+//                samplingRate,
+//                AudioFormat.CHANNEL_IN_STEREO,
+//                AudioFormat.ENCODING_PCM_16BIT,
+//                bufferStore.length,
+//                AudioTrack.MODE_STREAM);
+
+//        audioTrack.play();
+        audioRecord.startRecording();
+
+        //녹음버퍼의 내용을 저장 버퍼로 옮김
+        int retBufferSize;
+        shortBuffer.rewind();
+
+        while(shortBuffer.position() + bufferRecordSize < bufferShortSize){
+            retBufferSize = audioRecord.read(bufferRecord, 0, bufferRecordSize);
+            shortBuffer.put(bufferRecord,0,retBufferSize);
+        }
+    }
+    private void stopRecoding() {
+        int Index=0;
+        shortBuffer.position(0);
+
+        while(shortBuffer.position() <= bufferShortSize - bufferTrackSize){
+            shortBuffer.get(bufferStore, 0, bufferTrackSize);
+//            audioTrack.write(bufferStore, 0, bufferTrackSize);
+            Index=Index + bufferTrackSize;
+        }
+
+        audioRecord.stop();
+        audioRecord.release();
+//        audioTrack.stop();
+//        audioTrack.release();
+    }
     //TODO get recoding data
     private void getRecodeDataList() {
         listRecodingData.clear();
