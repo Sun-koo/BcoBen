@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -32,7 +31,7 @@ import static kr.co.bcoben.util.CommonUtil.getAppVersion;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, DrawerLayout.DrawerListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
 
     public enum CurrentStep {
         GRADE, FACILITY, FACILITY_CATEGORY, ARCHITECTURE, RESEARCH
@@ -74,7 +73,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     protected void initView() {
         // side menu
-        dataBinding.mainDrawer.layoutDrawer.addDrawerListener(this);
+        dataBinding.mainDrawer.layoutDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                dataBinding.mainDrawer.layoutDrawer.bringChildToFront(drawerView);
+                dataBinding.mainDrawer.layoutDrawer.requestLayout();
+            }
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {}
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {}
+            @Override
+            public void onDrawerStateChanged(int newState) {}
+        });
         dataBinding.mainDrawer.layoutDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         setNavigationViewWidth();
 
@@ -102,8 +113,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.recyclerProject.setLayoutManager(new LinearLayoutManager(this));
         dataBinding.txtVersion.setText(getAppVersion());
 
-        projectPageAdapter = new ProjectDataPageAdapter(getSupportFragmentManager(), getLifecycle(), projectDataList);
+        projectPageAdapter = new ProjectDataPageAdapter(getSupportFragmentManager(), projectDataList);
         dataBinding.mainDrawer.mainContents.pagerProjectData.setAdapter(projectPageAdapter);
+        dataBinding.mainDrawer.mainContents.pagerProjectData.setOffscreenPageLimit(5);
+
+        dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
 
         requestProjectList();
         requestProjectDataList();
@@ -111,7 +125,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     @Override
     public void onBackPressed() {
-        finishApp(this);
+        if (dataBinding.mainDrawer.layoutDrawer.isDrawerOpen(GravityCompat.START)) {
+            dataBinding.mainDrawer.layoutDrawer.closeDrawer(GravityCompat.START);
+        } else {
+            finishApp(this);
+        }
     }
 
     @Override
@@ -171,27 +189,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
-    @Override
-    public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-        dataBinding.mainDrawer.layoutDrawer.bringChildToFront(drawerView);
-        dataBinding.mainDrawer.layoutDrawer.requestLayout();
-    }
-
-    @Override
-    public void onDrawerOpened(@NonNull View drawerView) {
-
-    }
-
-    @Override
-    public void onDrawerClosed(@NonNull View drawerView) {
-        initUI();
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState) {
-
-    }
-
     private void setNavigationViewWidth() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -228,17 +225,31 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void updateStepMenuUI() {
-        dataBinding.mainDrawer.layoutGrade.setBackgroundColor(currentStep == CurrentStep.GRADE ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorPrimary));
-        dataBinding.mainDrawer.layoutFacility.setBackgroundColor(currentStep == CurrentStep.FACILITY ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorPrimary));
-        dataBinding.mainDrawer.layoutFacilityCategory.setBackgroundColor(currentStep == CurrentStep.FACILITY_CATEGORY ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorPrimary));
-        dataBinding.mainDrawer.layoutArchitecture.setBackgroundColor(currentStep == CurrentStep.ARCHITECTURE ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorPrimary));
-        dataBinding.mainDrawer.layoutResearch.setBackgroundColor(currentStep == CurrentStep.RESEARCH ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorPrimary));
+        dataBinding.mainDrawer.layoutGrade.setSelected(false);
+        dataBinding.mainDrawer.layoutFacility.setSelected(false);
+        dataBinding.mainDrawer.layoutFacilityCategory.setSelected(false);
+        dataBinding.mainDrawer.layoutArchitecture.setSelected(false);
+        dataBinding.mainDrawer.layoutResearch.setSelected(false);
 
-        dataBinding.mainDrawer.txtGradeTitle.setTextColor(currentStep == CurrentStep.GRADE ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
-        dataBinding.mainDrawer.txtFacilityTitle.setTextColor(currentStep == CurrentStep.FACILITY ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
-        dataBinding.mainDrawer.txtFacilityCategoryTitle.setTextColor(currentStep == CurrentStep.FACILITY_CATEGORY ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
-        dataBinding.mainDrawer.txtArchitectureTitle.setTextColor(currentStep == CurrentStep.ARCHITECTURE ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
-        dataBinding.mainDrawer.txtResearchTitle.setTextColor(currentStep == CurrentStep.RESEARCH ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
+        switch (currentStep) {
+            case GRADE: dataBinding.mainDrawer.layoutGrade.setSelected(true); break;
+            case FACILITY: dataBinding.mainDrawer.layoutFacility.setSelected(true); break;
+            case FACILITY_CATEGORY: dataBinding.mainDrawer.layoutFacilityCategory.setSelected(true); break;
+            case ARCHITECTURE: dataBinding.mainDrawer.layoutArchitecture.setSelected(true); break;
+            case RESEARCH: dataBinding.mainDrawer.layoutResearch.setSelected(true); break;
+        }
+
+//        dataBinding.mainDrawer.layoutGrade.setBackgroundColor(currentStep == CurrentStep.GRADE ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorBackgroundDrawer));
+//        dataBinding.mainDrawer.layoutFacility.setBackgroundColor(currentStep == CurrentStep.FACILITY ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorBackgroundDrawer));
+//        dataBinding.mainDrawer.layoutFacilityCategory.setBackgroundColor(currentStep == CurrentStep.FACILITY_CATEGORY ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorBackgroundDrawer));
+//        dataBinding.mainDrawer.layoutArchitecture.setBackgroundColor(currentStep == CurrentStep.ARCHITECTURE ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorBackgroundDrawer));
+//        dataBinding.mainDrawer.layoutResearch.setBackgroundColor(currentStep == CurrentStep.RESEARCH ? getResources().getColor(R.color.colorBackgroundPink) : getResources().getColor(R.color.colorBackgroundDrawer));
+//
+//        dataBinding.mainDrawer.txtGradeTitle.setTextColor(currentStep == CurrentStep.GRADE ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
+//        dataBinding.mainDrawer.txtFacilityTitle.setTextColor(currentStep == CurrentStep.FACILITY ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
+//        dataBinding.mainDrawer.txtFacilityCategoryTitle.setTextColor(currentStep == CurrentStep.FACILITY_CATEGORY ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
+//        dataBinding.mainDrawer.txtArchitectureTitle.setTextColor(currentStep == CurrentStep.ARCHITECTURE ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
+//        dataBinding.mainDrawer.txtResearchTitle.setTextColor(currentStep == CurrentStep.RESEARCH ? getResources().getColor(R.color.colorTextNavy) : getResources().getColor(R.color.colorWhite));
     }
 
     private void goToNextStep() {
@@ -343,6 +354,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
+    public boolean isDrawingOpen() {
+        return dataBinding.mainDrawer.layoutDrawer.isDrawerOpen(GravityCompat.START);
+    }
+
+    public void closeDrawing() {
+        dataBinding.mainDrawer.layoutDrawer.closeDrawer(GravityCompat.START);
+    }
+
     private void goToDrawingsPage() {
         Intent intent = new Intent(MainActivity.this, DrawingsListActivity.class);
 
@@ -372,8 +391,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void requestProjectList() {
         //TODO add dummy data for test
         projectList.clear();
+        boolean isFirst = true;
         for (String name : projectName) {
             ProjectListData data = new ProjectListData(name);
+            if (isFirst) {
+                data.setSelected(true);
+                isFirst = false;
+            }
             projectList.add(data);
         }
         projectListAdapter.setList(projectList);
@@ -393,8 +417,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
             ProjectData data = new ProjectData(facility, researchDataList);
             projectDataList.add(data);
-
-            dataBinding.mainDrawer.mainContents.tabProjectFacility.addTab(dataBinding.mainDrawer.mainContents.tabProjectFacility.newTab().setText(facility));
         }
         projectPageAdapter.setProjectDataList(projectDataList);
     }

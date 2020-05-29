@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#636780</color>
-    <color name="colorPrimaryDark">#545871</color>
+    <color name="colorPrimary">#545871</color>
+    <color name="colorPrimaryDark">#42465C</color>
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBackgroundNavy">#F5F6FA</color>
     <color name="colorBackgroundPink">#F7ECEB</color>
+    <color name="colorBackgroundDrawer">#636780</color>
     <color name="colorBorderPink">#E6DBDA</color>
     <color name="colorDividerMainItem">#F0F1F7</color>
     <color name="colorDividerRegisterList">#9597A6</color>

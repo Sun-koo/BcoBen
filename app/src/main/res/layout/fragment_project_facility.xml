@@ -44,9 +44,40 @@
                 android:gravity="bottom"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-                <androidx.appcompat.widget.AppCompatSpinner
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="35dp"
+                    android:background="@drawable/bg_research_data_list">
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spn_research_order"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:spinnerMode="dropdown"
+                        android:dropDownVerticalOffset="38dp"
+                        android:popupBackground="@drawable/bg_research_data_list"
+                        android:theme="@style/ResearchSpinnerTheme"/>
+                    <View
+                        android:id="@+id/view_spn_divider"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="32dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/colorBorderPink"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_spinner_pink"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/view_spn_divider"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <TextView
                     android:id="@+id/txt_facility_percent"
                     android:layout_width="wrap_content"
@@ -55,7 +86,8 @@
                     android:text="53%"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="32dp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/txt_facility_count"
                     android:layout_width="wrap_content"
@@ -68,6 +100,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
         
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_research"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

@@ -7,7 +7,7 @@
         android:color="@color/colorBorderPink"/>
 
     <solid
-        android:color="@color/colorPrimaryDark"/>
+        android:color="@color/colorPrimary"/>
 
     <corners
         android:radius="5dp"/>
