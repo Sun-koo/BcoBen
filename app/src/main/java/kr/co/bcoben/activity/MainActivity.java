@@ -407,13 +407,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void requestProjectDataList() {
         //TODO add dummy data for test
         projectDataList.clear();
+        int count = 0;
         for (String facility : projectFacility) {
             List<ProjectResearchData> researchDataList = new ArrayList<>();
-            for (int i = 0; i < projectResearchFacCate.length; i++) {
-                Calendar c = Calendar.getInstance();
-                c.set(Calendar.MONTH, c.get(Calendar.MONTH) - i);
-                c.set(Calendar.DATE, c.get(Calendar.DATE) - (i * 2));
-                researchDataList.add(new ProjectResearchData(projectResearchFacCate[i], projectResearchArch[i], projectResearchTitle[i], c.getTime(), (i + 1) * 3 + 2, 3));
+            if (++count < projectFacility.length) {
+                for (int i = 0; i < projectResearchFacCate.length; i++) {
+                    Calendar c = Calendar.getInstance();
+                    c.set(Calendar.MONTH, c.get(Calendar.MONTH) - i);
+                    c.set(Calendar.DATE, c.get(Calendar.DATE) - (i * 2));
+                    researchDataList.add(new ProjectResearchData(projectResearchFacCate[i], projectResearchArch[i], projectResearchTitle[i], c.getTime(), (i + 1) * 3 + 2, 3));
+                }
             }
             ProjectData data = new ProjectData(facility, researchDataList);
             projectDataList.add(data);

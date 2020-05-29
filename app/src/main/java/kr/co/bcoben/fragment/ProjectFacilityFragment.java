@@ -56,10 +56,11 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     @Override
     protected void initView() {
         String count = getString(R.string.main_research_count, projectData.getRegCount(), projectData.getTotCount());
-        String percent = (projectData.getRegCount() * 100 / projectData.getTotCount()) + "%";
+        String percent = projectData.getTotCount() == 0 ? "0%" : ((projectData.getRegCount() * 100 / projectData.getTotCount()) + "%");
 
         dataBinding.txtFacilityPercent.setText(percent);
         dataBinding.txtFacilityCount.setText(count);
+        dataBinding.txtResearchNone.setVisibility(projectData.getResearchList().isEmpty() ? View.VISIBLE : View.GONE);
 
         adapter = new ResearchDataListAdapter(getActivity(), projectData.getResearchList());
         dataBinding.recyclerResearch.setLayoutManager(new GridLayoutManager(getContext(), 2));
