@@ -343,17 +343,31 @@
 
                 <include
                     android:id="@+id/layout_summary_input"
-                    layout="@layout/activity_main_drawer_reg_project_summary"/>
+                    layout="@layout/activity_main_drawer_reg_project_summary" />
 
-<!--                <Button-->
-<!--                    android:id="@+id/btn_next"-->
-<!--                    android:layout_width="169dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:layout_gravity="end"-->
-<!--                    android:text="@string/side_menu_project_next_button"-->
-<!--                    android:textColor="@color/colorWhite"-->
-<!--                    android:textSize="18dp"-->
-<!--                    android:background="@drawable/btn_keycolor"/>-->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <include
+                    android:id="@+id/layout_drawings_input"
+                    layout="@layout/activity_main_drawer_reg_project_drawings" />
+
+                <Button
+                    android:id="@+id/btn_next"
+                    android:layout_width="169dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginEnd="33dp"
+                    android:layout_gravity="end"
+                    android:text="@string/side_menu_project_next_button"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="18dp"
+                    android:background="@drawable/btn_keycolor"/>
 
             </LinearLayout>
 
