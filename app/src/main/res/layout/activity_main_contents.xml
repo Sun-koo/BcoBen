@@ -81,12 +81,12 @@
                 android:layout_height="wrap_content"
                 app:tabTextColor="@color/colorTextLightGray"
                 app:tabSelectedTextColor="@color/colorTextPrimary"
-                app:tabIndicatorColor="@color/colorPrimaryDark"
+                app:tabIndicatorColor="@color/colorPrimary"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.viewpager2.widget.ViewPager2
+        <kr.co.bcoben.component.NonSwipeViewPager
             android:id="@+id/pager_project_data"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

@@ -1,6 +1,5 @@
 package kr.co.bcoben.adapter;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,18 +8,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.ProjectListData;
 
 public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.ProjectHolder> {
 
-    private Activity activity;
+    private MainActivity activity;
     private List<ProjectListData> list;
 
-    public ProjectListAdapter(Activity activity, List<ProjectListData> list) {
+    public ProjectListAdapter(MainActivity activity, List<ProjectListData> list) {
         this.activity = activity;
         this.list = list;
     }
@@ -64,6 +63,11 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (activity.isDrawingOpen()) {
+                        activity.closeDrawing();
+                        return;
+                    }
+
                     for (ProjectListData data : list) {
                         data.setSelected(false);
                     }

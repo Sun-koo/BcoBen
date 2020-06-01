@@ -22,7 +22,7 @@ public class ProjectData implements Parcelable {
         regCount = 0;
         for (ProjectResearchData data : researchList) {
             totCount += data.getTotCount();
-            regCount += data.getTotCount();
+            regCount += data.getRegCount();
         }
     }
 

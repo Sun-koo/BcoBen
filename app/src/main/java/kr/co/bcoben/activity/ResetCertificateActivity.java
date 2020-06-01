@@ -79,6 +79,7 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                     Intent intent = new Intent(ResetCertificateActivity.this, ResetPwActivity.class);
                     startActivity(intent);
                     finishAffinity();
+                    overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
                 }
                 break;
         }

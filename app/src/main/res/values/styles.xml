@@ -9,4 +9,13 @@
         <item name="buttonStyle">?android:attr/borderlessButtonStyle</item>
     </style>
 
+    <style name="ResearchSpinnerTheme" parent="AppTheme">
+        <item name="android:dropDownListViewStyle">@style/ResearchSpinnerStyle</item>
+    </style>
+
+    <style name="ResearchSpinnerStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:divider">@color/colorBorderPink</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
 </resources>

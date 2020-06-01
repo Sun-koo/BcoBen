@@ -13,7 +13,7 @@
             android:layout_width="232dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@color/colorPrimaryDark">
+            android:background="@color/colorPrimary">
 
             <ImageButton
                 android:id="@+id/btn_home"
