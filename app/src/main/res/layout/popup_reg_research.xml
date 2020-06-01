@@ -5,26 +5,26 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="37dp"
-        android:paddingBottom="37dp"
+        android:paddingTop="33dp"
+        android:paddingBottom="33dp"
         android:background="#99000000">
         
         <LinearLayout
-            android:layout_width="376dp"
+            android:layout_width="330dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="9dp"
             android:orientation="vertical"
             android:background="@drawable/background_gray_popup">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="13dp"
-                android:paddingBottom="9dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
+                android:paddingTop="11dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -35,10 +35,10 @@
                         android:id="@+id/layout_input_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:paddingStart="17dp"
-                        android:paddingEnd="17dp"
+                        android:paddingTop="9dp"
+                        android:paddingBottom="9dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:onClick="onClick"
                         android:background="@drawable/background_keycolor_tab">
 
@@ -56,10 +56,10 @@
                         android:id="@+id/layout_picture_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:paddingStart="17dp"
-                        android:paddingEnd="17dp"
+                        android:paddingTop="9dp"
+                        android:paddingBottom="9dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:onClick="onClick"
                         android:background="@drawable/background_gray_tab">
 
@@ -77,10 +77,10 @@
                         android:id="@+id/layout_recode_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:paddingStart="17dp"
-                        android:paddingEnd="17dp"
+                        android:paddingTop="9dp"
+                        android:paddingBottom="9dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:onClick="onClick"
                         android:background="@drawable/background_gray_tab">
 
@@ -98,10 +98,10 @@
                         android:id="@+id/layout_memo_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:paddingStart="17dp"
-                        android:paddingEnd="17dp"
+                        android:paddingTop="9dp"
+                        android:paddingBottom="9dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:onClick="onClick"
                         android:background="@drawable/background_gray_tab">
 
@@ -133,14 +133,14 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="17dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:background="@color/colorDividerPopup"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="17dp"
+                android:padding="15dp"
                 android:orientation="vertical">
                 
                 <ScrollView
@@ -165,16 +165,16 @@
                                 android:id="@+id/layout_sub_title"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:onClick="onClick"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_sub_title"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -183,9 +183,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginEnd="41dp"
                                     android:text="@string/popup_reg_research_input_hint1"
                                     android:textColor="@color/colorTextHintPopupMenu"
                                     android:textSize="13dp"/>
@@ -196,16 +196,16 @@
                                 android:id="@+id/layout_direction"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:onClick="onClick"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_direction"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -214,9 +214,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginEnd="41dp"
                                     android:text="@string/popup_reg_research_input_hint1"
                                     android:textColor="@color/colorTextHintPopupMenu"
                                     android:textSize="13dp"/>
@@ -227,16 +227,16 @@
                                 android:id="@+id/layout_defect_content"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:onClick="onClick"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_defect_content"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -245,9 +245,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginEnd="41dp"
                                     android:text="@string/popup_reg_research_input_hint1"
                                     android:textColor="@color/colorTextHintPopupMenu"
                                     android:textSize="13dp"/>
@@ -258,16 +258,16 @@
                                 android:id="@+id/layout_architecture"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:onClick="onClick"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_architecture"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -276,9 +276,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginEnd="41dp"
                                     android:text="@string/popup_reg_research_input_hint1"
                                     android:textColor="@color/colorTextHintPopupMenu"
                                     android:textSize="13dp"/>
@@ -289,15 +289,15 @@
                                 android:id="@+id/layout_length"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_length"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -308,8 +308,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="150dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginStart="132dp"
+                                    android:layout_marginEnd="41dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
@@ -324,15 +324,15 @@
                                 android:id="@+id/layout_width"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_width"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -343,8 +343,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="150dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginStart="132dp"
+                                    android:layout_marginEnd="41dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
@@ -359,15 +359,15 @@
                                 android:id="@+id/layout_height"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_height"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -378,8 +378,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="150dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginStart="132dp"
+                                    android:layout_marginEnd="41dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
@@ -394,15 +394,15 @@
                                 android:id="@+id/layout_count"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
+                                android:layout_marginBottom="6dp"
                                 android:background="@drawable/background_white_popup_menu">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
-                                    android:layout_marginBottom="14dp"
-                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:layout_marginStart="22dp"
                                     android:text="@string/popup_reg_research_input_count"
                                     android:textColor="@color/colorBlack"
                                     android:textSize="13dp"/>
@@ -413,8 +413,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="150dp"
-                                    android:layout_marginEnd="47dp"
+                                    android:layout_marginStart="132dp"
+                                    android:layout_marginEnd="41dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
@@ -431,15 +431,15 @@
                             android:id="@+id/layout_picture"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="34dp"
+                            android:layout_marginBottom="29dp"
                             android:background="@drawable/background_keycolor_popup_menu">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:layout_marginBottom="14dp"
-                                android:layout_marginStart="25dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginBottom="12dp"
+                                android:layout_marginStart="22dp"
                                 android:text="@string/popup_reg_research_picture"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="13dp"/>
@@ -449,9 +449,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:layout_marginTop="14dp"
-                                android:layout_marginBottom="14dp"
-                                android:layout_marginEnd="47dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginBottom="12dp"
+                                android:layout_marginEnd="41dp"
                                 android:text="@string/popup_reg_research_picture_hint"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="13dp"/>
@@ -468,7 +468,7 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="9dp"
+                                android:layout_marginBottom="8dp"
                                 android:orientation="horizontal">
 
                                 <TextView
@@ -507,7 +507,7 @@
                         android:id="@+id/recode_view"
                         layout="@layout/popup_reg_research_recode"
                         android:layout_width="match_parent"
-                        android:layout_height="348dp"/>
+                        android:layout_height="306dp"/>
 
                 </LinearLayout>
 
@@ -522,15 +522,15 @@
                         android:id="@+id/memo_view"
                         layout="@layout/popup_reg_research_memo"
                         android:layout_width="match_parent"
-                        android:layout_height="443dp"/>
+                        android:layout_height="390dp"/>
 
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/btn_reg"
                     android:layout_width="match_parent"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="17dp"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="15dp"
                     android:text="@string/popup_reg_research_reg"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="16dp"

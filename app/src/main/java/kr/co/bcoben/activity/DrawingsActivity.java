@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.adapter.CustomSpinnerAdapter;
 import kr.co.bcoben.adapter.PictureListAdapter;
 import kr.co.bcoben.adapter.RecodeListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
@@ -69,7 +71,7 @@ import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 
 import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 
-public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
     private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
@@ -101,9 +103,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
 
-    private CanvasView canvasView;
-    private GestureDetectorCompat mDetector;
-
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_drawings;
@@ -132,10 +131,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         research = getIntent().getStringExtra("research");
         facility = getIntent().getStringExtra("facility");
 
-        initSpinner(dataBinding.spCategory, listCategory, category);
-        initSpinner(dataBinding.spArchitecture, listArchitecture, architecture);
-        initSpinner(dataBinding.spResearch, listResearch, research);
-        initSpinner(dataBinding.spFacility, listFacility, facility);
+        initSpinner(dataBinding.spnCategory, listCategory, category);
+        initSpinner(dataBinding.spnArchitecture, listArchitecture, architecture);
+        initSpinner(dataBinding.spnResearch, listResearch, research);
+        initSpinner(dataBinding.spnFacility, listFacility, facility);
 
         // 도면 이미지
         photoViewAttacher = new PhotoViewAttacher(dataBinding.ivDrawings);
@@ -216,20 +215,14 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         });
 
         // 메모 탭
-        mDetector = new GestureDetectorCompat(this, new TapAndDragGestureListener());
-        dataBinding.researchPopup.memoView.layoutGuideContainer.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mDetector.onTouchEvent(event);
-                return onTouchEvent(event);
-            }
-        });
+        initCanvas();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_home: case R.id.btn_close:
+            case R.id.btn_home:
+            case R.id.btn_close:
                 finish();
                 break;
 
@@ -257,6 +250,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 //for test
                 dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
                 getPictureDataList();
+                break;
+
+            case R.id.btn_table_handle:
+                dataBinding.btnTableHandle.setImageDrawable(dataBinding.layoutTable.getVisibility() == View.VISIBLE ? getResources().getDrawable(R.drawable.ic_arrow_left) : getResources().getDrawable(R.drawable.ic_arrow_right));
+                dataBinding.layoutTable.setVisibility(dataBinding.layoutTable.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 break;
 
             // table
@@ -343,61 +341,18 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Log.e("aaa", "position: " + position);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        Log.e("aaa", "not selected!");
-    }
-
-    private void initSpinner(Spinner spinner, ArrayList<String> list_data, String select_data) {
-        spinner.setAdapter(new CategorySpinnerAdapter(this, R.layout.item_spinner, R.id.txt_list, list_data));
-
-        spinner.setOnItemSelectedListener(this);
+    private void initSpinner(AppCompatSpinner spinner, ArrayList<String> list_data, String select_data) {
+        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list_data));
 
         setSpinnerSelectedData(list_data, select_data, spinner);
     }
 
-    private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, Spinner spinner) {
+    private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, AppCompatSpinner spinner) {
         for (int i=0;i<list_data.size();i++) {
             String cate = list_data.get(i);
             if (cate.equals(select_data)) {
                 spinner.setSelection(i);
             }
-        }
-    }
-
-    public class CategorySpinnerAdapter extends ArrayAdapter<String> {
-
-        List<String> list;
-
-        CategorySpinnerAdapter(Context context, int layout_resource_id, int tv_resource_id, List tv_list) {
-            super(context, layout_resource_id, tv_resource_id, tv_list);
-            list = tv_list;
-        }
-
-        @Override
-        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return getCustomView(position, convertView, parent);
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return getCustomView(position, convertView, parent);
-        }
-
-        View getCustomView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = getLayoutInflater();
-            View row = inflater.inflate(R.layout.item_spinner, parent, false);
-
-            TextView txtSelect = row.findViewById(R.id.txt_list);
-            txtSelect.setText(list.get(position));
-
-            return row;
         }
     }
 
@@ -529,9 +484,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
         dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
         dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
-        dataBinding.researchPopup.memoView.editMemo.setVisibility(View.GONE);
-        dataBinding.researchPopup.memoView.editMemo.getText().clear();
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
+        dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
     }
 
     // popup tab update isSelected
@@ -609,35 +563,20 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.VISIBLE);
     }
 
-    private void updateMemoView(boolean isDrawing) {
-        dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.GONE);
+    private void initCanvas() {
+        dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
+        dataBinding.researchPopup.memoView.layoutCanvas.setDrawer(CanvasView.Drawer.PEN);
+        dataBinding.researchPopup.memoView.layoutCanvas.setBaseColor(getResources().getColor(R.color.colorWhite));
+        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStyle(Paint.Style.STROKE);
+        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeColor(getResources().getColor(R.color.colorBlack));
+        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeWidth(8);
 
-        if (isDrawing) {
-            dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
-            dataBinding.researchPopup.memoView.layoutCanvas.setDrawer(CanvasView.Drawer.PEN);
-            dataBinding.researchPopup.memoView.layoutCanvas.setBaseColor(getResources().getColor(R.color.colorWhite));
-            dataBinding.researchPopup.memoView.layoutCanvas.setPaintStyle(Paint.Style.STROKE);
-            dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeColor(getResources().getColor(R.color.colorBlack));
-            dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeWidth(8);
-
-        } else {
-            dataBinding.researchPopup.memoView.editMemo.setVisibility(View.VISIBLE);
-            showKeyboard(this, dataBinding.researchPopup.memoView.editMemo);
-        }
-    }
-    // 메모 영역 화면 탭 했을 경우와 드로잉 제스쳐를 구분하기 위해 리스너 추가
-    class TapAndDragGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            updateMemoView(false);
-            return true;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            updateMemoView(true);
-            return true;
-        }
+        dataBinding.researchPopup.memoView.layoutCanvas.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.GONE);
+                return false;
+            }
+        });
     }
 }
