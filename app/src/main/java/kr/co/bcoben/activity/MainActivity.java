@@ -91,7 +91,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setAdapter(menuSelectListAdapter);
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setLayoutManager(new LinearLayoutManager(this));
 
-        initDrawerResearch();
         requestRegResearchData();
 
         // main
@@ -129,9 +128,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             case R.id.btn_next:
                 researchNextStep();
                 break;
-//            case R.id.layout_detail_safe_check:
-//                setSelectedText(getResources().getString(R.string.side_menu_detail_safe_check));
-//                break;
 
             // main
             case R.id.btn_home:
@@ -146,8 +142,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             case R.id.btn_update:
                 break;
             case R.id.layout_register_research:
-                String project = projectListAdapter.getSelectedProject();
-                openDrawerResearch(project, "", "");
+                openDrawerResearch("");
                 break;
         }
     }
@@ -163,13 +158,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
-    public void openDrawerResearch(String project, String grade, String facility) {
-        dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.GONE);
-        dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.VISIBLE);
-        initDrawerResearch();
-
+    public void openDrawerResearch(String facility) {
         setNavigationViewWidth(false);
         dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
+
+        String project = projectListAdapter.getSelectedProject();
+        String grade = dataBinding.mainDrawer.mainContents.txtSubTitle.getText().toString().replace("(", "").replace(")", "");
+
+        dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.VISIBLE);
+        initDrawerResearch(project, grade, facility);
     }
 
     public boolean isDrawingOpen() {
@@ -188,8 +186,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.naviMain.setLayoutParams(params);
     }
 
-    private void initDrawerResearch() {
+    private void initDrawerResearch(String project, String grade, String facility) {
         updateStepMenuUI(CurrentStep.GRADE);
+        dataBinding.mainDrawer.layoutRegResearch.txtProjectName.setText(project);
+
         dataBinding.mainDrawer.layoutRegResearch.layoutFacility.setClickable(false);
         dataBinding.mainDrawer.layoutRegResearch.layoutFacilityCategory.setClickable(false);
         dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setClickable(false);
@@ -200,6 +200,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.setText("");
         dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.setText("");
         dataBinding.mainDrawer.layoutRegResearch.txtResearch.setText("");
+
+        if (grade != null && !grade.isEmpty()) {
+            setSelectedText(grade);
+        }
+        if (facility != null && !facility.isEmpty()) {
+            setSelectedText(facility);
+        }
     }
 
     private void updateStepMenuUI(CurrentStep step) {

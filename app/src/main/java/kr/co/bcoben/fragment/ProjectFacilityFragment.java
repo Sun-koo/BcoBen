@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.adapter.CustomSpinnerAdapter;
 import kr.co.bcoben.adapter.ResearchDataListAdapter;
 import kr.co.bcoben.component.BaseFragment;
@@ -29,6 +30,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
 
     private static final String ARG_PARAM = "project_data";
 
+    private MainActivity activity;
     private ProjectData projectData;
     private ResearchDataListAdapter adapter;
 
@@ -47,6 +49,8 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         if (getArguments() != null) {
             projectData = getArguments().getParcelable(ARG_PARAM);
         }
+
+        activity = (MainActivity) getActivity();
     }
 
     @Override
@@ -80,5 +84,12 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         spinnerList.add("지하도상가");
 
         dataBinding.spnResearchOrder.setAdapter(new CustomSpinnerAdapter(getActivity(), R.layout.item_spinner_research, spinnerList));
+
+        dataBinding.layoutRegisterResearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.openDrawerResearch(projectData.getFacility());
+            }
+        });
     }
 }
