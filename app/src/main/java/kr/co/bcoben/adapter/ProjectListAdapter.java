@@ -44,6 +44,14 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
         this.list = list;
         notifyDataSetChanged();
     }
+    public String getSelectedProject() {
+        for (ProjectListData data : list) {
+            if (data.isSelected()) {
+                return data.getProjectName();
+            }
+        }
+        return null;
+    }
 
     class ProjectHolder extends RecyclerView.ViewHolder {
 

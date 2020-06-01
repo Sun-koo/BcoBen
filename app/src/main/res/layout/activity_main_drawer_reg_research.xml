@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/layout_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="330dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorBackgroundDrawer"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_project_name"
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:text="서초구청"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="21dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_grade"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_grade_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_grade"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_grade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_facility"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_facility_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_facility"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_facility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_facility_category"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_facility_category_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_facility_category"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_facility_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="120dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_architecture"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_architecture_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_architecture"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_architecture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_research"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_research_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_research_category"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_research"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <Button
+                android:id="@+id/btn_input_research"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="22.5dp"
+                android:layout_marginEnd="25dp"
+                android:background="@drawable/btn_round_light_pink"
+                android:onClick="onClick"
+                android:text="조사 입력하기"
+                android:textColor="@color/colorTextNavy"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/colorBackgroundPink"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:paddingStart="48dp"
+                android:paddingEnd="34dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/side_menu_please_select"
+                    android:textColor="@color/colorTextLabel"
+                    android:textSize="21dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@null"
+                    android:onClick="onClick"
+                    android:src="@drawable/btn_next" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBorderPink" />
+
+            <LinearLayout
+                android:id="@+id/layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
