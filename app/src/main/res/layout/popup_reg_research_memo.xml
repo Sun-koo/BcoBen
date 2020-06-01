@@ -11,8 +11,15 @@
             android:id="@+id/layout_guide_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true"
             android:background="@drawable/border_round_gray_box">
+
+            <kr.co.bcoben.component.CanvasView
+                android:id="@+id/layout_canvas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:onClick="onClick">
+            </kr.co.bcoben.component.CanvasView>
 
             <TextView
                 android:id="@+id/txt_guide"
@@ -25,33 +32,6 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/layout_memo_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/border_round_gray_box">
-
-            <kr.co.bcoben.component.CanvasView
-                android:id="@+id/layout_canvas"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="false"
-                android:layout_margin="2dp">
-            </kr.co.bcoben.component.CanvasView>
-
-            <EditText
-                android:id="@+id/edit_memo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:focusable="true"
-                android:background="@null"
-                android:textColor="@color/colorBlack"
-                android:textSize="100dp"
-                android:padding="10dp"
-                android:visibility="gone"/>
-
-        </RelativeLayout>
-        
     </LinearLayout>
     
 </layout>

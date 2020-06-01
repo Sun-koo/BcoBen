@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -11,9 +11,11 @@
         tools:context=".activity.DrawingsListActivity">
 
         <RelativeLayout
+            android:id="@+id/layout_top_menu"
             android:layout_width="match_parent"
             android:layout_height="41dp"
-            android:background="@color/colorPrimary">
+            android:background="@color/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -31,133 +33,149 @@
                     android:src="@drawable/ic_project_home"
                     android:onClick="onClick"/>
 
-                <RelativeLayout
-                    android:layout_width="90dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="87dp"
                     android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="67dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:background="@drawable/spinner_box">
-
-                    <Spinner
-                        android:id="@+id/sp_category"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:spinnerMode="dropdown"
-                        android:background="@null" />
-
-                    <ImageView
-                        android:id="@+id/iv_arrow_category"
-                        android:layout_width="7dp"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_spinner_off"/>
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_toStartOf="@id/iv_arrow_category"
-                        android:background="@color/colorBorderPink"/>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="90dp"
-                    android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="14dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:padding="2dp"
                     android:background="@drawable/spinner_box">
-
-                    <Spinner
-                        android:id="@+id/sp_architecture"
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spn_category"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@null"
                         android:spinnerMode="dropdown"
-                        android:background="@null" />
-
-                    <ImageView
-                        android:id="@+id/iv_arrow_architecture"
-                        android:layout_width="7dp"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_spinner_off"/>
+                        android:dropDownVerticalOffset="28dp"
+                        android:popupBackground="@drawable/spinner_box"
+                        android:theme="@style/ResearchSpinnerTheme"/>
                     <View
+                        android:id="@+id/view_spn_category_divider"
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:layout_toStartOf="@id/iv_arrow_architecture"
-                        android:background="@color/colorBorderPink"/>
-                </RelativeLayout>
+                        android:layout_marginEnd="23dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/colorBorderPink"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_spinner_off"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/view_spn_category_divider"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <RelativeLayout
-                    android:layout_width="260dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="87dp"
                     android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="14dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="2dp"
                     android:background="@drawable/spinner_box">
-
-                    <Spinner
-                        android:id="@+id/sp_research"
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spn_architecture"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@null"
                         android:spinnerMode="dropdown"
-                        android:background="@null" />
-
-                    <ImageView
-                        android:id="@+id/iv_arrow_research"
-                        android:layout_width="7dp"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_spinner_off"/>
+                        android:dropDownVerticalOffset="28dp"
+                        android:popupBackground="@drawable/spinner_box"
+                        android:theme="@style/ResearchSpinnerTheme"/>
                     <View
+                        android:id="@+id/view_spn_architecture_divider"
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:layout_toStartOf="@id/iv_arrow_research"
-                        android:background="@color/colorBorderPink"/>
-                </RelativeLayout>
+                        android:layout_marginEnd="23dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/colorBorderPink"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_spinner_off"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/view_spn_architecture_divider"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <RelativeLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="258dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="14dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="2dp"
+                    android:background="@drawable/spinner_box">
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spn_research"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:spinnerMode="dropdown"
+                        android:dropDownVerticalOffset="28dp"
+                        android:popupBackground="@drawable/spinner_box"
+                        android:theme="@style/ResearchSpinnerTheme"/>
+                    <View
+                        android:id="@+id/view_spn_research_divider"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="23dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/colorBorderPink"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_spinner_off"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/view_spn_research_divider"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="145dp"
                     android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="14dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="2dp"
                     android:background="@drawable/spinner_box">
-
-                    <Spinner
-                        android:id="@+id/sp_facility"
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spn_facility"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@null"
                         android:spinnerMode="dropdown"
-                        android:background="@null" />
-
-                    <ImageView
-                        android:id="@+id/iv_arrow_facility"
-                        android:layout_width="7dp"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_spinner_off"/>
+                        android:dropDownVerticalOffset="28dp"
+                        android:popupBackground="@drawable/spinner_box"
+                        android:theme="@style/ResearchSpinnerTheme"/>
                     <View
+                        android:id="@+id/view_spn_facility_divider"
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:layout_toStartOf="@id/iv_arrow_facility"
-                        android:background="@color/colorBorderPink"/>
-                </RelativeLayout>
+                        android:layout_marginEnd="23dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/colorBorderPink"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_spinner_off"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/view_spn_facility_divider"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
@@ -178,19 +196,19 @@
             android:id="@+id/btn_download_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="27dp"
+            android:layout_marginStart="24dp"
             android:padding="13dp"
             android:text="@string/drawings_list_download_all"
             android:textColor="@color/colorBlack"
             android:textSize="14dp"
-            android:onClick="onClick"/>
+            android:onClick="onClick" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_drawings"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="80dp"
-            android:paddingEnd="60dp">
+            android:paddingStart="60dp"
+            android:paddingEnd="43dp">
         </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>

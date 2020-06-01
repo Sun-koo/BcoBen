@@ -6,8 +6,8 @@
     android:id="@+id/list_layout">
     
     <RelativeLayout
-        android:layout_width="162dp"
-        android:layout_height="119dp">
+        android:layout_width="143dp"
+        android:layout_height="105dp">
 
         <ImageView
             android:id="@+id/iv_picture"

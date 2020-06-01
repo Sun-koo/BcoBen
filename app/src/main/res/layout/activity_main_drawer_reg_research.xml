@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@drawable/bg_drawer_list"
-                android:onClick="onDrawerMenuClick">
+                android:onClick="onDrawerResearchMenuClick">
 
                 <TextView
                     android:id="@+id/txt_grade_title"
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@drawable/bg_drawer_list"
-                android:onClick="onDrawerMenuClick">
+                android:onClick="onDrawerResearchMenuClick">
 
                 <TextView
                     android:id="@+id/txt_facility_title"
@@ -109,7 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@drawable/bg_drawer_list"
-                android:onClick="onDrawerMenuClick">
+                android:onClick="onDrawerResearchMenuClick">
 
                 <TextView
                     android:id="@+id/txt_facility_category_title"
@@ -145,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@drawable/bg_drawer_list"
-                android:onClick="onDrawerMenuClick">
+                android:onClick="onDrawerResearchMenuClick">
 
                 <TextView
                     android:id="@+id/txt_architecture_title"
@@ -181,7 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@drawable/bg_drawer_list"
-                android:onClick="onDrawerMenuClick">
+                android:onClick="onDrawerResearchMenuClick">
 
                 <TextView
                     android:id="@+id/txt_research_title"

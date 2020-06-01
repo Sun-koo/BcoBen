@@ -7,7 +7,7 @@
     tools:context=".component.DrawingsSelectDialog">
 
     <LinearLayout
-        android:layout_width="402dp"
+        android:layout_width="354dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical"
@@ -21,8 +21,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="23dp"
-                android:layout_marginBottom="23dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 android:text="@string/drawings_select_dialog_title"
                 android:textColor="@color/colorBlack"
                 android:textSize="16dp"/>
@@ -33,8 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="15dp"
-                android:padding="15dp"
+                android:layout_marginEnd="13dp"
+                android:padding="13dp"
                 android:src="@drawable/close"
                 android:background="@null"/>
 
@@ -43,9 +43,9 @@
         <Button
             android:id="@+id/btn_input"
             android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="5dp"
             android:text="@string/drawings_select_dialog_input"
             android:textColor="@color/colorTextPrimary"
@@ -55,10 +55,10 @@
         <Button
             android:id="@+id/btn_reset_input"
             android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="36dp"
-            android:layout_marginBottom="23dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/drawings_select_dialog_reset_input"
             android:textColor="@color/colorTextPrimary"
             android:textSize="16dp"
@@ -67,10 +67,10 @@
         <Button
             android:id="@+id/btn_other_select"
             android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="36dp"
-            android:layout_marginBottom="26dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="23dp"
             android:text="@string/drawings_select_dialog_other_select"
             android:textColor="@color/colorWhite"
             android:textSize="16dp"
