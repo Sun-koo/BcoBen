@@ -1,76 +1,94 @@
 package kr.co.bcoben.adapter;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
 
-public class MenuSelectListAdapter extends RecyclerView.Adapter {
+public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAdapter.MenuSelectHolder> {
 
-    private Activity mActivity;
-    private ArrayList<JSONObject> mList;
+    private MainActivity activity;
+    private List<String> list;
+    private EditText editName;
 
-    public MenuSelectListAdapter(Activity activity, ArrayList<JSONObject> list) {
-        this.mActivity = activity;
-        this.mList = list;
+    public MenuSelectListAdapter(MainActivity activity, List<String> list) {
+        this.activity = activity;
+        this.list = list;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public MenuSelectHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_menu_select_list ,viewGroup, false);
-        return new MenuSelectListAdapter.MenuSelectHolder(view, i);
+        return new MenuSelectHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        final String name = mList.get(position).optString("name", "");
-
-        final MenuSelectListAdapter.MenuSelectHolder view = (MenuSelectListAdapter.MenuSelectHolder) holder;
-
-        view.txtName.setText(name);
-
-        view.listLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity main = (MainActivity) mActivity;
-                main.setSelectedText(name);
-            }
-        });
+    public void onBindViewHolder(@NonNull MenuSelectHolder holder, int position) {
+        if (list.size() > position) {
+            holder.onBind(list.get(position));
+        } else {
+            holder.onBind(null);
+            this.editName = holder.editName;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return list.size() + 1;
+    }
+    public void setList(List<String> list) {
+        this.list = list;
+        editName = null;
+        notifyDataSetChanged();
+    }
+    public String getEditName() {
+        if (editName != null) {
+            return editName.getText().toString();
+        } else {
+            return "";
+        }
     }
 
-    public void setList(ArrayList<JSONObject> mList) {
-        this.mList = mList;
-    }
+    class MenuSelectHolder extends RecyclerView.ViewHolder {
 
-    private class MenuSelectHolder extends RecyclerView.ViewHolder {
+        private View view;
+        private TextView txtName;
+        private EditText editName;
 
-        LinearLayout listLayout;
-        TextView txtName;
-
-        public MenuSelectHolder(View view, int position) {
+        MenuSelectHolder(View view) {
             super(view);
-
-            listLayout = view.findViewById(R.id.list_layout);
+            this.view = view;
             txtName = view.findViewById(R.id.txt_name);
+            editName = view.findViewById(R.id.edit_name);
+        }
+
+        void onBind(@Nullable final String name) {
+            if (name != null) {
+                txtName.setText(name);
+                txtName.setVisibility(View.VISIBLE);
+                editName.setVisibility(View.GONE);
+
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        activity.setSelectedText(name);
+                    }
+                });
+            } else {
+                txtName.setVisibility(View.GONE);
+                editName.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

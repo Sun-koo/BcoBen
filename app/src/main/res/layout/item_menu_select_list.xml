@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/list_layout">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="70dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="34dp"
+        android:paddingEnd="34dp"
         android:background="@color/colorBackgroundPink">
 
         <TextView
             android:id="@+id/txt_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginEnd="48dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="본관동"
-            android:textSize="18dp"
-            android:textColor="@color/colorTextNavy"/>
+            android:textColor="@color/colorTextNavy"
+            android:textSize="16dp" />
+
+        <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:background="@drawable/border_square_gray_box"
+            android:maxLines="1"
+            android:inputType="text"
+            android:hint="@string/side_menu_hint_self"
+            android:textColorHint="@color/colorHintGray"
+            android:textSize="16dp"
+            android:textColor="@color/colorTextPrimary"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <View

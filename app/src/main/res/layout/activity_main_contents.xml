@@ -39,7 +39,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layout_register"
+                android:id="@+id/layout_register_research"
                 android:layout_width="162dp"
                 android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
