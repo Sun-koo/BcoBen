@@ -80,6 +80,9 @@
     <string name="side_menu_please_select">선택하세요</string>
     <string name="side_menu_detail_safe_check">정밀안전진단</string>
     <string name="side_menu_hint_self">직접입력</string>
+    <string name="side_menu_summary">프로젝트 개요</string>
+    <string name="side_menu_drawings">도면</string>
+    <string name="side_menu_project_button">프로젝트 생성하기</string>
     <string name="toast_input_grade">진단등급을 입력해주세요</string>
     <string name="toast_input_facility">시설물을 입력해주세요</string>
     <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>

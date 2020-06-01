@@ -32,12 +32,17 @@ import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
 
-    public enum CurrentStep {
+    public enum CurrentResearchStep {
         GRADE, FACILITY, FACILITY_CATEGORY, ARCHITECTURE, RESEARCH
     }
 
+    public enum CurrentProjectStep {
+        SUMMARY, GRADE, FACILITY, FACILITY_CATEGORY, ARCHITECTURE, RESEARCH, DRAWINGS
+    }
+
     // side menu
-    private CurrentStep currentStep = CurrentStep.GRADE;
+    private CurrentResearchStep currentResearchStep = CurrentResearchStep.GRADE;
+    private CurrentProjectStep currentProjectStep = CurrentProjectStep.SUMMARY;
     private MenuSelectListAdapter menuSelectListAdapter;
     private ArrayList<JSONObject> listFacility, listFacilityCategory, listArchitecture, listResearch;
     private List<String> regResearchGrade = new ArrayList<>();
@@ -91,7 +96,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setAdapter(menuSelectListAdapter);
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setLayoutManager(new LinearLayoutManager(this));
 
-        initDrawerResearch();
         requestRegResearchData();
 
         // main
@@ -137,6 +141,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             case R.id.btn_home:
                 break;
             case R.id.btn_add_project:
+                openDrawerProject();
                 break;
             case R.id.txt_logout:
                 Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
@@ -152,14 +157,27 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
-    // side menu
-    public void onDrawerMenuClick(View v) {
+    // side menu(research)
+    public void onDrawerResearchMenuClick(View v) {
         switch (v.getId()) {
-            case R.id.layout_grade: updateStepMenuUI(CurrentStep.GRADE); break;
-            case R.id.layout_facility: updateStepMenuUI(CurrentStep.FACILITY); break;
-            case R.id.layout_facility_category: updateStepMenuUI(CurrentStep.FACILITY_CATEGORY); break;
-            case R.id.layout_architecture: updateStepMenuUI(CurrentStep.ARCHITECTURE); break;
-            case R.id.layout_research: updateStepMenuUI(CurrentStep.RESEARCH); break;
+            case R.id.layout_grade: updateStepResearchMenuUI(CurrentResearchStep.GRADE); break;
+            case R.id.layout_facility: updateStepResearchMenuUI(CurrentResearchStep.FACILITY); break;
+            case R.id.layout_facility_category: updateStepResearchMenuUI(CurrentResearchStep.FACILITY_CATEGORY); break;
+            case R.id.layout_architecture: updateStepResearchMenuUI(CurrentResearchStep.ARCHITECTURE); break;
+            case R.id.layout_research: updateStepResearchMenuUI(CurrentResearchStep.RESEARCH); break;
+        }
+    }
+
+    // side menu(project)
+    public void onDrawerProjectMenuClick(View v) {
+        switch (v.getId()) {
+            case R.id.layout_summary: updateStepProjectMenuUI(CurrentProjectStep.SUMMARY); break;
+            case R.id.layout_grade: updateStepProjectMenuUI(CurrentProjectStep.GRADE); break;
+            case R.id.layout_facility: updateStepProjectMenuUI(CurrentProjectStep.FACILITY); break;
+            case R.id.layout_facility_category: updateStepProjectMenuUI(CurrentProjectStep.FACILITY_CATEGORY); break;
+            case R.id.layout_architecture: updateStepProjectMenuUI(CurrentProjectStep.ARCHITECTURE); break;
+            case R.id.layout_research: updateStepProjectMenuUI(CurrentProjectStep.RESEARCH); break;
+            case R.id.layout_drawings: updateStepProjectMenuUI(CurrentProjectStep.DRAWINGS); break;
         }
     }
 
@@ -167,6 +185,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.GONE);
         dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.VISIBLE);
         initDrawerResearch();
+
+        setNavigationViewWidth(false);
+        dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
+    }
+
+    public void openDrawerProject() {
+        dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.VISIBLE);
+        dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.GONE);
+        initDrawerProject();
 
         setNavigationViewWidth(false);
         dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
@@ -189,7 +216,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void initDrawerResearch() {
-        updateStepMenuUI(CurrentStep.GRADE);
+        updateStepResearchMenuUI(CurrentResearchStep.GRADE);
         dataBinding.mainDrawer.layoutRegResearch.layoutFacility.setClickable(false);
         dataBinding.mainDrawer.layoutRegResearch.layoutFacilityCategory.setClickable(false);
         dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setClickable(false);
@@ -202,8 +229,26 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.txtResearch.setText("");
     }
 
-    private void updateStepMenuUI(CurrentStep step) {
-        currentStep = step;
+    private void initDrawerProject() {
+        updateStepProjectMenuUI(CurrentProjectStep.SUMMARY);
+        dataBinding.mainDrawer.layoutRegProject.layoutGrade.setClickable(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutFacility.setClickable(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setClickable(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setClickable(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutResearch.setClickable(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setClickable(false);
+
+        dataBinding.mainDrawer.layoutRegProject.txtSummaryName.setText("");
+        dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.setText("");
+        dataBinding.mainDrawer.layoutRegProject.txtGrade.setText("");
+        dataBinding.mainDrawer.layoutRegProject.txtFacility.setText("");
+        dataBinding.mainDrawer.layoutRegProject.txtFacilityCategory.setText("");
+        dataBinding.mainDrawer.layoutRegProject.txtArchitecture.setText("");
+        dataBinding.mainDrawer.layoutRegProject.txtResearch.setText("");
+    }
+
+    private void updateStepResearchMenuUI(CurrentResearchStep step) {
+        currentResearchStep = step;
 
         dataBinding.mainDrawer.layoutRegResearch.layoutGrade.setSelected(false);
         dataBinding.mainDrawer.layoutRegResearch.layoutFacility.setSelected(false);
@@ -211,7 +256,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setSelected(false);
         dataBinding.mainDrawer.layoutRegResearch.layoutResearch.setSelected(false);
 
-        switch (currentStep) {
+        switch (currentResearchStep) {
             case GRADE:
                 dataBinding.mainDrawer.layoutRegResearch.layoutGrade.setSelected(true);
                 menuSelectListAdapter.setList(regResearchGrade);
@@ -236,9 +281,53 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
     }
 
+    private void updateStepProjectMenuUI(CurrentProjectStep step) {
+        currentProjectStep = step;
+
+        dataBinding.mainDrawer.layoutRegProject.layoutSummary.setSelected(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutGrade.setSelected(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setSelected(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setSelected(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(false);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(false);
+
+        switch (currentProjectStep) {
+            case SUMMARY:
+                dataBinding.mainDrawer.layoutRegProject.layoutSummary.setSelected(true);
+
+                break;
+            case GRADE:
+                dataBinding.mainDrawer.layoutRegProject.layoutGrade.setSelected(true);
+
+                break;
+            case FACILITY:
+                dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
+
+                break;
+            case FACILITY_CATEGORY:
+                dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setSelected(true);
+
+                break;
+            case ARCHITECTURE:
+                dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setSelected(true);
+
+                break;
+            case RESEARCH:
+                dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(true);
+
+                break;
+            case DRAWINGS:
+                dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(true);
+
+                break;
+        }
+//        dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
+    }
+
     private void researchNextStep() {
         String name = menuSelectListAdapter.getEditName();
-        switch (currentStep) {
+        switch (currentResearchStep) {
             case GRADE:
                 if (name.isEmpty()) {
                     showToast(R.string.toast_input_grade);
@@ -281,30 +370,30 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     public void setSelectedText(String value) {
-        switch (currentStep) {
+        switch (currentResearchStep) {
             case GRADE:
                 dataBinding.mainDrawer.layoutRegResearch.txtGrade.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutFacility.setClickable(true);
-                updateStepMenuUI(CurrentStep.FACILITY);
+                updateStepResearchMenuUI(CurrentResearchStep.FACILITY);
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegResearch.txtFacility.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutFacilityCategory.setClickable(true);
-                updateStepMenuUI(CurrentStep.FACILITY_CATEGORY);
+                updateStepResearchMenuUI(CurrentResearchStep.FACILITY_CATEGORY);
                 break;
             case FACILITY_CATEGORY:
                 dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setClickable(true);
-                updateStepMenuUI(CurrentStep.ARCHITECTURE);
+                updateStepResearchMenuUI(CurrentResearchStep.ARCHITECTURE);
                 break;
             case ARCHITECTURE:
                 dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutResearch.setClickable(true);
-                updateStepMenuUI(CurrentStep.RESEARCH);
+                updateStepResearchMenuUI(CurrentResearchStep.RESEARCH);
                 break;
             case RESEARCH:
                 dataBinding.mainDrawer.layoutRegResearch.txtResearch.setText(value);
-                updateStepMenuUI(CurrentStep.RESEARCH);
+                updateStepResearchMenuUI(CurrentResearchStep.RESEARCH);
                 break;
         }
     }
@@ -312,26 +401,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void goToDrawingsPage() {
         Intent intent = new Intent(MainActivity.this, DrawingsListActivity.class);
 
-        intent.putStringArrayListExtra("category_list", getCategoryList(listFacilityCategory));
-        intent.putStringArrayListExtra("architecture_list", getCategoryList(listArchitecture));
-        intent.putStringArrayListExtra("research_list", getCategoryList(listResearch));
-        intent.putStringArrayListExtra("facility_list", getCategoryList(listFacility));
+        intent.putStringArrayListExtra("category_list", (ArrayList<String>) regResearchFacCate);
+        intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) regResearchArchitecture);
+        intent.putStringArrayListExtra("research_list", (ArrayList<String>) regResearchResearch);
+        intent.putStringArrayListExtra("facility_list", (ArrayList<String>) regResearchFacility);
         intent.putExtra("category", dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.getText().toString());
         intent.putExtra("architecture", dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.getText().toString());
         intent.putExtra("research", dataBinding.mainDrawer.layoutRegResearch.txtResearch.getText().toString());
         intent.putExtra("facility", dataBinding.mainDrawer.layoutRegResearch.txtFacility.getText().toString());
         startActivity(intent);
-    }
-
-    private ArrayList<String> getCategoryList(ArrayList<JSONObject> list_json) {
-        ArrayList<String> items = new ArrayList<>();
-        for (int i = 0;i<list_json.size();i++) {
-            String category = list_json.get(i).optString("name");
-
-            items.add(category);
-        }
-
-        return items;
     }
 
     //TODO request project list api

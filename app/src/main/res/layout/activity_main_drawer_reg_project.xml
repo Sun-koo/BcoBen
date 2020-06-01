@@ -6,5 +6,346 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/colorBackgroundDrawer"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/layout_summary"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_summary_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_summary"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <LinearLayout
+                    android:id="@+id/layout_summary_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_summary_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/text_drawer_list_selector"
+                        android:textSize="14dp" />
+
+                    <TextView
+                        android:id="@+id/txt_summary_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/text_drawer_list_selector"
+                        android:textSize="14dp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_grade"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_grade_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_grade"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_grade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_facility"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_facility_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_facility"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_facility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_facility_category"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_facility_category_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_facility_category"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_facility_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="120dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_architecture"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_architecture_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_architecture"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_architecture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <RelativeLayout
+                android:id="@+id/layout_research"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_research_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_research_category"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/txt_research"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:textColor="@color/text_drawer_list_selector"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_selected_research"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/layout_drawings"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_drawer_list"
+                android:onClick="onDrawerProjectMenuClick">
+
+                <TextView
+                    android:id="@+id/txt_drawings_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:text="@string/side_menu_drawings"
+                    android:textColor="@color/text_drawer_list"
+                    android:textSize="18dp" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDividerRegisterList" />
+
+            <Button
+                android:id="@+id/btn_input_project"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="22.5dp"
+                android:background="@drawable/btn_round_light_pink"
+                android:onClick="onClick"
+                android:text="@string/side_menu_project_button"
+                android:textColor="@color/colorTextNavy"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:background="@color/colorBackgroundPink"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:paddingStart="48dp"
+                android:paddingEnd="34dp">
+
+                <TextView
+                    android:id="@+id/txt_input_guide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/side_menu_please_select"
+                    android:textColor="@color/colorTextLabel"
+                    android:textSize="21dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@null"
+                    android:onClick="onClick"
+                    android:src="@drawable/btn_next" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBorderPink" />
+
+            <LinearLayout
+                android:id="@+id/layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 </layout>
