@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -49,6 +50,10 @@ import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,13 +90,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private PictureListAdapter pictureListAdapter;
     private ArrayList<JSONObject> listPictureData;
 
-    short[] bufferRecord, bufferStore;
-    int bufferRecordSize, bufferTrackSize;
-    int samplingRate = 44100;
-    int bufferShortSize = samplingRate * 6;
-    ShortBuffer shortBuffer = ShortBuffer.allocate(bufferShortSize);
-    AudioTrack audioTrack;
-    AudioRecord audioRecord;
+    private int audioSource = MediaRecorder.AudioSource.MIC;
+    private int sampleRate = 44100;
+    private int channelCount = AudioFormat.CHANNEL_IN_STEREO;
+    private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+    private int bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelCount, audioFormat);
+    public AudioRecord audioRecord = null;
+    public Thread recordThread = null;
     private boolean isRecoding = false;
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
@@ -140,6 +145,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         photoViewAttacher.setOnPhotoTapListener(new OnPhotoTapListener() {
             @Override
             public void onPhotoTap(ImageView view, float x, float y) {
+                //TODO add new btn icon and show research popup
                 dataBinding.layoutTable.setVisibility(View.VISIBLE);
             }
         });
@@ -173,6 +179,42 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         listRecodingData = new ArrayList<>();
         recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
         dataBinding.researchPopup.recodeView.recyclerRecode.setAdapter(recodeListAdapter);
+
+        recordThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] readData = new byte[bufferSize];
+                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.pcm";
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(filePath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                while (isRecoding) {
+                    int ret = audioRecord.read(readData, 0, bufferSize);
+                    Log.e("aaa", "read bytes is " + ret);
+
+                    try {
+                        fos.write(readData, 0, bufferSize);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                audioRecord.stop();
+                audioRecord.release();
+                audioRecord = null;
+
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         // 메모 탭
         mDetector = new GestureDetectorCompat(this, new TapAndDragGestureListener());
         dataBinding.researchPopup.memoView.layoutGuideContainer.setOnTouchListener(new View.OnTouchListener() {
@@ -198,7 +240,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
             case R.id.btn_zoom_in:
                 scale = calculateScale(photoViewAttacher.getScale());
-                scale = (scale + 0.5f) > 6 ? 6f : scale + 0.5f;
                 photoViewAttacher.setScale(scale);
 
                 showScaleView();
@@ -283,12 +324,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
                 dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
 
-                startRecoding();
+                recode();
                 break;
 
             case R.id.btn_recode_stop:
                 if (isRecoding) {
-                    stopRecoding();
                     dataBinding.researchPopup.recodeView.btnRecodeStop.setText(R.string.popup_reg_research_recode_save);
                 } else {
                     dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
@@ -298,7 +338,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
                 }
 
-                isRecoding = !isRecoding;
+                isRecoding = false;
                 break;
         }
     }
@@ -404,7 +444,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             return 5f;
         } else if (scale > 5f && scale < 5.5f) {
             return 5.5f;
-        } else if (scale > 5.5f && scale < 6f) {
+        } else if (scale > 5.5f) {
             return 6f;
         } else {
             return scale;
@@ -532,58 +572,21 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.layoutPictureList.setVisibility(View.VISIBLE);
     }
 
-    private void startRecoding() {
-        isRecoding = true;
-        bufferStore = new short[samplingRate];
-        bufferTrackSize = bufferStore.length;
-        // 녹음용 버퍼 사이즈 구하기 및 버퍼 초기화
-        bufferRecordSize = AudioRecord.getMinBufferSize(samplingRate,
-        AudioFormat.CHANNEL_IN_STEREO,
-        AudioFormat.ENCODING_PCM_16BIT) * 2;
-        bufferRecord = new short[bufferRecordSize];
+    private void recode() {
+        if (isRecoding) {
+            isRecoding = false;
+            dataBinding.researchPopup.recodeView.btnRecodeStop.setText(R.string.popup_reg_research_recode_save);
+        } else {
+            isRecoding = true;
 
-        //AudioRecord 초기화
-        audioRecord=null;
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
-                samplingRate,
-                AudioFormat.CHANNEL_IN_STEREO,
-                AudioFormat.ENCODING_PCM_16BIT,bufferRecord.length);
-
-        //AudioTrack 초기화
-//        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-//                samplingRate,
-//                AudioFormat.CHANNEL_IN_STEREO,
-//                AudioFormat.ENCODING_PCM_16BIT,
-//                bufferStore.length,
-//                AudioTrack.MODE_STREAM);
-
-//        audioTrack.play();
-        audioRecord.startRecording();
-
-        //녹음버퍼의 내용을 저장 버퍼로 옮김
-        int retBufferSize;
-        shortBuffer.rewind();
-
-        while(shortBuffer.position() + bufferRecordSize < bufferShortSize){
-            retBufferSize = audioRecord.read(bufferRecord, 0, bufferRecordSize);
-            shortBuffer.put(bufferRecord,0,retBufferSize);
+            if (audioRecord == null) {
+                audioRecord = new AudioRecord(audioSource, sampleRate, channelCount, audioFormat, bufferSize);
+                audioRecord.startRecording();
+            }
+            recordThread.start();
         }
     }
-    private void stopRecoding() {
-        int Index=0;
-        shortBuffer.position(0);
 
-        while(shortBuffer.position() <= bufferShortSize - bufferTrackSize){
-            shortBuffer.get(bufferStore, 0, bufferTrackSize);
-//            audioTrack.write(bufferStore, 0, bufferTrackSize);
-            Index=Index + bufferTrackSize;
-        }
-
-        audioRecord.stop();
-        audioRecord.release();
-//        audioTrack.stop();
-//        audioTrack.release();
-    }
     //TODO get recoding data
     private void getRecodeDataList() {
         listRecodingData.clear();
