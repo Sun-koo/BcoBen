@@ -1,14 +1,13 @@
 package kr.co.bcoben.activity;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +43,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private CurrentResearchStep currentResearchStep = CurrentResearchStep.GRADE;
     private CurrentProjectStep currentProjectStep = CurrentProjectStep.SUMMARY;
     private MenuSelectListAdapter menuSelectListAdapter;
-    private ArrayList<JSONObject> listFacility, listFacilityCategory, listArchitecture, listResearch;
+
     private List<String> regResearchGrade = new ArrayList<>();
     private List<String> regResearchFacility = new ArrayList<>();
     private List<String> regResearchFacCate = new ArrayList<>();
@@ -202,7 +201,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         return dataBinding.mainDrawer.layoutDrawer.isDrawerOpen(GravityCompat.START);
     }
 
-    public void closeDrawing() {
+    public void closeDrawer() {
         dataBinding.mainDrawer.layoutDrawer.closeDrawer(GravityCompat.START);
     }
 
@@ -418,6 +417,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         intent.putExtra("research", dataBinding.mainDrawer.layoutRegResearch.txtResearch.getText().toString());
         intent.putExtra("facility", dataBinding.mainDrawer.layoutRegResearch.txtFacility.getText().toString());
         startActivity(intent);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                closeDrawer();
+            }
+        }, 1000);
     }
 
     //TODO request project list api

@@ -72,7 +72,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                 @Override
                 public void onClick(View v) {
                     if (activity.isDrawingOpen()) {
-                        activity.closeDrawing();
+                        activity.closeDrawer();
                         return;
                     }
 
