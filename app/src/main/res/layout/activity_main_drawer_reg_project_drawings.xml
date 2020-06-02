@@ -1,11 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/layout_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="9dp"
+        android:paddingBottom="9dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:orientation="vertical"
         android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:orientation="vertical"
+            android:background="@drawable/border_round_gray_box">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="43dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="60dp"
+                    android:text="@string/side_menu_facility"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="14dp"/>
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/flex_layout_facility"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:flexWrap="wrap"
+                        app:alignItems="stretch"
+                        app:alignContent="stretch">
+                    </com.google.android.flexbox.FlexboxLayout>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_drawings_upload"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/background_keycolor_popup_menu">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="22dp"
+                    android:text="@string/side_menu_drawings"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="11dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="34dp"
+                    android:text="@string/side_menu_project_upload_drawings"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="11dp"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="33dp"
+            android:layout_marginBottom="11dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/side_menu_project_reg_drawings"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="18dp"/>
+
+            <TextView
+                android:id="@+id/txt_drawings_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="18dp"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_drawings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 

@@ -82,7 +82,7 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAd
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        activity.setSelectedText(name);
+                        activity.setResearchSelectedText(name);
                     }
                 });
             } else {

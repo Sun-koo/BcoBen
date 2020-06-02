@@ -27,8 +27,7 @@
             android:screenOrientation="landscape"/>
         <activity
             android:name=".activity.DrawingsActivity"
-            android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateVisible"/>
+            android:screenOrientation="landscape" />
         <activity android:name=".activity.DrawingsListActivity" />
         <activity
             android:name=".activity.SplashActivity"

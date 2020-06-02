@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-        android:id="@+id/layout"
+        android:id="@+id/layout_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="12dp"
@@ -44,19 +44,31 @@
                     android:textColor="@color/colorTextLabel"
                     android:textSize="18dp"/>
 
-                <EditText
-                    android:id="@+id/edit_project_start_date"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:background="@drawable/border_square_gray_box"
-                    android:maxLines="1"
-                    android:inputType="number"
-                    android:hint="@string/side_menu_hint_project_date"
-                    android:textColorHint="@color/colorHintGray"
-                    android:textSize="18dp"
-                    android:textColor="@color/colorTextPrimary" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/edit_project_start_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:background="@drawable/border_square_gray_box"
+                        android:maxLines="1"
+                        android:editable="false"
+                        android:hint="@string/side_menu_hint_project_date"
+                        android:textColorHint="@color/colorHintGray"
+                        android:textSize="18dp"
+                        android:textColor="@color/colorTextPrimary" />
+
+                    <RelativeLayout
+                        android:id="@+id/layout_project_start_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:onClick="onClick"/>
+
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -78,19 +90,31 @@
                     android:textColor="@color/colorTextLabel"
                     android:textSize="18dp"/>
 
-                <EditText
-                    android:id="@+id/edit_project_end_date"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:background="@drawable/border_square_gray_box"
-                    android:maxLines="1"
-                    android:inputType="number"
-                    android:hint="@string/side_menu_hint_project_date"
-                    android:textColorHint="@color/colorHintGray"
-                    android:textSize="18dp"
-                    android:textColor="@color/colorTextPrimary" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/edit_project_end_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:background="@drawable/border_square_gray_box"
+                        android:maxLines="1"
+                        android:editable="false"
+                        android:hint="@string/side_menu_hint_project_date"
+                        android:textColorHint="@color/colorHintGray"
+                        android:textSize="18dp"
+                        android:textColor="@color/colorTextPrimary" />
+
+                    <RelativeLayout
+                        android:id="@+id/layout_project_end_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:onClick="onClick"/>
+
+                </RelativeLayout>
 
             </LinearLayout>
 
