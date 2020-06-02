@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -193,7 +194,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.GONE);
         initDrawerProject();
 
-        setNavigationViewWidth(false);
+        setNavigationViewWidth(true);
         dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
     }
 
@@ -208,8 +209,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void setNavigationViewWidth(boolean isProject) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        LinearLayout.LayoutParams params_home = (LinearLayout.LayoutParams) dataBinding.layoutHome.getLayoutParams();
         DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) dataBinding.mainDrawer.naviMain.getLayoutParams();
         params.width = (int) (displayMetrics.widthPixels * (isProject ? 1.0 : 0.6));
+        if (isProject) {
+            params.width -= params_home.width;
+        }
         dataBinding.mainDrawer.naviMain.setLayoutParams(params);
     }
 
