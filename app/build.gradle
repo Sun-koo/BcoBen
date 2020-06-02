@@ -40,7 +40,6 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     //PhotoView
-    implementation "com.github.chrisbanes:PhotoView:2.3.0"
     implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
 
     //FlexboxLayout

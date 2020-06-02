@@ -17,20 +17,13 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.github.chrisbanes.photoview.OnOutsidePhotoTapListener;
-import com.github.chrisbanes.photoview.OnPhotoTapListener;
-import com.github.chrisbanes.photoview.OnScaleChangedListener;
-import com.github.chrisbanes.photoview.OnSingleFlingListener;
-import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
