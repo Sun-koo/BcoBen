@@ -1,63 +1,45 @@
 package kr.co.bcoben.activity;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Matrix;
+import android.annotation.SuppressLint;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Typeface;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
-import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.github.chrisbanes.photoview.OnOutsidePhotoTapListener;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
-import com.github.chrisbanes.photoview.OnViewTapListener;
+import com.github.chrisbanes.photoview.OnScaleChangedListener;
+import com.github.chrisbanes.photoview.OnSingleFlingListener;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ShortBuffer;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.CustomSpinnerAdapter;
@@ -69,16 +51,15 @@ import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 
-import static kr.co.bcoben.util.CommonUtil.showKeyboard;
-
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
     private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
     // image
-    private PhotoViewAttacher photoViewAttacher;
-    private float scale;
+//    private PhotoViewAttacher photoViewAttacher;
+    private float initScale;
+    private int currentScale = 2;
 
     // table
     private TableListAdapter tableListAdapter;
@@ -103,11 +84,14 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
 
+    // Dummy Data
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_drawings;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initView() {
         // Spinner
@@ -137,15 +121,31 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         initSpinner(dataBinding.spnFacility, listFacility, facility);
 
         // 도면 이미지
-        photoViewAttacher = new PhotoViewAttacher(dataBinding.ivDrawings);
-        photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_XY);
-        photoViewAttacher.setMaximumScale(6);
-
-        photoViewAttacher.setOnPhotoTapListener(new OnPhotoTapListener() {
+        final GestureDetector gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public void onPhotoTap(ImageView view, float x, float y) {
-                //TODO add new btn icon and show research popup
-                dataBinding.layoutTable.setVisibility(View.VISIBLE);
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (dataBinding.imgDrawings.isReady()) {
+                    PointF pin = dataBinding.imgDrawings.viewToSourceCoord(e.getX(), e.getY());
+                    dataBinding.imgDrawings.setPin(pin);
+                }
+                return true;
+            }
+        });
+
+        dataBinding.imgDrawings.setImage(ImageSource.asset("drawings_detail.png"));
+        dataBinding.imgDrawings.setZoomEnabled(false);
+        dataBinding.imgDrawings.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+        dataBinding.imgDrawings.setOnImageEventListener(new SubsamplingScaleImageView.DefaultOnImageEventListener() {
+            @Override
+            public void onReady() {
+                super.onReady();
+                initScale = dataBinding.imgDrawings.getScale();
+                dataBinding.imgDrawings.setMaxScale(12);
             }
         });
 
@@ -232,25 +232,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
 
             case R.id.btn_zoom_in:
-                scale = calculateScale(photoViewAttacher.getScale());
-                photoViewAttacher.setScale(scale);
-
-                showScaleView();
+                calculateScale(true);
                 break;
-
             case R.id.btn_zoom_out:
-                scale = calculateScale(photoViewAttacher.getScale());
-                scale = (scale - 0.5f) < 1 ? 1f : scale - 0.5f;
-                photoViewAttacher.setScale(scale);
-
-                showScaleView();
+                calculateScale(false);
                 break;
-
-            case R.id.btn_new:
-                //for test
-                dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
-                getPictureDataList();
-                break;
+//            case R.id.btn_new:
+//                //for test
+//                dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
+//                getPictureDataList();
+//                break;
 
             case R.id.btn_table_handle:
                 dataBinding.btnTableHandle.setImageDrawable(dataBinding.layoutTable.getVisibility() == View.VISIBLE ? getResources().getDrawable(R.drawable.ic_arrow_left) : getResources().getDrawable(R.drawable.ic_arrow_right));
@@ -379,56 +370,49 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         });
         dialog.show();
     }
-    //TODO Pinch Zoom 으로 바뀐 Scale을 0.5단위로 맞추기 위해 구현
-    private float calculateScale(float scale) {
-        if (scale > 1f && scale < 1.5f) {
-            return 1.5f;
-        } else if (scale > 1.5f && scale < 2f) {
-            return 2f;
-        } else if (scale > 2f && scale < 2.5f) {
-            return 2.5f;
-        } else if (scale > 2.5f && scale < 3f) {
-            return 3f;
-        } else if (scale > 3f && scale < 3.5f) {
-            return 3.5f;
-        } else if (scale > 3.5f && scale < 4f) {
-            return 4f;
-        } else if (scale > 4f && scale < 4.5f) {
-            return 4.5f;
-        } else if (scale > 4.5f && scale < 5f) {
-            return 5f;
-        } else if (scale > 5f && scale < 5.5f) {
-            return 5.5f;
-        } else if (scale > 5.5f) {
-            return 6f;
+
+    private void calculateScale(boolean plus) {
+        if (plus) {
+            switch (currentScale) {
+                case 2: currentScale = 3; break;
+                case 3: currentScale = 4; break;
+                case 4: currentScale = 8; break;
+                case 8: currentScale = 12; break;
+                default: return;
+            }
         } else {
-            return scale;
+            switch (currentScale) {
+                case 3: currentScale = 2; break;
+                case 4: currentScale = 3; break;
+                case 8: currentScale = 4; break;
+                case 12: currentScale = 8; break;
+                default: return;
+            }
         }
+        dataBinding.imgDrawings.animateScale(initScale * currentScale / 2.0f).withDuration(500).start();
+        showScaleView();
     }
 
     // 현재 줌 배수 출력
     private void showScaleView() {
+        DecimalFormat df = new DecimalFormat("0.#");
+        String scaleStr = "x" + df.format(currentScale / 2.0f) + "배";
+
         dataBinding.layoutScale.setVisibility(View.VISIBLE);
-        dataBinding.txtScale.setText("x"+ scale +"배");
+        dataBinding.txtScale.setText(scaleStr);
 
         final Animation fadeOut = new AlphaAnimation(1, 0);
         fadeOut.setInterpolator(new AccelerateInterpolator());
         fadeOut.setDuration(1000);
         fadeOut.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
+            public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
                 dataBinding.layoutScale.setVisibility(View.GONE);
             }
-
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
 
         Animation fadeIn = new AlphaAnimation(0, 1);
@@ -436,19 +420,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         fadeIn.setDuration(1000);
         fadeIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
+            public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
                 dataBinding.layoutScale.startAnimation(fadeOut);
             }
-
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
 
         dataBinding.layoutScale.startAnimation(fadeIn);

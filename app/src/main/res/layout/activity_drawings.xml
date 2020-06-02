@@ -219,24 +219,21 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:background="@color/colorWhite">
 
-                    <ImageView
+                    <kr.co.bcoben.component.DrawingImageView
+                        android:id="@+id/img_drawings"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                    <!--<ImageView
                         android:id="@+id/iv_drawings"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         android:scaleType="matrix"
-                        android:src="@drawable/drawings_detail" />
-
-                    <ImageButton
-                        android:id="@+id/btn_new"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:onClick="onClick"
-                        android:background="@null"
-                        android:src="@drawable/ic_tap_new"/>
+                        android:src="@drawable/drawings_detail" />-->
 
                     <LinearLayout
                         android:layout_width="wrap_content"

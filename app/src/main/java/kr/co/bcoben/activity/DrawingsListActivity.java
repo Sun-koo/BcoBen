@@ -100,10 +100,11 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     }
 
     private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, AppCompatSpinner spinner) {
-        for (int i=0;i<list_data.size();i++) {
+        for (int i = 0; i < list_data.size(); i++) {
             String cate = list_data.get(i);
             if (cate.equals(select_data)) {
                 spinner.setSelection(i);
+                break;
             }
         }
     }
