@@ -1,25 +1,32 @@
 package kr.co.bcoben.activity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.MenuSelectListAdapter;
 import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
+import kr.co.bcoben.component.CameraDialog;
+import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 import kr.co.bcoben.model.ProjectData;
 import kr.co.bcoben.model.ProjectListData;
@@ -40,10 +47,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         SUMMARY, GRADE, FACILITY, FACILITY_CATEGORY, ARCHITECTURE, RESEARCH, DRAWINGS
     }
 
+    public enum DatePickerType {
+        START, END
+    }
+
     // side menu
     private CurrentResearchStep currentResearchStep = CurrentResearchStep.GRADE;
     private CurrentProjectStep currentProjectStep = CurrentProjectStep.SUMMARY;
     private MenuSelectListAdapter menuSelectListAdapter;
+
+    private DatePickerType datePickerType = DatePickerType.START;
+    private int startYear, startMonth, startDay;
 
     private List<String> regResearchGrade = new ArrayList<>();
     private List<String> regResearchFacility = new ArrayList<>();
@@ -126,12 +140,42 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            // side menu
+            // side menu(research)
             case R.id.btn_input_research:
                 goToDrawingsPage();
                 break;
             case R.id.btn_next:
                 researchNextStep();
+                break;
+            // side menu(project)
+            case R.id.btn_input_project:
+
+                break;
+            case R.id.btn_project_next: case R.id.btn_arrow_next:
+                projectNextStep();
+                break;
+            case R.id.layout_project_start_date:
+                // 현재 날짜 Get
+                Date currentTime = Calendar.getInstance().getTime();
+                SimpleDateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
+                SimpleDateFormat monthFormat = new SimpleDateFormat("M", Locale.getDefault());
+                SimpleDateFormat yearFormat = new SimpleDateFormat("y", Locale.getDefault());
+
+                String curYear = yearFormat.format(currentTime);
+                String curMonth = monthFormat.format(currentTime);
+                String curDay = dayFormat.format(currentTime);
+
+                datePickerType = DatePickerType.START;
+                DatePickerDialog dialog_start = new DatePickerDialog(this, onDateSetListener, Integer.parseInt(curYear), Integer.parseInt(curMonth) - 1, Integer.parseInt(curDay));
+                dialog_start.show();
+                break;
+            case R.id.layout_project_end_date:
+                datePickerType = DatePickerType.END;
+                DatePickerDialog dialog_end = new DatePickerDialog(this, onDateSetListener, startYear, startMonth, startDay);
+                dialog_end.show();
+                break;
+            case R.id.btn_drawings_upload:
+                showCameraDialog();
                 break;
 
             // main
@@ -234,10 +278,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.txtResearch.setText("");
 
         if (grade != null && !grade.isEmpty()) {
-            setSelectedText(grade);
+            setResearchSelectedText(grade);
         }
         if (facility != null && !facility.isEmpty()) {
-            setSelectedText(facility);
+            setResearchSelectedText(facility);
         }
     }
 
@@ -257,6 +301,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.txtFacilityCategory.setText("");
         dataBinding.mainDrawer.layoutRegProject.txtArchitecture.setText("");
         dataBinding.mainDrawer.layoutRegProject.txtResearch.setText("");
+
+        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectName.setText("");
+        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText("");
+        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText("");
     }
 
     private void updateStepResearchMenuUI(CurrentResearchStep step) {
@@ -304,25 +352,34 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(false);
         dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(false);
 
+        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.layoutRoot.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.layoutRoot.setVisibility(View.GONE);
+
         switch (currentProjectStep) {
             case SUMMARY:
                 dataBinding.mainDrawer.layoutRegProject.layoutSummary.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.layoutRoot.setVisibility(View.VISIBLE);
 
                 break;
             case GRADE:
                 dataBinding.mainDrawer.layoutRegProject.layoutGrade.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
 
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
 
                 break;
             case FACILITY_CATEGORY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
 
                 break;
             case ARCHITECTURE:
                 dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
 
                 break;
             case RESEARCH:
@@ -331,6 +388,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 break;
             case DRAWINGS:
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.layoutRoot.setVisibility(View.VISIBLE);
 
                 break;
         }
@@ -378,10 +436,53 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
 
         hideKeyboard(this);
-        setSelectedText(name);
+        setResearchSelectedText(name);
     }
 
-    public void setSelectedText(String value) {
+    private void projectNextStep() {
+        List<String> selectedValue = new ArrayList<>();
+        switch (currentProjectStep) {
+            case SUMMARY:
+                String name = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectName.getText().toString();
+                String startDate = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.getText().toString();
+                String endDate = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.getText().toString();
+                if (name.isEmpty()) {
+                    showToast(R.string.toast_input_project_name);
+                    return;
+                }
+                if (startDate.isEmpty() || endDate.isEmpty()) {
+                    showToast(R.string.toast_input_project_date);
+                    return;
+                }
+                selectedValue.add(name);
+                selectedValue.add(startDate);
+                selectedValue.add(endDate);
+                break;
+            case GRADE:
+
+                break;
+            case FACILITY:
+
+                break;
+            case FACILITY_CATEGORY:
+
+                break;
+            case ARCHITECTURE:
+
+                break;
+            case RESEARCH:
+
+                break;
+            case DRAWINGS:
+
+                break;
+        }
+
+        hideKeyboard(this);
+        setProjectSelectedText(selectedValue);
+    }
+
+    public void setResearchSelectedText(String value) {
         switch (currentResearchStep) {
             case GRADE:
                 dataBinding.mainDrawer.layoutRegResearch.txtGrade.setText(value);
@@ -408,6 +509,107 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 updateStepResearchMenuUI(CurrentResearchStep.RESEARCH);
                 break;
         }
+    }
+
+    public void setProjectSelectedText(List<String> value) {
+        switch (currentProjectStep) {
+            case SUMMARY:
+                dataBinding.mainDrawer.layoutRegProject.txtSummaryName.setText(value.get(0));
+                dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.setText(value.get(1) + " ~ " + value.get(2));
+                dataBinding.mainDrawer.layoutRegProject.layoutGrade.setClickable(true);
+                updateStepProjectMenuUI(CurrentProjectStep.GRADE);
+                break;
+            case GRADE:
+                String grade = value.get(0);
+                for (int i=1;i<value.size();i++) {
+                    grade = grade + ", " + value.get(i);
+                }
+                dataBinding.mainDrawer.layoutRegProject.txtGrade.setText(grade);
+                dataBinding.mainDrawer.layoutRegProject.layoutFacility.setClickable(true);
+                updateStepProjectMenuUI(CurrentProjectStep.FACILITY);
+                break;
+            case FACILITY:
+                String facility = value.get(0);
+                for (int i=1;i<value.size();i++) {
+                    facility = facility + ", " + value.get(i);
+                }
+                dataBinding.mainDrawer.layoutRegProject.txtFacility.setText(facility);
+                dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setClickable(true);
+                updateStepProjectMenuUI(CurrentProjectStep.FACILITY_CATEGORY);
+                break;
+            case FACILITY_CATEGORY:
+                String facilityCategory = value.get(0);
+                for (int i=1;i<value.size();i++) {
+                    facilityCategory = facilityCategory + ", " + value.get(i);
+                }
+                dataBinding.mainDrawer.layoutRegProject.txtFacilityCategory.setText(facilityCategory);
+                dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setClickable(true);
+                updateStepProjectMenuUI(CurrentProjectStep.ARCHITECTURE);
+                break;
+            case ARCHITECTURE:
+                String architecture = value.get(0);
+                for (int i=1;i<value.size();i++) {
+                    architecture = architecture + ", " + value.get(i);
+                }
+                dataBinding.mainDrawer.layoutRegProject.txtArchitecture.setText(architecture);
+                dataBinding.mainDrawer.layoutRegProject.layoutResearch.setClickable(true);
+                updateStepProjectMenuUI(CurrentProjectStep.RESEARCH);
+                break;
+            case RESEARCH:
+                //TODO
+                updateStepProjectMenuUI(CurrentProjectStep.DRAWINGS);
+                break;
+            case DRAWINGS:
+                //TODO
+                break;
+        }
+    }
+
+    // 날짜 선택 다이얼로그
+    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            startYear = year;
+            startMonth = month;
+            startDay = dayOfMonth;
+            String monthStr = String.valueOf(month + 1);
+            String dayStr = String.valueOf(dayOfMonth);
+
+            if (monthStr.length() == 1) {
+                monthStr = "0" + monthStr;
+            }
+            if (dayStr.length() == 1) {
+                dayStr = "0" + dayStr;
+            }
+
+            String date = year + "/" + monthStr + "/" + dayStr;
+
+            if (datePickerType == DatePickerType.START) {
+                dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText(date);
+            } else {
+                dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText(date);
+            }
+        }
+    };
+
+    // 카메라 촬영 / 앨범 선택 다이얼로그 출력
+    private void showCameraDialog() {
+        final CameraDialog dialog = new CameraDialog(this);
+        dialog.selectCameraListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+                dialog.dismiss();
+            }
+        });
+        dialog.selectAlbumInputListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     private void goToDrawingsPage() {

@@ -89,11 +89,15 @@
     <string name="side_menu_project_end_date">종료일자</string>
     <string name="side_menu_hint_project_date">YYYY/MM/DD</string>
     <string name="side_menu_project_next_button">다음 ></string>
+    <string name="side_menu_project_upload_drawings">도면을 업로드 하세요</string>
+    <string name="side_menu_project_reg_drawings">등록 도면</string>
     <string name="toast_input_grade">진단등급을 입력해주세요</string>
     <string name="toast_input_facility">시설물을 입력해주세요</string>
     <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>
     <string name="toast_input_architecture">구조형식을 입력해주세요</string>
     <string name="toast_input_research">조사종류를 입력해주세요</string>
+    <string name="toast_input_project_name">프로젝트명을 입력해주세요</string>
+    <string name="toast_input_project_date">프로젝트 기간을 입력해주세요</string>
 
     <!--도면 리스트 화면-->
     <string name="drawings_list_download_all">전체 다운로드</string>
@@ -151,4 +155,9 @@
     <!--조사 데이터 등록 팝업 메모 Tab-->
     <string name="popup_reg_research_memo_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>
     <string name="popup_reg_research_memo_canvas_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>
+
+    <!--카메라 촬영 / 갤러리 선택 다이얼로그-->
+    <string name="camera_dialog_title">도면 업로드 방법을 선택하세요.</string>
+    <string name="camera_dialog_take">사진 촬영</string>
+    <string name="camera_dialog_album">갤러리 선택</string>
 </resources>

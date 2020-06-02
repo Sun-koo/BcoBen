@@ -42,4 +42,7 @@ dependencies {
     //PhotoView
     implementation "com.github.chrisbanes:PhotoView:2.3.0"
     implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
+
+    //FlexboxLayout
+    implementation "com.google.android:flexbox:2.0.1"
 }

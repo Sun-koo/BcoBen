@@ -357,13 +357,14 @@
                     layout="@layout/activity_main_drawer_reg_project_drawings" />
 
                 <Button
-                    android:id="@+id/btn_next"
+                    android:id="@+id/btn_project_next"
                     android:layout_width="169dp"
                     android:layout_height="50dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="15dp"
                     android:layout_marginEnd="33dp"
                     android:layout_gravity="end"
+                    android:onClick="onClick"
                     android:text="@string/side_menu_project_next_button"
                     android:textColor="@color/colorWhite"
                     android:textSize="18dp"

@@ -43,4 +43,7 @@
     <color name="colorDividerPopup">#ADADAD</color>
     <color name="colorBorderPopupMenu">#E2E2E2</color>
     <color name="colorTextHintPopupMenu">#888888</color>
+
+    <color name="colorBorderDialogGray">#C1C1C1</color>
+    <color name="colorBorderDialogButtonGray">#CECECE</color>
 </resources>
