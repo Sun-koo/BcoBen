@@ -1,13 +1,18 @@
 package kr.co.bcoben.activity;
 
 import android.annotation.SuppressLint;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,9 +23,12 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -28,14 +36,17 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.CustomSpinnerAdapter;
+import kr.co.bcoben.adapter.DrawingPictureListAdapter;
 import kr.co.bcoben.adapter.PictureListAdapter;
 import kr.co.bcoben.adapter.RecodeListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
@@ -43,26 +54,28 @@ import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
+import kr.co.bcoben.model.DrawingPointData;
+
+import static kr.co.bcoben.model.DrawingPointData.DrawingType;
+import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
-    private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
+    private List<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
     // image
 //    private PhotoViewAttacher photoViewAttacher;
     private float initScale;
     private int currentScale = 2;
+    private DrawingPointData regPointData;
+    private DrawingPictureListAdapter drawingPictureListAdapter;
 
     // table
     private TableListAdapter tableListAdapter;
     private ArrayList<JSONObject> listTableData;
 
     // popup
-    private enum CurrentTab {
-        INPUT, PICTURE, RECODE, MEMO
-    }
-
     private PictureListAdapter pictureListAdapter;
     private ArrayList<JSONObject> listPictureData;
 
@@ -76,8 +89,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private boolean isRecoding = false;
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
+    private List<DrawingPointData> pinList = new ArrayList<>();
 
     // Dummy Data
+    private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1800}, {500, 1200}, {2300, 1800}};
+    private DrawingType[] pinTypeArray = {DrawingType.NORMAL, DrawingType.NORMAL, DrawingType.IMAGE, DrawingType.VOICE, DrawingType.VOICE, DrawingType.MEMO};
 
     @Override
     protected int getLayoutResource() {
@@ -88,21 +104,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     @Override
     protected void initView() {
         // Spinner
-        listCategory = new ArrayList<>();
-        listArchitecture = new ArrayList<>();
-        listResearch = new ArrayList<>();
-        listFacility = new ArrayList<>();
-
-        ArrayList<String> categoryList = getIntent().getStringArrayListExtra("category_list");
-        ArrayList<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
-        ArrayList<String> researchList = getIntent().getStringArrayListExtra("research_list");
-        ArrayList<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
-
-        listCategory = categoryList;
-        listArchitecture = architectureList;
-        listResearch = researchList;
-        listFacility = facilityList;
-
+        listCategory = getIntent().getStringArrayListExtra("category_list");
+        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
+        listResearch = getIntent().getStringArrayListExtra("research_list");
+        listFacility = getIntent().getStringArrayListExtra("facility_list");
         category = getIntent().getStringExtra("category");
         architecture = getIntent().getStringExtra("architecture");
         research = getIntent().getStringExtra("research");
@@ -113,19 +118,58 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         initSpinner(dataBinding.spnResearch, listResearch, research);
         initSpinner(dataBinding.spnFacility, listFacility, facility);
 
+        drawingPictureListAdapter = new DrawingPictureListAdapter(this);
+        dataBinding.recyclerPicturePopup.setAdapter(drawingPictureListAdapter);
+        dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        dataBinding.recyclerPicturePopup.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                int position = parent.getChildAdapterPosition(view);
+                outRect.bottom = 15;
+                outRect.right = position % 2 == 0 ? 15 : 0;
+            }
+        });
+
         // 도면 이미지
         final GestureDetector gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
+            public boolean onSingleTapConfirmed(final MotionEvent e) {
                 if (dataBinding.imgDrawings.isReady()) {
                     PointF pin = dataBinding.imgDrawings.viewToSourceCoord(e.getX(), e.getY());
-                    dataBinding.imgDrawings.setPin(pin);
+                    int index = dataBinding.imgDrawings.checkClickPoint(pin);
+
+                    if (index == 0) {
+                        dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
+                        regPointData = new DrawingPointData(pin, DrawingType.NORMAL);
+                        dataBinding.txtNewPin.setText(String.valueOf(pinList.size() + 1));
+
+                        initPopupView();
+                        getPictureDataList();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataBinding.ivNewPin.setX(e.getX() - dataBinding.ivNewPin.getWidth() / 2.0f);
+                                dataBinding.ivNewPin.setY(e.getY() - dataBinding.ivNewPin.getHeight() / 2.0f);
+                                dataBinding.txtNewPin.setX(dataBinding.ivNewPin.getX());
+                                dataBinding.txtNewPin.setY(dataBinding.ivNewPin.getY() + dataBinding.ivNewPin.getHeight() + 3);
+                            }
+                        }, 1);
+                    } else if (index > 0) {
+                        showToast(index + "번 Point");
+                    } else {
+                        index = -(index + 1);
+                        dataBinding.layoutPicturePopup.setVisibility(View.VISIBLE);
+
+                        int size = pinList.get(index).getImgCount();
+                        drawingPictureListAdapter.setSize(size);
+                    }
                 }
                 return true;
             }
         });
 
         dataBinding.imgDrawings.setImage(ImageSource.asset("drawings_detail.png"));
+        dataBinding.imgDrawings.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
         dataBinding.imgDrawings.setZoomEnabled(false);
         dataBinding.imgDrawings.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -137,8 +181,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             @Override
             public void onReady() {
                 super.onReady();
-                initScale = dataBinding.imgDrawings.getScale();
+                initScale = dataBinding.imgDrawings.getMinScale();
                 dataBinding.imgDrawings.setMaxScale(12);
+                requestDrawingPointDataList();
             }
         });
 
@@ -212,6 +257,15 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     @Override
+    public void onBackPressed() {
+        if (dataBinding.layoutResearchPopup.getVisibility() == View.VISIBLE) {
+            dataBinding.researchPopup.btnPopupClose.performClick();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_home:
@@ -230,15 +284,20 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.btn_zoom_out:
                 calculateScale(false);
                 break;
-//            case R.id.btn_new:
-//                //for test
-//                dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
-//                getPictureDataList();
-//                break;
 
             case R.id.btn_table_handle:
-                dataBinding.btnTableHandle.setImageDrawable(dataBinding.layoutTable.getVisibility() == View.VISIBLE ? getResources().getDrawable(R.drawable.ic_arrow_left) : getResources().getDrawable(R.drawable.ic_arrow_right));
-                dataBinding.layoutTable.setVisibility(dataBinding.layoutTable.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                boolean isSelected = dataBinding.btnTableHandle.isSelected();
+                dataBinding.btnTableHandle.setSelected(!isSelected);
+                dataBinding.layoutTable.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (currentScale == 2) {
+                                dataBinding.imgDrawings.animateScale(0.1f).withDuration(10).start();
+                            }
+                        }
+                    }, 10);
                 break;
 
             // table
@@ -260,23 +319,18 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             // popup
             case R.id.btn_popup_close:
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
-                initPopupView();
                 break;
-
-            case R.id.layout_input_tab:
-                setSelectedTab(CurrentTab.INPUT);
+            case R.id.txt_input_tab:
+                setSelectedTab(DrawingType.NORMAL);
                 break;
-
-            case R.id.layout_picture_tab:
-                setSelectedTab(CurrentTab.PICTURE);
+            case R.id.txt_picture_tab:
+                setSelectedTab(DrawingType.IMAGE);
                 break;
-
-            case R.id.layout_recode_tab:
-                setSelectedTab(CurrentTab.RECODE);
+            case R.id.txt_recode_tab:
+                setSelectedTab(DrawingType.VOICE);
                 break;
-
-            case R.id.layout_memo_tab:
-                setSelectedTab(CurrentTab.MEMO);
+            case R.id.txt_memo_tab:
+                setSelectedTab(DrawingType.MEMO);
                 break;
 
             case R.id.layout_sub_title:
@@ -298,6 +352,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.btn_reg:
                 //TODO
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                dataBinding.imgDrawings.addPin(regPointData);
                 break;
 
             case R.id.btn_recode:
@@ -322,20 +377,21 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
                 isRecoding = false;
                 break;
+
+            case R.id.layout_picture_popup:
+                dataBinding.layoutPicturePopup.setVisibility(View.GONE);
+                break;
         }
     }
 
-    private void initSpinner(AppCompatSpinner spinner, ArrayList<String> list_data, String select_data) {
-        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list_data));
+    private void initSpinner(AppCompatSpinner spinner, List<String> list, String selectData) {
+        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list));
 
-        setSpinnerSelectedData(list_data, select_data, spinner);
-    }
-
-    private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, AppCompatSpinner spinner) {
-        for (int i=0;i<list_data.size();i++) {
-            String cate = list_data.get(i);
-            if (cate.equals(select_data)) {
+        for (int i = 0; i < list.size(); i++) {
+            String cate = list.get(i);
+            if (cate.equals(selectData)) {
                 spinner.setSelection(i);
+                break;
             }
         }
     }
@@ -447,8 +503,33 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         tableListAdapter.notifyDataSetChanged();
     }
 
+    private void requestDrawingPointDataList() {
+        pinList.clear();
+
+        for (int i = 0; i < pinPointArray.length; i++) {
+            DrawingPointData data;
+            if (pinTypeArray[i] == DrawingType.NORMAL || pinTypeArray[i] == DrawingType.IMAGE) {
+                Bitmap regImage = null;
+                try {
+                    AssetManager assetManager = getAssets();
+                    BufferedInputStream bis = new BufferedInputStream(assetManager.open("drawing_item.png"));
+                    regImage = BitmapFactory.decodeStream(bis);
+                    bis.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i], regImage, (i + 1));
+            } else {
+                data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i]);
+            }
+            pinList.add(data);
+        }
+        dataBinding.imgDrawings.setPinList(pinList);
+    }
+
     private void initPopupView() {
-        setSelectedTab(CurrentTab.INPUT);
+        setSelectedTab(DrawingType.NORMAL);
         dataBinding.researchPopup.layoutPictureList.setVisibility(View.GONE);
         dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
         dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
@@ -460,23 +541,25 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     // popup tab update isSelected
-    private void setSelectedTab(CurrentTab tab) {
-        dataBinding.researchPopup.layoutInputTab.setBackground(tab == CurrentTab.INPUT ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
-        dataBinding.researchPopup.txtInputTab.setTextColor(tab == CurrentTab.INPUT ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+    private void setSelectedTab(DrawingType type) {
+        dataBinding.researchPopup.txtInputTab.setSelected(false);
+        dataBinding.researchPopup.txtPictureTab.setSelected(false);
+        dataBinding.researchPopup.txtRecodeTab.setSelected(false);
+        dataBinding.researchPopup.txtMemoTab.setSelected(false);
 
-        dataBinding.researchPopup.layoutPictureTab.setBackground(tab == CurrentTab.PICTURE ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
-        dataBinding.researchPopup.txtPictureTab.setTextColor(tab == CurrentTab.PICTURE ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+        switch (type) {
+            case NORMAL: dataBinding.researchPopup.txtInputTab.setSelected(true); break;
+            case IMAGE: dataBinding.researchPopup.txtPictureTab.setSelected(true); break;
+            case VOICE: dataBinding.researchPopup.txtRecodeTab.setSelected(true); break;
+            case MEMO: dataBinding.researchPopup.txtMemoTab.setSelected(true); break;
+        }
 
-        dataBinding.researchPopup.layoutRecodeTab.setBackground(tab == CurrentTab.RECODE ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
-        dataBinding.researchPopup.txtRecodeTab.setTextColor(tab == CurrentTab.RECODE ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
+        dataBinding.researchPopup.layoutInput.setVisibility(type == DrawingType.NORMAL ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutInputPicture.setVisibility((type == DrawingType.NORMAL || type == DrawingType.IMAGE) ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutRecode.setVisibility(type == DrawingType.VOICE ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutMemo.setVisibility(type == DrawingType.MEMO ? View.VISIBLE : View.GONE);
 
-        dataBinding.researchPopup.layoutMemoTab.setBackground(tab == CurrentTab.MEMO ? getDrawable(R.drawable.background_keycolor_tab) : getDrawable(R.drawable.background_gray_tab));
-        dataBinding.researchPopup.txtMemoTab.setTextColor(tab == CurrentTab.MEMO ? getResources().getColor(R.color.colorWhite) : getResources().getColor(R.color.colorTextGrayPopup));
-
-        dataBinding.researchPopup.layoutInput.setVisibility(tab == CurrentTab.INPUT ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutInputPicture.setVisibility((tab == CurrentTab.INPUT || tab == CurrentTab.PICTURE) ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutRecode.setVisibility(tab == CurrentTab.RECODE ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutMemo.setVisibility(tab == CurrentTab.MEMO ? View.VISIBLE : View.GONE);
+        regPointData.setType(type);
     }
 
     //TODO get picture data
@@ -534,6 +617,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.VISIBLE);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initCanvas() {
         dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
         dataBinding.researchPopup.memoView.layoutCanvas.setDrawer(CanvasView.Drawer.PEN);

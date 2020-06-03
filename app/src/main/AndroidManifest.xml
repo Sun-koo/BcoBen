@@ -17,19 +17,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="LockedOrientationActivity">
         <activity
-            android:name=".component.DrawingsSelectDialog"
-            android:screenOrientation="landscape"/>
-        <activity
-            android:name=".activity.ResetPwActivity"
-            android:screenOrientation="landscape"/>
-        <activity
-            android:name=".activity.ResetCertificateActivity"
-            android:screenOrientation="landscape"/>
-        <activity
-            android:name=".activity.DrawingsActivity"
-            android:screenOrientation="landscape" />
-        <activity android:name=".activity.DrawingsListActivity" />
-        <activity
             android:name=".activity.SplashActivity"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -39,9 +26,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.MainActivity"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateAlwaysHidden" />
@@ -49,6 +33,23 @@
             android:name=".activity.CertificateActivity"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".activity.ResetPwActivity"
+            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.ResetCertificateActivity"
+            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+            android:name=".activity.DrawingsListActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activity.DrawingsActivity"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

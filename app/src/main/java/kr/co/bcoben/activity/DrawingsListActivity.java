@@ -1,22 +1,10 @@
 package kr.co.bcoben.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.view.View;
+
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,11 +17,10 @@ import kr.co.bcoben.adapter.CustomSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
-import kr.co.bcoben.databinding.ActivityMainBinding;
 
 public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBinding> implements View.OnClickListener {
 
-    private ArrayList<String> listCategory, listArchitecture, listResearch, listFacility;
+    private List<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
     private DrawingsListAdapter drawingsListAdapter;
@@ -46,21 +33,10 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     @Override
     protected void initView() {
-        listCategory = new ArrayList<>();
-        listArchitecture = new ArrayList<>();
-        listResearch = new ArrayList<>();
-        listFacility = new ArrayList<>();
-
-        ArrayList<String> categoryList = getIntent().getStringArrayListExtra("category_list");
-        ArrayList<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
-        ArrayList<String> researchList = getIntent().getStringArrayListExtra("research_list");
-        ArrayList<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
-
-        listCategory = categoryList;
-        listArchitecture = architectureList;
-        listResearch = researchList;
-        listFacility = facilityList;
-
+        listCategory = getIntent().getStringArrayListExtra("category_list");
+        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
+        listResearch = getIntent().getStringArrayListExtra("research_list");
+        listFacility = getIntent().getStringArrayListExtra("facility_list");
         category = getIntent().getStringExtra("category");
         architecture = getIntent().getStringExtra("architecture");
         research = getIntent().getStringExtra("research");
@@ -83,26 +59,22 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_home: case R.id.btn_close:
+            case R.id.btn_home:
+            case R.id.btn_close:
                 finish();
                 break;
-
             case R.id.btn_download_all:
                 //TODO
                 break;
         }
     }
 
-    private void initSpinner(AppCompatSpinner spinner, ArrayList<String> list_data, String select_data) {
-        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list_data));
+    private void initSpinner(AppCompatSpinner spinner, List<String> list, String selectData) {
+        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list));
 
-        setSpinnerSelectedData(list_data, select_data, spinner);
-    }
-
-    private void setSpinnerSelectedData(ArrayList<String> list_data, String select_data, AppCompatSpinner spinner) {
-        for (int i = 0; i < list_data.size(); i++) {
-            String cate = list_data.get(i);
-            if (cate.equals(select_data)) {
+        for (int i = 0; i < list.size(); i++) {
+            String cate = list.get(i);
+            if (cate.equals(selectData)) {
                 spinner.setSelection(i);
                 break;
             }
@@ -139,10 +111,10 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     public void sendSpinnerData() {
         Intent intent = new Intent(DrawingsListActivity.this, DrawingsActivity.class);
-        intent.putStringArrayListExtra("category_list", listCategory);
-        intent.putStringArrayListExtra("architecture_list", listArchitecture);
-        intent.putStringArrayListExtra("research_list", listResearch);
-        intent.putStringArrayListExtra("facility_list", listFacility);
+        intent.putStringArrayListExtra("category_list", (ArrayList<String>) listCategory);
+        intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) listArchitecture);
+        intent.putStringArrayListExtra("research_list", (ArrayList<String>) listResearch);
+        intent.putStringArrayListExtra("facility_list", (ArrayList<String>) listFacility);
         intent.putExtra("category", category);
         intent.putExtra("architecture", architecture);
         intent.putExtra("research", research);
