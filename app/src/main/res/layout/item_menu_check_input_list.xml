@@ -24,7 +24,6 @@
                 android:id="@+id/checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="false"
                 android:button="@drawable/custom_checkbox"/>
 
             <TextView
@@ -33,11 +32,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="9dp"
                 android:layout_marginEnd="9dp"
-                android:text="정밀안전진단"
+                android:text="비파괴, 장비조사 | 지반(BH)"
                 android:textColor="@color/colorTextNavy"
                 android:textSize="16dp" />
 
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/edit_count"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:background="@drawable/border_square_gray_box"
+            android:maxLines="1"
+            android:inputType="number"
+            android:hint="@string/side_menu_hint_count"
+            android:enabled="false"
+            android:alpha="0.38"
+            android:textColorHint="@color/colorHintGray"
+            android:textSize="16dp"
+            android:textColor="@color/colorTextPrimary"/>
 
         <Button
             android:id="@+id/btn_project_next"
