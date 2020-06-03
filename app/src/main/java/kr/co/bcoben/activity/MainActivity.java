@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.adapter.MenuCheckInputListAdapter;
+import kr.co.bcoben.adapter.MenuCheckListAdapter;
 import kr.co.bcoben.adapter.MenuSelectListAdapter;
 import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
@@ -28,6 +30,7 @@ import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CameraDialog;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityMainBinding;
+import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.ProjectData;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectResearchData;
@@ -55,6 +58,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private CurrentResearchStep currentResearchStep = CurrentResearchStep.GRADE;
     private CurrentProjectStep currentProjectStep = CurrentProjectStep.SUMMARY;
     private MenuSelectListAdapter menuSelectListAdapter;
+    private MenuCheckListAdapter menuCheckListAdapter;
+    private MenuCheckInputListAdapter menuCheckInputListAdapter;
 
     private DatePickerType datePickerType = DatePickerType.START;
     private int startYear, startMonth, startDay;
@@ -65,6 +70,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<String> regResearchArchitecture = new ArrayList<>();
     private List<String> regResearchResearch = new ArrayList<>();
 
+    private List<MenuCheckData> regProjectGrade = new ArrayList<>();
+    private List<MenuCheckData> regProjectFacility = new ArrayList<>();
+    private List<MenuCheckData> regProjectFacCate = new ArrayList<>();
+    private List<MenuCheckData> regProjectArchitecture = new ArrayList<>();
+    private List<String> regProjectResearch = new ArrayList<>();
+
+    private List<MenuCheckData> selectedProjectGrade = new ArrayList<>();
+    private List<MenuCheckData> selectedProjectFacility = new ArrayList<>();
+    private List<MenuCheckData> selectedProjectFacCate = new ArrayList<>();
+    private List<MenuCheckData> selectedProjectArchitecture = new ArrayList<>();
+    private List<String> selectedProjectResearchTitle = new ArrayList<>();
+    private List<String> selectedProjectResearchCount = new ArrayList<>();
+
     // main
     private ProjectListAdapter projectListAdapter;
     private ProjectDataPageAdapter projectPageAdapter;
@@ -72,7 +90,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<ProjectData> projectDataList = new ArrayList<>();
 
     // Dummy Data
-    private String[] projectGrade = {"정밀안전진단"};
+    private String[] projectGrade = {"정밀안전진단", "긴급안전점검"};
     private String[] projectName = {"서초구청", "성수초등학교", "프로젝트명"};
     private String[] projectFacility = {"본관동", "별관동", "기숙사동", "대극장"};
     private String[] projectResearchFacCate = {"건축", "지하도상가", "교량", "터널", "지하차도", "복개구조물", "항만", "항만외곽", "댐"};
@@ -111,6 +129,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setLayoutManager(new LinearLayoutManager(this));
 
         requestRegResearchData();
+
+        menuCheckListAdapter = new MenuCheckListAdapter(this, regProjectGrade, selectedProjectGrade);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setAdapter(menuCheckListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setLayoutManager(new LinearLayoutManager(this));
+
+        requestRegProjectCheckData();
+
+        menuCheckInputListAdapter = new MenuCheckInputListAdapter(this, regProjectResearch, selectedProjectResearchTitle, selectedProjectResearchCount);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setAdapter(menuCheckInputListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setLayoutManager(new LinearLayoutManager(this));
+
+        requestRegProjectCheckInputData();
 
         // main
         projectListAdapter = new ProjectListAdapter(this, projectList);
@@ -353,37 +383,49 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(false);
 
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.layoutRoot.setVisibility(View.GONE);
-        dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setVisibility(View.GONE);
         dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.layoutRoot.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegProject.btnProjectNext.setVisibility(View.GONE);
+        dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_select);
 
         switch (currentProjectStep) {
             case SUMMARY:
                 dataBinding.mainDrawer.layoutRegProject.layoutSummary.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.layoutRoot.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.btnProjectNext.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_input);
 
                 break;
             case GRADE:
                 dataBinding.mainDrawer.layoutRegProject.layoutGrade.setSelected(true);
-                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
+                menuCheckListAdapter.setList(regProjectGrade, selectedProjectGrade);
 
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
-                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
+                menuCheckListAdapter.setList(regProjectFacility, selectedProjectFacility);
 
                 break;
             case FACILITY_CATEGORY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setSelected(true);
-                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
+                menuCheckListAdapter.setList(regProjectFacCate, selectedProjectFacCate);
 
                 break;
             case ARCHITECTURE:
                 dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setSelected(true);
-                dataBinding.mainDrawer.layoutRegProject.recyclerList.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
+                menuCheckListAdapter.setList(regProjectArchitecture, selectedProjectArchitecture);
 
                 break;
             case RESEARCH:
                 dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(true);
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setVisibility(View.VISIBLE);
+                dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_select_input);
+                menuCheckInputListAdapter.setList(regProjectResearch, selectedProjectResearchTitle, selectedProjectResearchCount);
 
                 break;
             case DRAWINGS:
@@ -439,8 +481,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         setResearchSelectedText(name);
     }
 
-    private void projectNextStep() {
-        List<String> selectedValue = new ArrayList<>();
+    public void projectNextStep() {
+        List<MenuCheckData> selectedValue = new ArrayList<>();
         switch (currentProjectStep) {
             case SUMMARY:
                 String name = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectName.getText().toString();
@@ -454,24 +496,29 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     showToast(R.string.toast_input_project_date);
                     return;
                 }
-                selectedValue.add(name);
-                selectedValue.add(startDate);
-                selectedValue.add(endDate);
+//                selectedValue.add(Menuch);
+//                selectedValue.add(startDate);
+//                selectedValue.add(endDate);
                 break;
             case GRADE:
-
+                selectedProjectGrade = menuCheckListAdapter.getSelectedValue();
+                selectedValue = selectedProjectGrade;
                 break;
             case FACILITY:
-
+                selectedProjectFacility = menuCheckListAdapter.getSelectedValue();
+                selectedValue = selectedProjectFacility;
                 break;
             case FACILITY_CATEGORY:
-
+                selectedProjectFacCate = menuCheckListAdapter.getSelectedValue();
+                selectedValue = selectedProjectFacCate;
                 break;
             case ARCHITECTURE:
-
+                selectedProjectArchitecture = menuCheckListAdapter.getSelectedValue();
+                selectedValue = selectedProjectArchitecture;
                 break;
             case RESEARCH:
-
+                selectedProjectResearchTitle = menuCheckInputListAdapter.getSelectedName();
+                selectedProjectResearchCount = menuCheckInputListAdapter.getSelectedCount();
                 break;
             case DRAWINGS:
 
@@ -479,7 +526,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
 
         hideKeyboard(this);
-        setProjectSelectedText(selectedValue);
+//        setProjectSelectedText(selectedValue);
     }
 
     public void setResearchSelectedText(String value) {
@@ -557,6 +604,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 break;
             case RESEARCH:
                 //TODO
+                dataBinding.mainDrawer.layoutRegProject.txtResearch.setText("-");
+                dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.DRAWINGS);
                 break;
             case DRAWINGS:
@@ -684,5 +733,27 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
 
         menuSelectListAdapter.setList(regResearchGrade);
+    }
+
+    private void requestRegProjectCheckData() {
+        regProjectGrade.clear();
+        regProjectFacility.clear();
+        regProjectFacCate.clear();
+        regProjectArchitecture.clear();
+
+//        regProjectGrade.addAll(Arrays.asList(projectGrade));
+//        regProjectFacility.addAll(Arrays.asList(projectFacility));
+//        regProjectFacCate.addAll(Arrays.asList(projectResearchFacCate));
+//        regProjectArchitecture.addAll(Arrays.asList(projectResearchArch));
+
+        menuCheckListAdapter.setList(regProjectGrade, selectedProjectGrade);
+    }
+
+    private void requestRegProjectCheckInputData() {
+        regProjectResearch.clear();
+
+        regProjectResearch.addAll(Arrays.asList(projectResearchTitle));
+
+        menuCheckInputListAdapter.setList(regProjectResearch, selectedProjectResearchTitle, selectedProjectResearchTitle);
     }
 }
