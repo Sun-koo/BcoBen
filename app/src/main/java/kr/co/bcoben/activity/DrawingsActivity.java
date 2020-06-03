@@ -141,7 +141,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     if (index == 0) {
                         dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
                         regPointData = new DrawingPointData(pin, DrawingType.NORMAL);
-                        dataBinding.txtNewPin.setText(String.valueOf(pinList.size() + 1));
+                        DecimalFormat df = new DecimalFormat("00");
+                        dataBinding.txtNewPin.setText(df.format(pinList.size() + 1));
 
                         initPopupView();
                         getPictureDataList();
