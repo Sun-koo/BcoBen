@@ -6,8 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="33dp"
-        android:paddingBottom="33dp"
-        android:background="#99000000">
+        android:paddingBottom="33dp">
         
         <LinearLayout
             android:layout_width="330dp"
@@ -31,90 +30,61 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <RelativeLayout
-                        android:id="@+id/layout_input_tab"
+                    <TextView
+                        android:id="@+id/txt_input_tab"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_drawing_input_tab"
+                        android:onClick="onClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
-                        android:onClick="onClick"
-                        android:background="@drawable/background_keycolor_tab">
+                        android:text="@string/popup_reg_research_input"
+                        android:textColor="@color/text_drawing_input_tab"
+                        android:textSize="14dp" />
 
-                        <TextView
-                            android:id="@+id/txt_input_tab"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/popup_reg_research_input"
-                            android:textColor="@color/colorWhite"
-                            android:textSize="14dp"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/layout_picture_tab"
+                    <TextView
+                        android:id="@+id/txt_picture_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_drawing_input_tab"
+                        android:onClick="onClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
-                        android:onClick="onClick"
-                        android:background="@drawable/background_gray_tab">
+                        android:text="@string/popup_reg_research_picture"
+                        android:textColor="@color/text_drawing_input_tab"
+                        android:textSize="14dp"/>
 
-                        <TextView
-                            android:id="@+id/txt_picture_tab"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/popup_reg_research_picture"
-                            android:textColor="@color/colorTextGrayPopup"
-                            android:textSize="14dp"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/layout_recode_tab"
+                    <TextView
+                        android:id="@+id/txt_recode_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_drawing_input_tab"
+                        android:onClick="onClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
-                        android:onClick="onClick"
-                        android:background="@drawable/background_gray_tab">
+                        android:text="@string/popup_reg_research_recode"
+                        android:textColor="@color/text_drawing_input_tab"
+                        android:textSize="14dp"/>
 
-                        <TextView
-                            android:id="@+id/txt_recode_tab"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/popup_reg_research_recode"
-                            android:textColor="@color/colorTextGrayPopup"
-                            android:textSize="14dp"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/layout_memo_tab"
+                    <TextView
+                        android:id="@+id/txt_memo_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_drawing_input_tab"
+                        android:onClick="onClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
-                        android:onClick="onClick"
-                        android:background="@drawable/background_gray_tab">
-
-                        <TextView
-                            android:id="@+id/txt_memo_tab"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/popup_reg_research_memo"
-                            android:textColor="@color/colorTextGrayPopup"
-                            android:textSize="14dp"/>
-
-                    </RelativeLayout>
-
+                        android:text="@string/popup_reg_research_memo"
+                        android:textColor="@color/text_drawing_input_tab"
+                        android:textSize="14dp"/>
                 </LinearLayout>
 
                 <TextView
@@ -487,8 +457,7 @@
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/recycler_picture"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-                            </androidx.recyclerview.widget.RecyclerView>
+                                android:layout_height="wrap_content"/>
 
                         </LinearLayout>
 
@@ -531,6 +500,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="36dp"
                     android:layout_marginTop="15dp"
+                    android:onClick="onClick"
                     android:text="@string/popup_reg_research_reg"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="16dp"
