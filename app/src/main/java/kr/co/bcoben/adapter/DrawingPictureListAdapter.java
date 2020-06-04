@@ -1,71 +1,57 @@
 package kr.co.bcoben.adapter;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.BufferedInputStream;
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsActivity;
+import kr.co.bcoben.component.DrawingPictureDialog;
+
+import static kr.co.bcoben.util.CommonUtil.dpToPx;
 
 public class DrawingPictureListAdapter extends RecyclerView.Adapter<DrawingPictureListAdapter.DrawingPictureHolder> {
 
     private DrawingsActivity activity;
-    private List<Bitmap> list;
-    private int size = 3;
+    private List<Bitmap> list = new ArrayList<>();
 
     public DrawingPictureListAdapter(DrawingsActivity activity) {
         this.activity = activity;
-        list = new ArrayList<>();
-
-        try {
-            AssetManager assetManager = activity.getAssets();
-            for (int i = 1; i <= 3; i++) {
-                BufferedInputStream bis = new BufferedInputStream(assetManager.open("drawing_popup_img" + i + ".png"));
-                Bitmap bitmap = BitmapFactory.decodeStream(bis);
-                bis.close();
-
-                list.add(bitmap);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @NonNull
     @Override
     public DrawingPictureHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_drawing_picture_list ,viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_drawing_picture_popup,viewGroup, false);
         return new DrawingPictureHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DrawingPictureHolder holder, int position) {
-        holder.onBind(list.get(position));
+        holder.onBind(position);
     }
 
     @Override
     public int getItemCount() {
-        return size;
+        return list.size();
     }
-    public void setSize(int size) {
-        if (size > 3) {
-            size = 3;
-        } else if (size < 0) {
-            size = 0;
-        }
-        this.size = size;
+    public int setList(List<Bitmap> list) {
+        this.list = list;
+        int width = activity.setDrawingPictureListAdapter(list.size());
         notifyDataSetChanged();
+        return width;
     }
 
     class DrawingPictureHolder extends RecyclerView.ViewHolder {
@@ -74,17 +60,24 @@ public class DrawingPictureListAdapter extends RecyclerView.Adapter<DrawingPictu
 
         DrawingPictureHolder(@NonNull View view) {
             super(view);
-            ivPicture = (ImageView) view;
+            ivPicture = view.findViewById(R.id.iv_picture);
         }
 
-        void onBind(Bitmap bitmap) {
-            ivPicture.setImageBitmap(bitmap);
+        void onBind(final int position) {
+            ivPicture.setImageBitmap(list.get(position));
             ivPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    DrawingPictureDialog.builder(activity)
+                            .setPicture(list.get(position))
+                            .build()
+                            .show();
                 }
             });
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) ivPicture.getLayoutParams();
+            params.bottomMargin = position < getItemCount() - 2 ? dpToPx(12) : 0;
+            ivPicture.setLayoutParams(params);
         }
     }
 }

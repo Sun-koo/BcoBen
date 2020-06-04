@@ -3,8 +3,21 @@ package kr.co.bcoben.model;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.R;
@@ -16,22 +29,12 @@ public class DrawingPointData {
     private PointF point;
     private DrawingType type;
     private Bitmap pinImage;
-    private Bitmap repImage;
-    private int imgCount;
+    private Bitmap regImage;
+    private List<Bitmap> regImageList;
 
     public DrawingPointData(PointF point, DrawingType type) {
-        this(point, type, null, 0);
-    }
-
-    public DrawingPointData(PointF point, DrawingType type, @Nullable Bitmap repImage, int imgCount) {
         this.point = point;
         setType(type);
-
-        if (repImage != null) {
-            repImage = Bitmap.createScaledBitmap(repImage, 60, 33, true);
-        }
-        this.repImage = repImage;
-        this.imgCount = imgCount;
     }
 
     public PointF getPoint() {
@@ -61,16 +64,20 @@ public class DrawingPointData {
     public void setPinImage(Bitmap pinImage) {
         this.pinImage = pinImage;
     }
-    public Bitmap getRepImage() {
-        return repImage;
+    public Bitmap getRegImage() {
+        return regImage;
     }
-    public void setRepImage(Bitmap repImage) {
-        this.repImage = repImage;
+    public void setRegImage(Bitmap regImage) {
+        this.regImage = regImage;
     }
-    public int getImgCount() {
-        return imgCount;
+    public List<Bitmap> getRegImageList() {
+        return regImageList;
     }
-    public void setImgCount(int imgCount) {
-        this.imgCount = imgCount;
+    public void setRegImageList(List<Bitmap> regImageList) {
+        this.regImageList = regImageList;
+        if (regImageList != null && !regImageList.isEmpty()) {
+            Bitmap bitmap = Bitmap.createScaledBitmap(regImageList.get(0), 60, 33, true);
+            setRegImage(bitmap);
+        }
     }
 }

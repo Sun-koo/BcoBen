@@ -7,19 +7,18 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Locale;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.model.DrawingPointData;
 
 public class DrawingImageView extends SubsamplingScaleImageView {
 
+    private final String TAG = "DrawingImageView";
     private final Paint paint = new Paint();
     private final PointF vPin = new PointF();
     private List<DrawingPointData> pinList;
@@ -83,23 +82,23 @@ public class DrawingImageView extends SubsamplingScaleImageView {
                     canvas.drawBitmap(pinImage, vX, vY, paint);
                     canvas.drawText(df.format(i + 1), vX, vY - 7, paint);
 
-                    if (data.getRepImage() != null) {
+                    if (data.getRegImage() != null) {
                         paint.setColor(getResources().getColor(R.color.colorWhite));
                         paint.setTextAlign(Paint.Align.CENTER);
                         Bitmap badge = BitmapFactory.decodeResource(getResources(), R.drawable.badge_drawing);
                         badge = initialise(badge);
 
                         vX += pinImage.getWidth() + 5;
-                        vY -= data.getRepImage().getHeight() / 2.0f;
-                        canvas.drawBitmap(data.getRepImage(), vX, vY, paint);
+                        vY -= data.getRegImage().getHeight() / 2.0f;
+                        canvas.drawBitmap(data.getRegImage(), vX, vY, paint);
 
-                        vX += data.getRepImage().getWidth() - badge.getWidth() / 2.0f;
+                        vX += data.getRegImage().getWidth() - badge.getWidth() / 2.0f;
                         vY -= badge.getHeight() / 2.0f;
                         canvas.drawBitmap(badge, vX, vY, paint);
 
                         vX += badge.getWidth() / 2.0f;
                         vY += badge.getHeight() / 2.0f + 5;
-                        canvas.drawText(String.valueOf(data.getImgCount()), vX, vY, paint);
+                        canvas.drawText(String.valueOf(data.getRegImageList().size()), vX, vY, paint);
                     }
                 }
             }
@@ -107,7 +106,6 @@ public class DrawingImageView extends SubsamplingScaleImageView {
     }
 
     public int checkClickPoint(PointF point) {
-        Log.e("Drawing", "scale : " + getScale());
         for (int i = 1; i <= pinList.size(); i++) {
             DrawingPointData data = pinList.get(i - 1);
             PointF pinPoint = data.getPoint();
@@ -118,11 +116,11 @@ public class DrawingImageView extends SubsamplingScaleImageView {
                 return i;
             }
 
-            if (data.getRepImage() != null) {
+            if (data.getRegImageList() != null) {
                 Bitmap badge = initialise(BitmapFactory.decodeResource(getResources(), R.drawable.badge_drawing));
 
-                float repWidth = (data.getRepImage().getWidth() + badge.getWidth()) / getScale();
-                float repHeight = ((data.getRepImage().getHeight() + badge.getWidth()) / 2.0f) / getScale();
+                float repWidth = (data.getRegImage().getWidth() + badge.getWidth()) / getScale();
+                float repHeight = ((data.getRegImage().getHeight() + badge.getWidth()) / 2.0f) / getScale();
                 if ((point.x > pinPoint.x + size && point.x < pinPoint.x + size + repWidth) &&
                         (point.y > pinPoint.y - size - repHeight && point.y < pinPoint.y + repHeight)) {
                     return -i;
@@ -130,5 +128,22 @@ public class DrawingImageView extends SubsamplingScaleImageView {
             }
         }
         return 0;
+    }
+
+    public PointF getImagePopupPosition(int index, int popupWidth, int popupHeight) {
+        DrawingPointData data = pinList.get(index);
+        PointF position = sourceToViewCoord(data.getPoint());
+        position.x += 95;
+        position.y -= 28;
+        int popupEndPointX = (int) (position.x + popupWidth);
+        int popupEndPointY = (int) (position.y + popupHeight);
+
+        if (popupEndPointX > getWidth()) {
+            position.x -= (popupWidth + 110);
+        }
+        if (popupEndPointY > getHeight()) {
+            position.y -= (popupEndPointY - getHeight() + 10);
+        }
+        return position;
     }
 }

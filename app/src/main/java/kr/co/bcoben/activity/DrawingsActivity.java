@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -24,12 +25,15 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
@@ -42,8 +46,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
+import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.CustomSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
@@ -57,6 +64,7 @@ import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
+import static kr.co.bcoben.util.CommonUtil.dpToPx;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
@@ -65,9 +73,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private String category, architecture, research, facility;
 
     // image
-//    private PhotoViewAttacher photoViewAttacher;
     private float initScale;
     private int currentScale = 2;
+    private List<DrawingPointData> pinList = new ArrayList<>();
     private DrawingPointData regPointData;
     private DrawingPictureListAdapter drawingPictureListAdapter;
 
@@ -89,18 +97,21 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private boolean isRecoding = false;
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
-    private List<DrawingPointData> pinList = new ArrayList<>();
 
     // Dummy Data
     private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1800}, {500, 1200}, {2300, 1800}};
     private DrawingType[] pinTypeArray = {DrawingType.NORMAL, DrawingType.NORMAL, DrawingType.IMAGE, DrawingType.VOICE, DrawingType.VOICE, DrawingType.MEMO};
+    private String[] urlArray = {
+            "https://cdn.pixabay.com/photo/2019/08/19/10/37/stone-4416019_1280.jpg",
+            "https://cdn.pixabay.com/photo/2013/09/22/19/15/brick-wall-185086_1280.jpg",
+            "https://cdn.pixabay.com/photo/2020/05/22/07/59/girl-5204296_960_720.jpg"
+    };
 
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_drawings;
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initView() {
         // Spinner
@@ -118,75 +129,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         initSpinner(dataBinding.spnResearch, listResearch, research);
         initSpinner(dataBinding.spnFacility, listFacility, facility);
 
-        drawingPictureListAdapter = new DrawingPictureListAdapter(this);
-        dataBinding.recyclerPicturePopup.setAdapter(drawingPictureListAdapter);
-        dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        dataBinding.recyclerPicturePopup.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                int position = parent.getChildAdapterPosition(view);
-                outRect.bottom = 15;
-                outRect.right = position % 2 == 0 ? 15 : 0;
-            }
-        });
-
-        // 도면 이미지
-        final GestureDetector gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapConfirmed(final MotionEvent e) {
-                if (dataBinding.imgDrawings.isReady()) {
-                    PointF pin = dataBinding.imgDrawings.viewToSourceCoord(e.getX(), e.getY());
-                    int index = dataBinding.imgDrawings.checkClickPoint(pin);
-
-                    if (index == 0) {
-                        dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
-                        regPointData = new DrawingPointData(pin, DrawingType.NORMAL);
-                        DecimalFormat df = new DecimalFormat("00");
-                        dataBinding.txtNewPin.setText(df.format(pinList.size() + 1));
-
-                        initPopupView();
-                        getPictureDataList();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dataBinding.ivNewPin.setX(e.getX() - dataBinding.ivNewPin.getWidth() / 2.0f);
-                                dataBinding.ivNewPin.setY(e.getY() - dataBinding.ivNewPin.getHeight() / 2.0f);
-                                dataBinding.txtNewPin.setX(dataBinding.ivNewPin.getX());
-                                dataBinding.txtNewPin.setY(dataBinding.ivNewPin.getY() + dataBinding.ivNewPin.getHeight() + 3);
-                            }
-                        }, 1);
-                    } else if (index > 0) {
-                        showToast(index + "번 Point");
-                    } else {
-                        index = -(index + 1);
-                        dataBinding.layoutPicturePopup.setVisibility(View.VISIBLE);
-
-                        int size = pinList.get(index).getImgCount();
-                        drawingPictureListAdapter.setSize(size);
-                    }
-                }
-                return true;
-            }
-        });
-
-        dataBinding.imgDrawings.setImage(ImageSource.asset("drawings_detail.png"));
-        dataBinding.imgDrawings.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
-        dataBinding.imgDrawings.setZoomEnabled(false);
-        dataBinding.imgDrawings.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        });
-        dataBinding.imgDrawings.setOnImageEventListener(new SubsamplingScaleImageView.DefaultOnImageEventListener() {
-            @Override
-            public void onReady() {
-                super.onReady();
-                initScale = dataBinding.imgDrawings.getMinScale();
-                dataBinding.imgDrawings.setMaxScale(12);
-                requestDrawingPointDataList();
-            }
-        });
+        initDrawing();
 
         // 집계표
         dataBinding.checkboxNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -257,10 +200,104 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         initCanvas();
     }
 
+    // 도면 이미지 Initialize
+    @SuppressLint("ClickableViewAccessibility")
+    private void initDrawing() {
+        final GestureDetector gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapConfirmed(final MotionEvent e) {
+                if (dataBinding.imgDrawings.isReady()) {
+                    PointF pin = dataBinding.imgDrawings.viewToSourceCoord(e.getX(), e.getY());
+                    int index = dataBinding.imgDrawings.checkClickPoint(pin);
+
+                    if (index == 0) {   // 새로운 핀 등록
+                        regPointData = new DrawingPointData(pin, DrawingType.NORMAL);
+                        DecimalFormat df = new DecimalFormat("00");
+                        dataBinding.txtNewPin.setText(df.format(pinList.size() + 1));
+
+                        initPopupView();
+                        getPictureDataList();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataBinding.ivNewPin.setTranslationX(e.getX() - dataBinding.ivNewPin.getWidth() / 2.0f);
+                                dataBinding.ivNewPin.setTranslationY(e.getY() - dataBinding.ivNewPin.getHeight() / 2.0f);
+                                dataBinding.txtNewPin.setX(dataBinding.ivNewPin.getX());
+                                dataBinding.txtNewPin.setY(dataBinding.ivNewPin.getY() + dataBinding.ivNewPin.getHeight() + 3);
+                                dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
+                            }
+                        }, 1);
+                    } else if (index > 0) { // 핀 클릭
+                        showToast(index + "번 Point");
+                    } else {    // 핀에 등록된 이미지 클릭
+                        index = -(index + 1);
+                        int width = drawingPictureListAdapter.setList(pinList.get(index).getRegImageList());
+
+                        final int i = index;
+                        PointF position = dataBinding.imgDrawings.getImagePopupPosition(i, width, dataBinding.layoutPictureListPopup.getHeight());
+                        dataBinding.layoutPictureListPopup.setX(position.x);
+                        dataBinding.layoutPictureListPopup.setY(position.y);
+                        dataBinding.layoutPicturePopup.setVisibility(View.VISIBLE);
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                PointF position = dataBinding.imgDrawings.getImagePopupPosition(i, dataBinding.layoutPictureListPopup.getWidth(), dataBinding.layoutPictureListPopup.getHeight());
+                                dataBinding.layoutPictureListPopup.setX(position.x);
+                                dataBinding.layoutPictureListPopup.setY(position.y);
+                            }
+                        }, 10);
+                    }
+                }
+                return true;
+            }
+        });
+
+        // 도면 이미지 처리
+        dataBinding.imgDrawings.setImage(ImageSource.asset("drawings_detail.png"));
+        dataBinding.imgDrawings.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
+        dataBinding.imgDrawings.setZoomEnabled(false);
+        dataBinding.imgDrawings.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+        dataBinding.imgDrawings.setOnImageEventListener(new SubsamplingScaleImageView.DefaultOnImageEventListener() {
+            @Override
+            public void onReady() {
+                super.onReady();
+                initScale = dataBinding.imgDrawings.getMinScale();
+                dataBinding.imgDrawings.setMaxScale(12);
+                requestDrawingPointDataList();
+            }
+        });
+
+        // 핀에 등록된 이미지 리스트 팝업
+        drawingPictureListAdapter = new DrawingPictureListAdapter(this);
+        dataBinding.recyclerPicturePopup.setAdapter(drawingPictureListAdapter);
+        dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+    }
+
+    public int setDrawingPictureListAdapter(int size) {
+        ViewGroup.LayoutParams params = dataBinding.layoutPictureListPopup.getLayoutParams();
+        if (size == 1) {
+            dataBinding.recyclerPicturePopup.setLayoutManager(new LinearLayoutManager(this));
+            params.width = dpToPx(171);
+        } else {
+            dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+            params.width = dpToPx(330);
+        }
+        dataBinding.layoutPictureListPopup.setLayoutParams(params);
+        return params.width;
+    }
+
     @Override
     public void onBackPressed() {
         if (dataBinding.layoutResearchPopup.getVisibility() == View.VISIBLE) {
             dataBinding.researchPopup.btnPopupClose.performClick();
+        } else if (dataBinding.layoutPicturePopup.getVisibility() == View.VISIBLE) {
+            dataBinding.layoutPicturePopup.performClick();
         } else {
             finish();
         }
@@ -278,7 +315,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 //TODO For Test
                 showDrawingsSelectDialog();
                 break;
-
+            case R.id.layout_picture_popup:
+                dataBinding.layoutPicturePopup.setVisibility(View.INVISIBLE);
+                break;
             case R.id.btn_zoom_in:
                 calculateScale(true);
                 break;
@@ -291,14 +330,14 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 dataBinding.btnTableHandle.setSelected(!isSelected);
                 dataBinding.layoutTable.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (currentScale == 2) {
-                                dataBinding.imgDrawings.animateScale(0.1f).withDuration(10).start();
-                            }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentScale == 2) {
+                            dataBinding.imgDrawings.animateScale(0.1f).withDuration(10).start();
                         }
-                    }, 10);
+                    }
+                }, 10);
                 break;
 
             // table
@@ -319,7 +358,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
             // popup
             case R.id.btn_popup_close:
-                dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE);
                 break;
             case R.id.txt_input_tab:
                 setSelectedTab(DrawingType.NORMAL);
@@ -377,10 +416,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 }
 
                 isRecoding = false;
-                break;
-
-            case R.id.layout_picture_popup:
-                dataBinding.layoutPicturePopup.setVisibility(View.GONE);
                 break;
         }
     }
@@ -504,25 +539,32 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         tableListAdapter.notifyDataSetChanged();
     }
 
+    //TODO request table data list api
     private void requestDrawingPointDataList() {
         pinList.clear();
-
         for (int i = 0; i < pinPointArray.length; i++) {
-            DrawingPointData data;
+            final DrawingPointData data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i]);
             if (pinTypeArray[i] == DrawingType.NORMAL || pinTypeArray[i] == DrawingType.IMAGE) {
-                Bitmap regImage = null;
-                try {
-                    AssetManager assetManager = getAssets();
-                    BufferedInputStream bis = new BufferedInputStream(assetManager.open("drawing_item.png"));
-                    regImage = BitmapFactory.decodeStream(bis);
-                    bis.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                int count = i % 3 + 1;
+                final List<String> regUrlList = new ArrayList<>(Arrays.asList(urlArray));
+                regUrlList.subList(count, regUrlList.size()).clear();
 
-                data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i], regImage, (i + 1));
-            } else {
-                data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i]);
+                final List<Bitmap> regImageList = new ArrayList<>();
+                for (int j = 0; j < regUrlList.size(); j++) {
+                    final int index = j;
+                    Glide.with(AppApplication.getContext()).asBitmap().load(regUrlList.get(j)).into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
+                            regImageList.add(bitmap);
+                            if (regImageList.size() == regUrlList.size()) {
+                                data.setRegImageList(regImageList);
+                                dataBinding.imgDrawings.invalidate();
+                            }
+                        }
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {}
+                    });
+                }
             }
             pinList.add(data);
         }
