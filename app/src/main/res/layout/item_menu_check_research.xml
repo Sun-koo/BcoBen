@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="34dp"
+        android:paddingEnd="23dp"
+        android:background="@color/colorBackgroundDrawer">
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="9dp"
+            android:text="비파괴, 장비조사 | 지반(BH)"
+            android:textColor="@color/colorTextLabelPink"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/txt_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="9dp"
+            android:text="20개소"
+            android:textColor="@color/colorTextLabelPink"
+            android:textSize="14dp" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/line_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorDividerRegisterList"/>
+</LinearLayout>

@@ -28,12 +28,10 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
 
     private Activity activity;
     private List<MenuCheckData> list;
-    private List<MenuCheckData> selectedList;
 
-    public MenuCheckListAdapter(Activity activity, List<MenuCheckData> list, List<MenuCheckData> selectedList) {
+    public MenuCheckListAdapter(Activity activity, List<MenuCheckData> list) {
         this.activity = activity;
         this.list = list;
-        this.selectedList = selectedList;
     }
 
     @NonNull
@@ -56,24 +54,12 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
             view.txtName.setText(list.get(position).getName());
             view.checkBox.setChecked(list.get(position).isChecked());
 
-//            for (int i=0;i<selectedList.size();i++) {
-//                if (view.txtName.getText().toString().equals(selectedList.get(i))) {
-//                    view.checkBox.setChecked(true);
-//                }
-//            }
-
             view.listLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO
                     view.checkBox.setChecked(!view.checkBox.isChecked());
 
-                    if (view.checkBox.isChecked()) {
-//                        selectedList.get(position).;
-//                        selectedList.add(view.txtName.getText().toString());
-                    } else {
-//                        selectedList.remove(view.txtName.getText().toString());
-                    }
+                    list.get(position).setChecked(view.checkBox.isChecked());
                 }
             });
         } else {
@@ -96,14 +82,13 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
         return list.size() + 1;
     }
 
-    public void setList(List<MenuCheckData> mList, List<MenuCheckData> mSelectedList) {
+    public void setList(List<MenuCheckData> mList) {
         this.list = mList;
-        this.selectedList = mSelectedList;
         notifyDataSetChanged();
     }
 
     public List<MenuCheckData> getSelectedValue() {
-        return selectedList;
+        return list;
     }
 
     private class MenuCheckHolder extends RecyclerView.ViewHolder {

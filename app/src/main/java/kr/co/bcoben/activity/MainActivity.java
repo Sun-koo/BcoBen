@@ -4,9 +4,12 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -23,6 +26,7 @@ import java.util.Locale;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.MenuCheckInputListAdapter;
 import kr.co.bcoben.adapter.MenuCheckListAdapter;
+import kr.co.bcoben.adapter.MenuCheckResearchListAdapter;
 import kr.co.bcoben.adapter.MenuSelectListAdapter;
 import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
@@ -60,6 +64,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private MenuSelectListAdapter menuSelectListAdapter;
     private MenuCheckListAdapter menuCheckListAdapter;
     private MenuCheckInputListAdapter menuCheckInputListAdapter;
+    private MenuCheckResearchListAdapter menuCheckResearchListAdapter;
 
     private DatePickerType datePickerType = DatePickerType.START;
     private int startYear, startMonth, startDay;
@@ -74,14 +79,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<MenuCheckData> regProjectFacility = new ArrayList<>();
     private List<MenuCheckData> regProjectFacCate = new ArrayList<>();
     private List<MenuCheckData> regProjectArchitecture = new ArrayList<>();
-    private List<String> regProjectResearch = new ArrayList<>();
-
-    private List<MenuCheckData> selectedProjectGrade = new ArrayList<>();
-    private List<MenuCheckData> selectedProjectFacility = new ArrayList<>();
-    private List<MenuCheckData> selectedProjectFacCate = new ArrayList<>();
-    private List<MenuCheckData> selectedProjectArchitecture = new ArrayList<>();
-    private List<String> selectedProjectResearchTitle = new ArrayList<>();
-    private List<String> selectedProjectResearchCount = new ArrayList<>();
+    private List<MenuCheckData> regProjectResearch = new ArrayList<>();
 
     // main
     private ProjectListAdapter projectListAdapter;
@@ -130,17 +128,21 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         requestRegResearchData();
 
-        menuCheckListAdapter = new MenuCheckListAdapter(this, regProjectGrade, selectedProjectGrade);
+        menuCheckListAdapter = new MenuCheckListAdapter(this, regProjectGrade);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setAdapter(menuCheckListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setLayoutManager(new LinearLayoutManager(this));
 
         requestRegProjectCheckData();
 
-        menuCheckInputListAdapter = new MenuCheckInputListAdapter(this, regProjectResearch, selectedProjectResearchTitle, selectedProjectResearchCount);
+        menuCheckInputListAdapter = new MenuCheckInputListAdapter(this, regProjectResearch);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setAdapter(menuCheckInputListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setLayoutManager(new LinearLayoutManager(this));
 
         requestRegProjectCheckInputData();
+
+        menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, regProjectResearch);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setLayoutManager(new LinearLayoutManager(this));
 
         // main
         projectListAdapter = new ProjectListAdapter(this, projectList);
@@ -400,35 +402,43 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             case GRADE:
                 dataBinding.mainDrawer.layoutRegProject.layoutGrade.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
-                menuCheckListAdapter.setList(regProjectGrade, selectedProjectGrade);
+                menuCheckListAdapter.setList(regProjectGrade);
 
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
-                menuCheckListAdapter.setList(regProjectFacility, selectedProjectFacility);
+                menuCheckListAdapter.setList(regProjectFacility);
 
                 break;
             case FACILITY_CATEGORY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
-                menuCheckListAdapter.setList(regProjectFacCate, selectedProjectFacCate);
+                menuCheckListAdapter.setList(regProjectFacCate);
 
                 break;
             case ARCHITECTURE:
                 dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
-                menuCheckListAdapter.setList(regProjectArchitecture, selectedProjectArchitecture);
+                menuCheckListAdapter.setList(regProjectArchitecture);
 
                 break;
             case RESEARCH:
                 dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_select_input);
-                menuCheckInputListAdapter.setList(regProjectResearch, selectedProjectResearchTitle, selectedProjectResearchCount);
+                menuCheckInputListAdapter.setList(regProjectResearch);
 
                 break;
             case DRAWINGS:
+                dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.removeAllViews();
+
+                for (MenuCheckData data : regProjectFacility) {
+                    if (data.isChecked()) {
+                        facilityCheckListItemAdd(data);
+                    }
+                }
+
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.layoutRoot.setVisibility(View.VISIBLE);
 
@@ -482,6 +492,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     public void projectNextStep() {
+        List<String> projectSummaryValue = new ArrayList<>();
         List<MenuCheckData> selectedValue = new ArrayList<>();
         switch (currentProjectStep) {
             case SUMMARY:
@@ -496,37 +507,92 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     showToast(R.string.toast_input_project_date);
                     return;
                 }
-//                selectedValue.add(Menuch);
-//                selectedValue.add(startDate);
-//                selectedValue.add(endDate);
+                projectSummaryValue.add(name);
+                projectSummaryValue.add(startDate);
+                projectSummaryValue.add(endDate);
                 break;
             case GRADE:
-                selectedProjectGrade = menuCheckListAdapter.getSelectedValue();
-                selectedValue = selectedProjectGrade;
+                regProjectGrade = menuCheckListAdapter.getSelectedValue();
+
+                if (!checkIsSelectMenu(regProjectGrade)) {
+                    showToast(R.string.toast_input_select_grade);
+                    return;
+                }
+
+                selectedValue = regProjectGrade;
                 break;
             case FACILITY:
-                selectedProjectFacility = menuCheckListAdapter.getSelectedValue();
-                selectedValue = selectedProjectFacility;
+                regProjectFacility = menuCheckListAdapter.getSelectedValue();
+
+                if (!checkIsSelectMenu(regProjectFacility)) {
+                    showToast(R.string.toast_input_select_facility);
+                    return;
+                }
+
+                selectedValue = regProjectFacility;
                 break;
             case FACILITY_CATEGORY:
-                selectedProjectFacCate = menuCheckListAdapter.getSelectedValue();
-                selectedValue = selectedProjectFacCate;
+                regProjectFacCate = menuCheckListAdapter.getSelectedValue();
+
+                if (!checkIsSelectMenu(regProjectFacCate)) {
+                    showToast(R.string.toast_input_select_facility_category);
+                    return;
+                }
+
+                selectedValue = regProjectFacCate;
                 break;
             case ARCHITECTURE:
-                selectedProjectArchitecture = menuCheckListAdapter.getSelectedValue();
-                selectedValue = selectedProjectArchitecture;
+                regProjectArchitecture = menuCheckListAdapter.getSelectedValue();
+
+                if (!checkIsSelectMenu(regProjectArchitecture)) {
+                    showToast(R.string.toast_input_select_architecture);
+                    return;
+                }
+
+                selectedValue = regProjectArchitecture;
                 break;
             case RESEARCH:
-                selectedProjectResearchTitle = menuCheckInputListAdapter.getSelectedName();
-                selectedProjectResearchCount = menuCheckInputListAdapter.getSelectedCount();
+                regProjectResearch = menuCheckInputListAdapter.getSelectedValue();
+
+                if (!checkIsSelectMenu(regProjectResearch)) {
+                    showToast(R.string.toast_input_select_research);
+                    return;
+                }
+
+                for (MenuCheckData data : regProjectResearch) {
+                    if (data.isChecked()) {
+                        if (data.getCount().equals("")) {
+                            showToast(R.string.toast_input_select_research_count);
+                            return;
+                        }
+                    }
+                }
+
+                selectedValue = regProjectResearch;
                 break;
             case DRAWINGS:
+                //TODO
+//                for (MenuCheckData data : regProjectFacility) {
+//                    facilityCheckListItemAdd(data);
+//                }
 
                 break;
         }
 
         hideKeyboard(this);
-//        setProjectSelectedText(selectedValue);
+        setProjectSelectedText(selectedValue, projectSummaryValue);
+    }
+
+    private boolean checkIsSelectMenu(List<MenuCheckData> list) {
+        boolean isChecked = false;
+
+        for (MenuCheckData data : list) {
+            if (data.isChecked()) {
+                isChecked = true;
+            }
+        }
+
+        return isChecked;
     }
 
     public void setResearchSelectedText(String value) {
@@ -558,52 +624,90 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
-    public void setProjectSelectedText(List<String> value) {
+    public void setProjectSelectedText(List<MenuCheckData> value, List<String> summary_value) {
         switch (currentProjectStep) {
             case SUMMARY:
-                dataBinding.mainDrawer.layoutRegProject.txtSummaryName.setText(value.get(0));
-                dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.setText(value.get(1) + " ~ " + value.get(2));
+                dataBinding.mainDrawer.layoutRegProject.txtSummaryName.setText(summary_value.get(0));
+                dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.setText(summary_value.get(1) + " ~ " + summary_value.get(2));
                 dataBinding.mainDrawer.layoutRegProject.layoutGrade.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.GRADE);
                 break;
             case GRADE:
-                String grade = value.get(0);
-                for (int i=1;i<value.size();i++) {
-                    grade = grade + ", " + value.get(i);
+                String grade = "";
+
+                for (MenuCheckData data : value) {
+                    if (data.isChecked()) {
+                        if (grade.equals("")) {
+                            grade = data.getName();
+                        } else {
+                            grade += ", " + data.getName();
+                        }
+                    }
                 }
                 dataBinding.mainDrawer.layoutRegProject.txtGrade.setText(grade);
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.FACILITY);
                 break;
             case FACILITY:
-                String facility = value.get(0);
-                for (int i=1;i<value.size();i++) {
-                    facility = facility + ", " + value.get(i);
+                String facility = "";
+
+                for (MenuCheckData data : value) {
+                    if (data.isChecked()) {
+                        if (facility.equals("")) {
+                            facility = data.getName();
+                        } else {
+                            facility += ", " + data.getName();
+                        }
+                    }
                 }
                 dataBinding.mainDrawer.layoutRegProject.txtFacility.setText(facility);
                 dataBinding.mainDrawer.layoutRegProject.layoutFacilityCategory.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.FACILITY_CATEGORY);
                 break;
             case FACILITY_CATEGORY:
-                String facilityCategory = value.get(0);
-                for (int i=1;i<value.size();i++) {
-                    facilityCategory = facilityCategory + ", " + value.get(i);
+                String facilityCategory = "";
+
+                for (MenuCheckData data : value) {
+                    if (data.isChecked()) {
+                        if (facilityCategory.equals("")) {
+                            facilityCategory = data.getName();
+                        } else {
+                            facilityCategory += ", " + data.getName();
+                        }
+                    }
                 }
                 dataBinding.mainDrawer.layoutRegProject.txtFacilityCategory.setText(facilityCategory);
                 dataBinding.mainDrawer.layoutRegProject.layoutArchitecture.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.ARCHITECTURE);
                 break;
             case ARCHITECTURE:
-                String architecture = value.get(0);
-                for (int i=1;i<value.size();i++) {
-                    architecture = architecture + ", " + value.get(i);
+                String architecture = "";
+
+                for (MenuCheckData data : value) {
+                    if (data.isChecked()) {
+                        if (architecture.equals("")) {
+                            architecture = data.getName();
+                        } else {
+                            architecture += ", " + data.getName();
+                        }
+                    }
                 }
                 dataBinding.mainDrawer.layoutRegProject.txtArchitecture.setText(architecture);
                 dataBinding.mainDrawer.layoutRegProject.layoutResearch.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.RESEARCH);
                 break;
             case RESEARCH:
-                //TODO
+                List<MenuCheckData> selectedList = new ArrayList<>();
+
+                for (MenuCheckData data : value) {
+                    if (data.isChecked()) {
+                        selectedList.add(data);
+                    }
+                }
+
+                menuCheckResearchListAdapter.setList(selectedList);
+
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.txtResearch.setText("-");
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setClickable(true);
                 updateStepProjectMenuUI(CurrentProjectStep.DRAWINGS);
@@ -741,19 +845,56 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         regProjectFacCate.clear();
         regProjectArchitecture.clear();
 
-//        regProjectGrade.addAll(Arrays.asList(projectGrade));
-//        regProjectFacility.addAll(Arrays.asList(projectFacility));
-//        regProjectFacCate.addAll(Arrays.asList(projectResearchFacCate));
-//        regProjectArchitecture.addAll(Arrays.asList(projectResearchArch));
+        for (int i=0;i<projectGrade.length;i++) {
+            MenuCheckData menuCheckData = new MenuCheckData(projectGrade[i]);
+            regProjectGrade.add(menuCheckData);
+        }
 
-        menuCheckListAdapter.setList(regProjectGrade, selectedProjectGrade);
+        for (int i=0;i<projectFacility.length;i++) {
+            MenuCheckData menuCheckData = new MenuCheckData(projectFacility[i]);
+            regProjectFacility.add(menuCheckData);
+        }
+
+        for (int i=0;i<projectResearchFacCate.length;i++) {
+            MenuCheckData menuCheckData = new MenuCheckData(projectResearchFacCate[i]);
+            regProjectFacCate.add(menuCheckData);
+        }
+
+        for (int i=0;i<projectResearchArch.length;i++) {
+            MenuCheckData menuCheckData = new MenuCheckData(projectResearchArch[i]);
+            regProjectArchitecture.add(menuCheckData);
+        }
+
+        menuCheckListAdapter.setList(regProjectGrade);
     }
 
     private void requestRegProjectCheckInputData() {
         regProjectResearch.clear();
 
-        regProjectResearch.addAll(Arrays.asList(projectResearchTitle));
+        for (int i=0;i<projectResearchTitle.length;i++) {
+            MenuCheckData menuCheckData = new MenuCheckData(projectResearchTitle[i]);
+            regProjectResearch.add(menuCheckData);
+        }
 
-        menuCheckInputListAdapter.setList(regProjectResearch, selectedProjectResearchTitle, selectedProjectResearchTitle);
+        menuCheckInputListAdapter.setList(regProjectResearch);
+    }
+
+    //TODO checkbox select only one
+    private void facilityCheckListItemAdd(MenuCheckData data) {
+        LinearLayout view = (LinearLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_menu_check_facility, null);
+
+        TextView facilityName = view.findViewById(R.id.txt_facility_name);
+        final CheckBox cbFacility = view.findViewById(R.id.cb_facility);
+
+        facilityName.setText(data.getName());
+        cbFacility.setChecked(false);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cbFacility.setChecked(!cbFacility.isChecked());
+            }
+        });
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.addView(view);
     }
 }

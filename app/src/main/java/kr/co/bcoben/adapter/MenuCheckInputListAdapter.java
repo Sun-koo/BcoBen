@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,104 +26,34 @@ import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
+import kr.co.bcoben.model.MenuCheckData;
 
-public class MenuCheckInputListAdapter extends RecyclerView.Adapter {
+public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInputListAdapter.MenuCheckInputHolder> {
 
     private Activity activity;
-    private List<String> list;
-    private List<String> nameList;
-    private List<String> countList;
+    private List<MenuCheckData> list;
 
-    public MenuCheckInputListAdapter(Activity activity, List<String> list, List<String> nameList, List<String> countList) {
+    public MenuCheckInputListAdapter(Activity activity, List<MenuCheckData> list) {
         this.activity = activity;
         this.list = list;
-        this.nameList = nameList;
-        this.countList = countList;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public MenuCheckInputHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_menu_check_input_list ,viewGroup, false);
-        return new MenuCheckInputListAdapter.MenuCheckInputHolder(view, i);
+        return new MenuCheckInputListAdapter.MenuCheckInputHolder(view, new EditCountTextChangeListener());
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        final MenuCheckInputListAdapter.MenuCheckInputHolder view = (MenuCheckInputListAdapter.MenuCheckInputHolder) holder;
-
+    public void onBindViewHolder(@NonNull final MenuCheckInputHolder holder, int position) {
         if (list.size() > position) {
-            view.txtName.setVisibility(View.VISIBLE);
-            view.checkBox.setVisibility(View.VISIBLE);
-            view.editCount.setVisibility(View.VISIBLE);
-            view.bottomLine.setVisibility(View.VISIBLE);
-            view.btnNext.setVisibility(View.GONE);
-
-            final String name = list.get(position);
-
-            view.txtName.setText(name);
-            view.checkBox.setChecked(false);
-            view.editCount.getText().clear();
-            view.editCount.setEnabled(false);
-            view.editCount.setAlpha(0.38f);
-
-            for (int i=0;i<nameList.size();i++) {
-                if (view.txtName.getText().toString().equals(nameList.get(i))) {
-                    view.checkBox.setChecked(true);
-                    view.editCount.setEnabled(true);
-                    view.editCount.setAlpha(1f);
-
-                    final String count = countList.get(position);
-                    view.editCount.setText(count);
-                }
-            }
-
-            view.listLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //TODO
-                    view.checkBox.setChecked(!view.checkBox.isChecked());
-
-                    if (view.checkBox.isChecked()) {
-                        nameList.add(view.txtName.getText().toString());
-
-                        view.editCount.setEnabled(true);
-                        view.editCount.setAlpha(1f);
-
-                    } else {
-                        nameList.remove(view.txtName.getText().toString());
-                        countList.remove(view.editCount.getText().toString());
-
-                        view.editCount.getText().clear();
-                        view.editCount.setEnabled(false);
-                        view.editCount.setAlpha(0.38f);
-                    }
-                }
-            });
-
-            view.editCount.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-
+            holder.onBind(list.get(position), position);
         } else {
-            view.txtName.setVisibility(View.GONE);
-            view.checkBox.setVisibility(View.GONE);
-            view.bottomLine.setVisibility(View.GONE);
-            view.btnNext.setVisibility(View.VISIBLE);
+            holder.layoutMenuInput.setVisibility(View.GONE);
+            holder.btnNext.setVisibility(View.VISIBLE);
 
-            view.btnNext.setOnClickListener(new View.OnClickListener() {
+            holder.btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ((MainActivity) activity).projectNextStep();
@@ -136,38 +67,81 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter {
         return list.size() + 1;
     }
 
-    public void setList(List<String> list, List<String> nameList, List<String> countList) {
+    public void setList(List<MenuCheckData> list) {
         this.list = list;
-        this.nameList = nameList;
-        this.countList = countList;
         notifyDataSetChanged();
     }
 
-    public List<String> getSelectedName() {
-        return nameList;
-    }
-    public List<String> getSelectedCount() {
-        return countList;
+    public List<MenuCheckData> getSelectedValue() {
+        return list;
     }
 
-    private class MenuCheckInputHolder extends RecyclerView.ViewHolder {
+    class MenuCheckInputHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout listLayout;
+        View view;
+        RelativeLayout layoutMenuInput;
         TextView txtName;
         CheckBox checkBox;
         EditText editCount;
         Button btnNext;
-        View bottomLine;
+        EditCountTextChangeListener textChangeListener;
 
-        public MenuCheckInputHolder(View view, int position) {
+        public MenuCheckInputHolder(View view, EditCountTextChangeListener textChangeListener) {
             super(view);
 
-            listLayout = view.findViewById(R.id.list_layout);
+            this.view = view;
+            this.textChangeListener = textChangeListener;
+
+            layoutMenuInput = view.findViewById(R.id.layout_menu_input);
             txtName = view.findViewById(R.id.txt_name);
             checkBox = view.findViewById(R.id.checkbox);
             editCount = view.findViewById(R.id.edit_count);
             btnNext = view.findViewById(R.id.btn_project_next);
-            bottomLine = view.findViewById(R.id.line_bottom);
+
+            editCount.addTextChangedListener(textChangeListener);
+        }
+
+        void onBind(final MenuCheckData data, int position) {
+            textChangeListener.setPosition(position);
+            layoutMenuInput.setVisibility(View.VISIBLE);
+            btnNext.setVisibility(View.GONE);
+
+            txtName.setText(data.getName());
+            checkBox.setChecked(data.isChecked());
+            editCount.setEnabled(data.isChecked());
+            editCount.setAlpha(data.isChecked() ? 1f : 0.38f);
+            editCount.setText(data.getCount());
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    data.setChecked(!data.isChecked());
+                    notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private class EditCountTextChangeListener implements TextWatcher {
+        private int position;
+
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            list.get(position).setCount(s.toString());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
         }
     }
 }
