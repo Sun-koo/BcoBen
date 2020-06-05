@@ -147,77 +147,12 @@
                     android:layout_height="1dp"
                     android:background="@color/colorDividerRegisterList" />
 
-                <RelativeLayout
-                    android:id="@+id/layout_facility_category"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_check_facility"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:background="@drawable/bg_drawer_list"
-                    android:onClick="onDrawerProjectMenuClick">
-
-                    <TextView
-                        android:id="@+id/txt_facility_category_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="24dp"
-                        android:text="@string/side_menu_facility_category"
-                        android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
-
-                    <TextView
-                        android:id="@+id/txt_facility_category"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="120dp"
-                        android:layout_marginEnd="8dp"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textColor="@color/text_drawer_list_selector"
-                        android:textSize="14dp" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorDividerRegisterList" />
-
-                <RelativeLayout
-                    android:id="@+id/layout_architecture"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:background="@drawable/bg_drawer_list"
-                    android:onClick="onDrawerProjectMenuClick">
-
-                    <TextView
-                        android:id="@+id/txt_architecture_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="24dp"
-                        android:text="@string/side_menu_architecture"
-                        android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
-
-                    <TextView
-                        android:id="@+id/txt_architecture"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="100dp"
-                        android:layout_marginEnd="8dp"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textColor="@color/text_drawer_list_selector"
-                        android:textSize="14dp" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorDividerRegisterList" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                </androidx.recyclerview.widget.RecyclerView>
 
                 <RelativeLayout
                     android:id="@+id/layout_research"
@@ -300,6 +235,18 @@
                     android:textSize="16dp"
                     android:textStyle="bold" />
 
+                <Button
+                    android:id="@+id/btn_input_project_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="22.5dp"
+                    android:background="@null"
+                    android:onClick="onClick"
+                    android:text="@string/side_menu_reg_cancel"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="18dp"/>
+
             </LinearLayout>
 
         </ScrollView>
@@ -355,6 +302,14 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_check"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:visibility="gone">
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_menu_tree"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"

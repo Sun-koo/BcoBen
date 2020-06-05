@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/list_layout"
+    android:background="@color/colorBackgroundPink">
+
+    <RelativeLayout
+        android:id="@+id/layout_facility_menu"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingStart="33dp"
+            android:paddingEnd="33dp"
+            android:text="본관동"
+            android:textColor="@color/colorTextNavy"
+            android:textSize="16dp"/>
+
+        <TextView
+            android:id="@+id/txt_handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="33dp"
+            android:paddingEnd="33dp"
+            android:text="@string/plus"
+            android:textColor="@color/colorTextNavy"
+            android:textSize="16dp"/>
+
+        <View
+            android:id="@+id/line_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorBorderPink"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_facility_child_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/txt_child_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:paddingStart="33dp"
+            android:paddingEnd="33dp"
+            android:text="RC조"
+            android:textColor="@color/colorTextNavy"
+            android:textSize="16dp"/>
+
+        <TextView
+            android:id="@+id/btn_reg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:paddingStart="33dp"
+            android:paddingEnd="33dp"
+            android:text="@string/plus_button"
+            android:textColor="@color/colorTextNavy"
+            android:textSize="16dp"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
