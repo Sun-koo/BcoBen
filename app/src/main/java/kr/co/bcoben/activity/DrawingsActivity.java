@@ -1,9 +1,7 @@
 package kr.co.bcoben.activity;
 
 import android.annotation.SuppressLint;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
@@ -22,7 +20,11 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +42,6 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,11 +49,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.R;
-import kr.co.bcoben.adapter.CustomSpinnerAdapter;
+import kr.co.bcoben.adapter.DrawingInputSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
 import kr.co.bcoben.adapter.PictureListAdapter;
 import kr.co.bcoben.adapter.RecodeListAdapter;
@@ -65,14 +65,13 @@ import kr.co.bcoben.model.DrawingPointData;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
+import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
+import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
-    private List<String> listCategory, listArchitecture, listResearch, listFacility;
-    private String category, architecture, research, facility;
-
-    // image
+    // drawing
     private float initScale;
     private int currentScale = 2;
     private List<DrawingPointData> pinList = new ArrayList<>();
@@ -99,7 +98,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private ArrayList<JSONObject> listRecodingData;
 
     // Dummy Data
-    private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1800}, {500, 1200}, {2300, 1800}};
+    private String[] inputDataArray = {"부풀음", "점부식", "박리", "백악화", "직접입력", ""};
+    private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1700}, {500, 1200}, {2300, 1400}};
     private DrawingType[] pinTypeArray = {DrawingType.NORMAL, DrawingType.NORMAL, DrawingType.IMAGE, DrawingType.VOICE, DrawingType.VOICE, DrawingType.MEMO};
     private String[] urlArray = {
             "https://cdn.pixabay.com/photo/2019/08/19/10/37/stone-4416019_1280.jpg",
@@ -114,22 +114,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void initView() {
-        // Spinner
-        listCategory = getIntent().getStringArrayListExtra("category_list");
-        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
-        listResearch = getIntent().getStringArrayListExtra("research_list");
-        listFacility = getIntent().getStringArrayListExtra("facility_list");
-        category = getIntent().getStringExtra("category");
-        architecture = getIntent().getStringExtra("architecture");
-        research = getIntent().getStringExtra("research");
-        facility = getIntent().getStringExtra("facility");
-
-        initSpinner(dataBinding.spnCategory, listCategory, category);
-        initSpinner(dataBinding.spnArchitecture, listArchitecture, architecture);
-        initSpinner(dataBinding.spnResearch, listResearch, research);
-        initSpinner(dataBinding.spnFacility, listFacility, facility);
-
+        initTopSpinner();
         initDrawing();
+        initDataPopup();
 
         // 집계표
         dataBinding.checkboxNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -200,6 +187,29 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         initCanvas();
     }
 
+    private void initTopSpinner() {
+        List<String> categoryList = getIntent().getStringArrayListExtra("category_list");
+        List<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
+        List<String> researchList = getIntent().getStringArrayListExtra("research_list");
+        List<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
+        String category = getIntent().getStringExtra("category");
+        String architecture = getIntent().getStringExtra("architecture");
+        String research = getIntent().getStringExtra("research");
+        String facility = getIntent().getStringExtra("facility");
+
+        setSpinnerData(dataBinding.spnCategory, categoryList, category);
+        setSpinnerData(dataBinding.spnArchitecture, architectureList, architecture);
+        setSpinnerData(dataBinding.spnResearch, researchList, research);
+        setSpinnerData(dataBinding.spnFacility, facilityList, facility);
+    }
+    private void setSpinnerData(AppCompatSpinner spinner, List<String> list, String selectData) {
+        spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, list));
+        int selectIndex = list.indexOf(selectData);
+        if (selectIndex > -1) {
+            spinner.setSelection(selectIndex);
+        }
+    }
+
     // 도면 이미지 Initialize
     @SuppressLint("ClickableViewAccessibility")
     private void initDrawing() {
@@ -216,7 +226,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         dataBinding.txtNewPin.setText(df.format(pinList.size() + 1));
 
                         initPopupView();
-                        getPictureDataList();
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -278,7 +287,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.recyclerPicturePopup.setAdapter(drawingPictureListAdapter);
         dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
     }
-
     public int setDrawingPictureListAdapter(int size) {
         ViewGroup.LayoutParams params = dataBinding.layoutPictureListPopup.getLayoutParams();
         if (size == 1) {
@@ -290,6 +298,40 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         }
         dataBinding.layoutPictureListPopup.setLayoutParams(params);
         return params.width;
+    }
+
+    public void initDataPopup() {
+        dataBinding.researchPopup.spnMaterial.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+
+        setSpinnerListener(dataBinding.researchPopup.spnMaterial, dataBinding.researchPopup.editMaterial, dataBinding.researchPopup.txtMaterial);
+        setSpinnerListener(dataBinding.researchPopup.spnDirection, dataBinding.researchPopup.editDirection, dataBinding.researchPopup.txtDirection);
+        setSpinnerListener(dataBinding.researchPopup.spnDefect, dataBinding.researchPopup.editDefect, dataBinding.researchPopup.txtDefect);
+        setSpinnerListener(dataBinding.researchPopup.spnArchitecture, dataBinding.researchPopup.editArchitecture, dataBinding.researchPopup.txtArchitecture);
+    }
+    private void setSpinnerListener(AppCompatSpinner spinner, final EditText editText, final TextView textView) {
+        spinner.setSelection(spinner.getCount());
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (parent.getSelectedItemPosition() == parent.getCount() - 1) {
+                    editText.setText("");
+                    textView.setText("");
+                    editText.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.GONE);
+                    showKeyboard(activity, editText);
+                } else {
+                    editText.setText(parent.getSelectedItem().toString());
+                    textView.setText(parent.getSelectedItem().toString());
+                    editText.setVisibility(View.GONE);
+                    textView.setVisibility(View.VISIBLE);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
     @Override
@@ -305,6 +347,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     public void onClick(View v) {
+        hideKeyboard(this);
         switch (v.getId()) {
             case R.id.btn_home:
             case R.id.btn_close:
@@ -357,37 +400,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
 
             // popup
-            case R.id.btn_popup_close:
-                dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.txt_input_tab:
-                setSelectedTab(DrawingType.NORMAL);
-                break;
-            case R.id.txt_picture_tab:
-                setSelectedTab(DrawingType.IMAGE);
-                break;
-            case R.id.txt_recode_tab:
-                setSelectedTab(DrawingType.VOICE);
-                break;
-            case R.id.txt_memo_tab:
-                setSelectedTab(DrawingType.MEMO);
-                break;
-
-            case R.id.layout_sub_title:
-                dataBinding.researchPopup.layoutSubTitle.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
-
-            case R.id.layout_direction:
-                dataBinding.researchPopup.layoutDirection.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
-
-            case R.id.layout_defect_content:
-                dataBinding.researchPopup.layoutDefectContent.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
-
-            case R.id.layout_architecture:
-                dataBinding.researchPopup.layoutArchitecture.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
 
             case R.id.btn_reg:
                 //TODO
@@ -420,15 +432,40 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         }
     }
 
-    private void initSpinner(AppCompatSpinner spinner, List<String> list, String selectData) {
-        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list));
+    public void onPopupTabClick(View v) {
+        hideKeyboard(this);
+        switch (v.getId()) {
+            case R.id.btn_popup_close: dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE); break;
+            case R.id.txt_input_tab: setSelectedTab(DrawingType.NORMAL); break;
+            case R.id.txt_picture_tab: setSelectedTab(DrawingType.IMAGE); break;
+            case R.id.txt_recode_tab: setSelectedTab(DrawingType.VOICE); break;
+            case R.id.txt_memo_tab: setSelectedTab(DrawingType.MEMO); break;
+        }
+    }
+    public void onPopupContentClick(View v) {
+        hideKeyboard(this);
+        dataBinding.researchPopup.layoutMaterial.setSelected(false);
+        dataBinding.researchPopup.layoutDirection.setSelected(false);
+        dataBinding.researchPopup.layoutDefect.setSelected(false);
+        dataBinding.researchPopup.layoutArchitecture.setSelected(false);
 
-        for (int i = 0; i < list.size(); i++) {
-            String cate = list.get(i);
-            if (cate.equals(selectData)) {
-                spinner.setSelection(i);
+        switch (v.getId()) {
+            case R.id.layout_material:
+                dataBinding.researchPopup.layoutMaterial.setSelected(true);
+                dataBinding.researchPopup.spnMaterial.performClick();
                 break;
-            }
+            case R.id.layout_direction:
+                dataBinding.researchPopup.layoutDirection.setSelected(true);
+                dataBinding.researchPopup.spnDirection.performClick();
+                break;
+            case R.id.layout_defect:
+                dataBinding.researchPopup.layoutDefect.setSelected(true);
+                dataBinding.researchPopup.spnDefect.performClick();
+                break;
+            case R.id.layout_architecture:
+                dataBinding.researchPopup.layoutArchitecture.setSelected(true);
+                dataBinding.researchPopup.spnArchitecture.performClick();
+                break;
         }
     }
 
@@ -668,7 +705,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.memoView.layoutCanvas.setPaintStyle(Paint.Style.STROKE);
         dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeColor(getResources().getColor(R.color.colorBlack));
         dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeWidth(8);
-
         dataBinding.researchPopup.memoView.layoutCanvas.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

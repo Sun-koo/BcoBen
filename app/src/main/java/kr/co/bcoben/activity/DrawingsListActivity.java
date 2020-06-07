@@ -2,6 +2,7 @@ package kr.co.bcoben.activity;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
-import kr.co.bcoben.adapter.CustomSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
@@ -70,7 +70,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     }
 
     private void initSpinner(AppCompatSpinner spinner, List<String> list, String selectData) {
-        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list));
+        spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, list));
 
         for (int i = 0; i < list.size(); i++) {
             String cate = list.get(i);

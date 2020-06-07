@@ -2,29 +2,22 @@ package kr.co.bcoben.fragment;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Parcelable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
-import kr.co.bcoben.adapter.CustomSpinnerAdapter;
 import kr.co.bcoben.adapter.ResearchDataListAdapter;
 import kr.co.bcoben.component.BaseFragment;
 import kr.co.bcoben.databinding.FragmentProjectFacilityBinding;
 import kr.co.bcoben.model.ProjectData;
-import kr.co.bcoben.model.ProjectResearchData;
 
 public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilityBinding> {
 
@@ -84,7 +77,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         spinnerList.add("지하도상가");
         spinnerList.add("지하도상가지하도상가");
 
-        dataBinding.spnResearchOrder.setAdapter(new CustomSpinnerAdapter(getActivity(), R.layout.item_spinner_research, spinnerList));
+        dataBinding.spnResearchOrder.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_research, spinnerList));
 
         dataBinding.layoutRegisterResearch.setOnClickListener(new View.OnClickListener() {
             @Override

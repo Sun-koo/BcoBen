@@ -138,7 +138,7 @@
     <string name="popup_reg_research_reg">등록하기</string>
 
     <!--조사 데이터 등록 팝업 입력 Tab-->
-    <string name="popup_reg_research_input_sub_title">부제</string>
+    <string name="popup_reg_research_input_sub_title">부재</string>
     <string name="popup_reg_research_input_direction">방향</string>
     <string name="popup_reg_research_input_defect_content">결함내용</string>
     <string name="popup_reg_research_input_architecture">구조&amp;비구조&amp;마감재</string>
