@@ -49,4 +49,7 @@ dependencies {
 
     //FlexboxLayout
     implementation "com.google.android:flexbox:2.0.1"
+
+    //RecyclerTreeView
+    implementation "com.github.TellH:RecyclerTreeView:1.2.0"
 }

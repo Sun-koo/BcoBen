@@ -14,6 +14,9 @@
     <string name="select">선택</string>
     <string name="cancel">취소</string>
     <string name="delete">삭제</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="plus_button">+ 등록</string>
 
     <!--로그인 화면-->
     <string name="login_title">현장조사 관리자 시스템에\n로그인하세요.</string>
@@ -93,6 +96,7 @@
     <string name="side_menu_hint_count">목표 개소 입력</string>
     <string name="side_menu_project_upload_drawings">도면을 업로드 하세요</string>
     <string name="side_menu_project_reg_drawings">등록 도면</string>
+    <string name="side_menu_reg_cancel">등록 취소</string>
     <string name="toast_input_grade">진단등급을 입력해주세요</string>
     <string name="toast_input_facility">시설물을 입력해주세요</string>
     <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>
