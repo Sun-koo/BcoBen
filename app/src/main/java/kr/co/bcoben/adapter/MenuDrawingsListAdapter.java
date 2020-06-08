@@ -1,6 +1,7 @@
 package kr.co.bcoben.adapter;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,81 +13,80 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsListActivity;
 
-public class MenuDrawingsListAdapter extends RecyclerView.Adapter {
+public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsListAdapter.MenuDrawingsHolder> {
 
-    private Activity mActivity;
-    private ArrayList<JSONObject> mList;
+    private Activity activity;
+    private List<String> list;
+    private List<Uri> uploadList;
 
-    public MenuDrawingsListAdapter(Activity activity, ArrayList<JSONObject> list) {
-        this.mActivity = activity;
-        this.mList = list;
+    public MenuDrawingsListAdapter(Activity activity, List<String> list) {
+        this.activity = activity;
+        this.list = list;
+        this.uploadList = new ArrayList<>();
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public MenuDrawingsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_menu_drawings ,viewGroup, false);
-        return new MenuDrawingsListAdapter.MenuDrawingsHolder(view, i);
+        return new MenuDrawingsHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        final MenuDrawingsListAdapter.MenuDrawingsHolder view = (MenuDrawingsListAdapter.MenuDrawingsHolder) holder;
+    public void onBindViewHolder(@NonNull MenuDrawingsHolder holder, final int position) {
+        holder.txtName.setText(list.get(position));
+        holder.txtFacilityName.setText("본관동");
 
-        //이미지 처리
-//        Thread thread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                URL url = null;
-//                try {
-//                    url = new URL("" + imageUrl);
-//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                    conn.setDoInput(true);
-//                    conn.connect();
-//
-//                    InputStream is = conn.getInputStream();
-//                    final Bitmap bitmap = BitmapFactory.decodeStream(is);
-//
-//                    mActivity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            view.ivDrawings.setImageBitmap(bitmap);
-//                        }
-//                    });
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        thread.start();
+        Glide.with(activity.getApplicationContext())
+                .load(uploadList.get(position))
+                .into(holder.ivDrawings);
+
+        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadList.remove(position);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return uploadList.size();
     }
 
-    public void setList(ArrayList<JSONObject> mList) {
-        this.mList = mList;
+    public void setList(List<String> list) {
+        this.list = list;
+        notifyDataSetChanged();
+    }
+    public void addImage(Uri uri) {
+        uploadList.add(uri);
+        notifyDataSetChanged();
     }
 
-    private class MenuDrawingsHolder extends RecyclerView.ViewHolder {
+    static class MenuDrawingsHolder extends RecyclerView.ViewHolder {
 
+        TextView txtName, txtFacilityName, btnDelete;
         ImageView ivDrawings;
 
-        public MenuDrawingsHolder(View view, int position) {
+        MenuDrawingsHolder(View view) {
             super(view);
-
-            ivDrawings = view.findViewById(R.id.iv_drawings);
+            this.txtName = view.findViewById(R.id.txt_name);
+            this.txtFacilityName = view.findViewById(R.id.txt_facility_name);
+            this.btnDelete = view.findViewById(R.id.btn_delete);
+            this.ivDrawings = view.findViewById(R.id.iv_drawings);
         }
     }
 }

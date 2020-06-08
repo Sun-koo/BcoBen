@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,10 +33,12 @@ import java.util.Locale;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.Dir;
+import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
 import kr.co.bcoben.adapter.MenuCheckFacilityListAdapter;
 import kr.co.bcoben.adapter.MenuCheckInputListAdapter;
 import kr.co.bcoben.adapter.MenuCheckListAdapter;
 import kr.co.bcoben.adapter.MenuCheckResearchListAdapter;
+import kr.co.bcoben.adapter.MenuDrawingsListAdapter;
 import kr.co.bcoben.adapter.MenuNodeBinder;
 import kr.co.bcoben.adapter.MenuSelectListAdapter;
 import kr.co.bcoben.adapter.ProjectDataPageAdapter;
@@ -54,6 +57,8 @@ import tellh.com.recyclertreeview_lib.TreeViewAdapter;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.getAppVersion;
+import static kr.co.bcoben.util.CommonUtil.getCameraImage;
+import static kr.co.bcoben.util.CommonUtil.getGalleryImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
@@ -81,6 +86,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private MenuCheckFacilityListAdapter menuCheckFacilityListAdapter;
     private MenuCheckInputListAdapter menuCheckInputListAdapter;
     private MenuCheckResearchListAdapter menuCheckResearchListAdapter;
+    private MenuDrawingsListAdapter menuDrawingsListAdapter;
 
     private DatePickerType datePickerType = DatePickerType.START;
     private int startYear, startMonth, startDay;
@@ -94,6 +100,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<MenuCheckData> regProjectGrade = new ArrayList<>();
     private List<MenuSelectFacilityData> regProjectFacility = new ArrayList<>();
     private List<MenuCheckData> regProjectResearch = new ArrayList<>();
+    private List<String> regDrawingsList = new ArrayList<>();
 
     private List<CheckBox> cbList = new ArrayList<>();
 
@@ -166,6 +173,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setLayoutManager(new LinearLayoutManager(this));
 
+        menuDrawingsListAdapter = new MenuDrawingsListAdapter(this, regDrawingsList);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.setAdapter(menuDrawingsListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+
         // main
         projectListAdapter = new ProjectListAdapter(this, projectList);
         dataBinding.recyclerProject.setAdapter(projectListAdapter);
@@ -187,7 +198,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = getImageResult(this, requestCode, resultCode, data);
         if (uri != null) {
-            Log.e(TAG, "onActivityResult : " + uri);
+            menuDrawingsListAdapter.addImage(uri);
+//            menuDrawingsListAdapter.setList();
         }
     }
 
@@ -706,6 +718,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             public void onClick(View v) {
                 //TODO
                 dialog.dismiss();
+                getCameraImage(MainActivity.this);
             }
         });
         dialog.selectAlbumInputListener(new View.OnClickListener() {
@@ -713,6 +726,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             public void onClick(View v) {
                 //TODO
                 dialog.dismiss();
+                getGalleryImage(MainActivity.this);
             }
         });
         dialog.show();

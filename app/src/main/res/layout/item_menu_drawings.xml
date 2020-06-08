@@ -9,14 +9,53 @@
     <RelativeLayout
         android:layout_width="228dp"
         android:layout_height="210dp"
+        android:padding="10dp"
         android:background="@drawable/background_round_white_box">
 
-        <ImageView
-            android:id="@+id/iv_drawings"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/drawings"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="13dp"
+                android:text="도면명"
+                android:textColor="@color/colorTextDarkGray"
+                android:textSize="12dp"/>
+
+            <TextView
+                android:id="@+id/txt_facility_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="13dp"
+                android:text="시설물명"
+                android:textColor="@color/colorTextDarkGray"
+                android:textSize="11dp"/>
+
+            <ImageView
+                android:id="@+id/iv_drawings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/drawings"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:padding="7dp"
+            android:text="@string/delete"
+            android:textColor="@color/colorTextLabel"
+            android:textSize="18dp"/>
 
     </RelativeLayout>
 
