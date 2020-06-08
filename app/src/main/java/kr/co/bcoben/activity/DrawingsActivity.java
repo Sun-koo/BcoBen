@@ -59,7 +59,7 @@ import kr.co.bcoben.model.DrawingPointData;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
-import static kr.co.bcoben.util.CommonUtil.getCameraImage;
+import static kr.co.bcoben.util.CommonUtil.getFileChooserImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showKeyboard;
@@ -134,10 +134,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         Uri photoUri = getImageResult(this, requestCode, resultCode, data);
         if (photoUri != null) {
             inputPopupPictureListAdapter.addImage(photoUri);
+            dataBinding.researchPopup.txtPictureCount.setText("(" + inputPopupPictureListAdapter.getItemCount() + "건)");
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -383,6 +385,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
         dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
+
+        dataBinding.researchPopup.txtPictureCount.setText("(" + inputPopupPictureListAdapter.getItemCount() + "건)");
     }
 
     @Override
@@ -528,7 +532,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.layout_width: showKeyboard(this, dataBinding.researchPopup.editWidth); break;
             case R.id.layout_height: showKeyboard(this, dataBinding.researchPopup.editHeight); break;
             case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.editCount); break;
-            case R.id.layout_picture: getCameraImage(this); break;
+            case R.id.layout_picture: getFileChooserImage(this); break;
         }
     }
     private void resetInputPopupContentLayout() {

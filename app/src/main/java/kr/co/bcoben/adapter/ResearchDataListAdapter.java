@@ -16,8 +16,6 @@ import java.util.Locale;
 import kr.co.bcoben.R;
 import kr.co.bcoben.model.ProjectResearchData;
 
-import static kr.co.bcoben.util.CommonUtil.getCameraImage;
-
 public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataListAdapter.ResearchDataListHolder> {
 
     private Activity activity;
@@ -85,7 +83,6 @@ public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataLi
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getCameraImage(activity);
                 }
             });
         }

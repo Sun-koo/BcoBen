@@ -194,7 +194,7 @@ public class CommonUtil {
                         MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
                             @Override
                             public void onScanCompleted(String path, Uri uri) {
-                                Log.e("getImageResult", uri.getPath());
+                                Log.e("getImageResult", path);
                             }
                         });
                     }

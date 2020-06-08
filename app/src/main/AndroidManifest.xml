@@ -44,14 +44,16 @@
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="keyboardHidden|orientation"/>
         <activity
             android:name=".activity.DrawingsListActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activity.DrawingsActivity"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="keyboardHidden|orientation"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
