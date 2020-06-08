@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">BCOBEN</string>
-    <string name="app_finish">뒤로 버튼을 한번 더 누르면 종료됩니다</string>
+    <string name="dialog_app_finish_title">서비스 종료</string>
+    <string name="dialog_app_finish_content">앱을 종료 하시겠습니까?</string>
+    <string name="dialog_permission_title">앱 권한</string>
+    <string name="dialog_permission_content">권한을 허용하지 않으면 앱을 사용할 수 없습니다</string>
+    <string name="dialog_permission_exit">종료</string>
+    <string name="dialog_permission_setting">권한 설정</string>
 
     <!--공통-->
     <string name="id">아이디</string>
@@ -14,6 +19,7 @@
     <string name="select">선택</string>
     <string name="cancel">취소</string>
     <string name="delete">삭제</string>
+    <string name="confirm">확인</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="plus_button">+ 등록</string>

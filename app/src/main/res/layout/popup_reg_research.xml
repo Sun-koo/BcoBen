@@ -35,7 +35,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onPopupTabClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onPopupTabClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -63,7 +63,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onPopupTabClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -77,7 +77,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onPopupTabClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -96,7 +96,7 @@
                     android:text="X 닫기"
                     android:textColor="@color/colorBlack"
                     android:textSize="16dp"
-                    android:onClick="onPopupTabClick"/>
+                    android:onClick="onInputPopupTabClick"/>
 
             </RelativeLayout>
 
@@ -136,7 +136,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onPopupContentClick"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -202,7 +202,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onPopupContentClick"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -238,7 +238,7 @@
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
                                     android:layout_marginEnd="33dp"
-                                    android:onClick="onPopupContentClick"
+                                    android:onClick="onInputPopupContentClick"
                                     android:background="@null"
                                     android:clickable="true"
                                     android:enabled="false"
@@ -271,7 +271,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onPopupContentClick"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -307,7 +307,7 @@
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
                                     android:layout_marginEnd="33dp"
-                                    android:onClick="onPopupContentClick"
+                                    android:onClick="onInputPopupContentClick"
                                     android:background="@null"
                                     android:enabled="false"
                                     android:inputType="text"
@@ -339,7 +339,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onPopupContentClick"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -375,7 +375,7 @@
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="150dp"
                                     android:layout_marginEnd="33dp"
-                                    android:onClick="onPopupContentClick"
+                                    android:onClick="onInputPopupContentClick"
                                     android:background="@null"
                                     android:enabled="false"
                                     android:inputType="text"
@@ -407,6 +407,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -444,6 +445,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -480,6 +482,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -516,6 +519,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
+                                android:onClick="onInputPopupContentClick"
                                 android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
@@ -554,6 +558,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="29dp"
+                            android:onClick="onInputPopupContentClick"
                             android:background="@drawable/background_keycolor_popup_menu">
 
                             <TextView
@@ -584,8 +589,7 @@
                             android:id="@+id/layout_picture_list"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="gone">
+                            android:orientation="vertical">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
