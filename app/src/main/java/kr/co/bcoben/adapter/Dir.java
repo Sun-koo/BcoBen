@@ -14,4 +14,12 @@ public class Dir implements LayoutItemType {
     public int getLayoutId() {
         return R.layout.item_menu_node;
     }
+
+    public String getDirName() {
+        return dirName;
+    }
+
+    public void setDirName(String dirName) {
+        this.dirName = dirName;
+    }
 }

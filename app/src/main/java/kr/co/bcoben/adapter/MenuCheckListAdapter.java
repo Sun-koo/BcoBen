@@ -41,7 +41,7 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_menu_check_list ,viewGroup, false);
-        return new MenuCheckListAdapter.MenuCheckHolder(view, i);
+        return new MenuCheckListAdapter.MenuCheckHolder(view);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
         Button btnNext;
         View bottomLine;
 
-        public MenuCheckHolder(View view, int position) {
+        public MenuCheckHolder(View view) {
             super(view);
 
             listLayout = view.findViewById(R.id.list_layout);

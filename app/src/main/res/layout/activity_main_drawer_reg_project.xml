@@ -111,48 +111,56 @@
                     android:layout_height="1dp"
                     android:background="@color/colorDividerRegisterList" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:id="@+id/layout_facility"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:background="@drawable/bg_drawer_list"
                     android:onClick="onDrawerProjectMenuClick">
 
-                    <TextView
-                        android:id="@+id/txt_facility_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="24dp"
-                        android:text="@string/side_menu_facility"
-                        android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp">
 
-                    <TextView
-                        android:id="@+id/txt_facility"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/txt_facility_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="24dp"
+                            android:text="@string/side_menu_facility"
+                            android:textColor="@color/text_drawer_list"
+                            android:textSize="18dp" />
+
+                        <TextView
+                            android:id="@+id/txt_facility"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="100dp"
+                            android:layout_marginEnd="8dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="@color/text_drawer_list_selector"
+                            android:textSize="14dp" />
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_check_facility"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="100dp"
-                        android:layout_marginEnd="8dp"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textColor="@color/text_drawer_list_selector"
-                        android:textSize="14dp" />
-                </RelativeLayout>
+                        android:background="@drawable/bg_drawer_list"
+                        android:visibility="visible">
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/colorDividerRegisterList" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_check_facility"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-                </androidx.recyclerview.widget.RecyclerView>
 
                 <RelativeLayout
                     android:id="@+id/layout_research"
@@ -274,15 +282,6 @@
                     android:textColor="@color/colorTextLabel"
                     android:textSize="21dp" />
 
-                <ImageButton
-                    android:id="@+id/btn_arrow_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@null"
-                    android:onClick="onClick"
-                    android:src="@drawable/btn_next" />
             </RelativeLayout>
 
             <View
