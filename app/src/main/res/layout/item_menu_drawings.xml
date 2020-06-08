@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingBottom="18dp"
-    android:paddingEnd="18dp">
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="250dp"
+    android:layout_height="230dp"
+    android:paddingBottom="9dp"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="228dp"
-        android:layout_height="210dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:padding="10dp"
         android:background="@drawable/background_round_white_box">
 
@@ -41,9 +40,7 @@
             <ImageView
                 android:id="@+id/iv_drawings"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/drawings"/>
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 

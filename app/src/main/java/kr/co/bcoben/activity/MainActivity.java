@@ -199,7 +199,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         Uri uri = getImageResult(this, requestCode, resultCode, data);
         if (uri != null) {
             menuDrawingsListAdapter.addImage(uri);
-//            menuDrawingsListAdapter.setList();
+            dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("(" + menuDrawingsListAdapter.getItemCount() + "건)");
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

@@ -46,7 +46,7 @@ public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsLi
 
     @Override
     public void onBindViewHolder(@NonNull MenuDrawingsHolder holder, final int position) {
-        holder.txtName.setText(list.get(position));
+//        holder.txtName.setText(list.get(position));
         holder.txtFacilityName.setText("본관동");
 
         Glide.with(activity.getApplicationContext())
