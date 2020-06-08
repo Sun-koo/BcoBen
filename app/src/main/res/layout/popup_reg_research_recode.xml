@@ -62,8 +62,7 @@
             android:id="@+id/recycler_recode"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/layout_recode_play"

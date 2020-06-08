@@ -2,48 +2,44 @@ package kr.co.bcoben.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.Resources;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.security.MessageDigest;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
-import kr.co.bcoben.R;
+import kr.co.bcoben.component.AppFinishDialog;
+
+import static android.app.Activity.RESULT_OK;
 
 public class CommonUtil {
-    private static final int FINISH_TIMER = 2000;
-    private static boolean isFinish = false;
     private static Toast toast;
 
     // 앱 종료
     public static void finishApp(Activity act) {
-        if (isFinish) {
-            act.finishAffinity();
-        } else {
-            showToast(R.string.app_finish);
-            isFinish = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    isFinish = false;
-                }
-            }, FINISH_TIMER);
-        }
+        AppFinishDialog.builder(act).show();
     }
 
     // Toast 출력
@@ -74,6 +70,7 @@ public class CommonUtil {
         }
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
         }
     }
     // 키보드 출력
@@ -141,13 +138,85 @@ public class CommonUtil {
         }
     }
 
-    // 이미지 저장폴더 가져오기
-    private static final File SAVE_PATH = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/BcoBen");
-    public static File getSavePath() {
-        if (!SAVE_PATH.exists()) {
-            SAVE_PATH.mkdirs();
+    public static final int IMAGE_FROM_GALLERY = 3001;
+    public static final int IMAGE_FROM_CAMERA = 3002;
+    public static final int IMAGE_FROM_GAL_CAM = 3003;
+    public static Uri photoUri;
+    public static void getGalleryImage(Activity act) {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        act.startActivityForResult(intent, IMAGE_FROM_GALLERY);
+    }
+    public static void getCameraImage(Activity act) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(act.getPackageManager()) != null) {
+            File photoFile = new File(getImagePath(), System.currentTimeMillis() + ".jpg");
+            photoUri = FileProvider.getUriForFile(act, act.getPackageName(), photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            act.startActivityForResult(takePictureIntent, IMAGE_FROM_CAMERA);
         }
-        return SAVE_PATH;
+    }
+    public static void getFileChooserImage(Activity act) {
+        Intent i = new Intent(Intent.ACTION_PICK);
+        i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.CONTENT_TYPE);
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(act.getPackageManager()) != null) {
+            File photoFile = new File(getImagePath(), System.currentTimeMillis() + ".jpg");
+            photoUri = FileProvider.getUriForFile(act, act.getPackageName(), photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        }
+
+        Intent chooserIntent = Intent.createChooser(i, "파일 선택");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[]{takePictureIntent});
+        act.startActivityForResult(chooserIntent, IMAGE_FROM_GAL_CAM);
+    }
+    public static Uri getImageResult(Activity act, int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK) {
+            String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg");
+            switch (requestCode) {
+                case IMAGE_FROM_CAMERA:
+                    MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.e("getImageResult", path);
+                        }
+                    });
+                    return photoUri;
+                case IMAGE_FROM_GALLERY:
+                    photoUri = data.getData();
+                    return photoUri;
+                case IMAGE_FROM_GAL_CAM:
+                    if (data != null && data.getData() != null) {
+                        photoUri = data.getData();
+                    } else {
+                        MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(String path, Uri uri) {
+                                Log.e("getImageResult", uri.getPath());
+                            }
+                        });
+                    }
+                    return photoUri;
+            }
+        }
+        return null;
+    }
+
+    // 이미지 저장폴더 가져오기
+    private static final File IMAGE_PATH = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/BcoBen");
+    public static File getImagePath() {
+        if (!IMAGE_PATH.exists()) {
+            IMAGE_PATH.mkdirs();
+        }
+        return IMAGE_PATH;
+    }
+    public static File getCachePath() {
+        return AppApplication.getContext().getCacheDir();
+    }
+    public static File getFilePath() {
+        return AppApplication.getContext().getFilesDir();
     }
 
     // 앱 버전 가져오기

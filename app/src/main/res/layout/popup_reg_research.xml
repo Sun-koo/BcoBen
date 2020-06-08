@@ -35,7 +35,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -63,7 +63,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -77,7 +77,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
-                        android:onClick="onClick"
+                        android:onClick="onInputPopupTabClick"
                         android:paddingTop="9dp"
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
@@ -96,7 +96,7 @@
                     android:text="X 닫기"
                     android:textColor="@color/colorBlack"
                     android:textSize="16dp"
-                    android:onClick="onClick"/>
+                    android:onClick="onInputPopupTabClick"/>
 
             </RelativeLayout>
 
@@ -132,12 +132,12 @@
                             android:orientation="vertical">
 
                             <RelativeLayout
-                                android:id="@+id/layout_sub_title"
+                                android:id="@+id/layout_material"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onClick"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -150,15 +150,50 @@
                                     android:textSize="13dp"/>
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:id="@+id/txt_material"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="12dp"
-                                    android:layout_marginBottom="12dp"
-                                    android:layout_marginEnd="41dp"
-                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="textEnd"
                                     android:textColor="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"/>
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                                <EditText
+                                    android:id="@+id/edit_material"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:background="@null"
+                                    android:inputType="text"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textAlignment="textEnd"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"
+                                    android:visibility="gone" />
+
+                                <androidx.appcompat.widget.AppCompatSpinner
+                                    android:id="@+id/spn_material"
+                                    android:layout_width="130dp"
+                                    android:layout_height="35dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@null"
+                                    android:dropDownVerticalOffset="35dp"
+                                    android:popupBackground="@drawable/bg_research_data_list"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ResearchSpinnerTheme"
+                                    android:visibility="invisible" />
 
                             </RelativeLayout>
 
@@ -167,8 +202,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onClick"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -181,25 +216,63 @@
                                     android:textSize="13dp"/>
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:id="@+id/txt_direction"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="12dp"
-                                    android:layout_marginBottom="12dp"
-                                    android:layout_marginEnd="41dp"
-                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="textEnd"
                                     android:textColor="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"/>
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                                <EditText
+                                    android:id="@+id/edit_direction"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:onClick="onInputPopupContentClick"
+                                    android:background="@null"
+                                    android:clickable="true"
+                                    android:enabled="false"
+                                    android:inputType="text"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="viewEnd"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"
+                                    android:visibility="gone" />
+
+                                <androidx.appcompat.widget.AppCompatSpinner
+                                    android:id="@+id/spn_direction"
+                                    android:layout_width="130dp"
+                                    android:layout_height="35dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@null"
+                                    android:dropDownVerticalOffset="35dp"
+                                    android:popupBackground="@drawable/bg_research_data_list"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ResearchSpinnerTheme"
+                                    android:visibility="invisible" />
 
                             </RelativeLayout>
 
                             <RelativeLayout
-                                android:id="@+id/layout_defect_content"
+                                android:id="@+id/layout_defect"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onClick"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -212,15 +285,52 @@
                                     android:textSize="13dp"/>
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:id="@+id/txt_defect"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="12dp"
-                                    android:layout_marginBottom="12dp"
-                                    android:layout_marginEnd="41dp"
-                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="textEnd"
                                     android:textColor="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"/>
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                                <EditText
+                                    android:id="@+id/edit_defect"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:onClick="onInputPopupContentClick"
+                                    android:background="@null"
+                                    android:enabled="false"
+                                    android:inputType="text"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="viewEnd"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"
+                                    android:visibility="gone" />
+
+                                <androidx.appcompat.widget.AppCompatSpinner
+                                    android:id="@+id/spn_defect"
+                                    android:layout_width="130dp"
+                                    android:layout_height="35dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@null"
+                                    android:dropDownVerticalOffset="35dp"
+                                    android:popupBackground="@drawable/bg_research_data_list"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ResearchSpinnerTheme"
+                                    android:visibility="invisible" />
 
                             </RelativeLayout>
 
@@ -229,8 +339,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:onClick="onClick"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -243,15 +353,52 @@
                                     android:textSize="13dp"/>
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:id="@+id/txt_architecture"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_marginTop="12dp"
-                                    android:layout_marginBottom="12dp"
-                                    android:layout_marginEnd="41dp"
-                                    android:text="@string/popup_reg_research_input_hint1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="textEnd"
                                     android:textColor="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"/>
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
+
+                                <EditText
+                                    android:id="@+id/edit_architecture"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
+                                    android:onClick="onInputPopupContentClick"
+                                    android:background="@null"
+                                    android:enabled="false"
+                                    android:inputType="text"
+                                    android:maxLines="1"
+                                    android:hint="@string/popup_reg_research_input_hint1"
+                                    android:textAlignment="viewEnd"
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textColorHint="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp"
+                                    android:visibility="gone" />
+
+                                <androidx.appcompat.widget.AppCompatSpinner
+                                    android:id="@+id/spn_architecture"
+                                    android:layout_width="130dp"
+                                    android:layout_height="35dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@null"
+                                    android:dropDownVerticalOffset="35dp"
+                                    android:popupBackground="@drawable/bg_research_data_list"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ResearchSpinnerTheme"
+                                    android:visibility="invisible" />
 
                             </RelativeLayout>
 
@@ -260,7 +407,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -278,15 +426,17 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="132dp"
-                                    android:layout_marginEnd="41dp"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
+                                    android:maxLength="5"
                                     android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textAlignment="viewEnd"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"
-                                    android:textAlignment="viewEnd"/>
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
 
                             </RelativeLayout>
 
@@ -295,7 +445,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -313,15 +464,16 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="132dp"
-                                    android:layout_marginEnd="41dp"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textAlignment="viewEnd"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"
-                                    android:textAlignment="viewEnd"/>
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
 
                             </RelativeLayout>
 
@@ -330,7 +482,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -348,15 +501,16 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="132dp"
-                                    android:layout_marginEnd="41dp"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textAlignment="viewEnd"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"
-                                    android:textAlignment="viewEnd"/>
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
 
                             </RelativeLayout>
 
@@ -365,7 +519,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="6dp"
-                                android:background="@drawable/background_white_popup_menu">
+                                android:onClick="onInputPopupContentClick"
+                                android:background="@drawable/bg_drawing_input_content">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -383,15 +538,16 @@
                                     android:layout_height="match_parent"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:layout_marginStart="132dp"
-                                    android:layout_marginEnd="41dp"
+                                    android:layout_marginStart="150dp"
+                                    android:layout_marginEnd="33dp"
                                     android:background="@null"
                                     android:inputType="number"
                                     android:maxLines="1"
                                     android:hint="@string/popup_reg_research_input_hint2"
+                                    android:textAlignment="viewEnd"
                                     android:textColorHint="@color/colorTextHintPopupMenu"
-                                    android:textSize="13dp"
-                                    android:textAlignment="viewEnd"/>
+                                    android:textColor="@color/colorTextHintPopupMenu"
+                                    android:textSize="13dp" />
 
                             </RelativeLayout>
 
@@ -402,6 +558,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="29dp"
+                            android:onClick="onInputPopupContentClick"
                             android:background="@drawable/background_keycolor_popup_menu">
 
                             <TextView
@@ -421,7 +578,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginTop="12dp"
                                 android:layout_marginBottom="12dp"
-                                android:layout_marginEnd="41dp"
+                                android:layout_marginEnd="33dp"
                                 android:text="@string/popup_reg_research_picture_hint"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="13dp"/>
@@ -432,8 +589,7 @@
                             android:id="@+id/layout_picture_list"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="gone">
+                            android:orientation="vertical">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"

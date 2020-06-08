@@ -29,6 +29,7 @@ public class DrawingImageView extends SubsamplingScaleImageView {
     }
     public DrawingImageView(Context context, AttributeSet attr) {
         super(context, attr);
+        invalidate();
     }
 
     public void setPinList(List<DrawingPointData> pinList) {

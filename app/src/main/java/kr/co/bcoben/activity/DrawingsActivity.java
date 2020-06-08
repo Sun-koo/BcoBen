@@ -1,16 +1,13 @@
 package kr.co.bcoben.activity;
 
-import android.annotation.SuppressLint;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
@@ -22,39 +19,36 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.R;
-import kr.co.bcoben.adapter.CustomSpinnerAdapter;
+import kr.co.bcoben.adapter.DrawingInputSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
-import kr.co.bcoben.adapter.PictureListAdapter;
+import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
 import kr.co.bcoben.adapter.RecodeListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
 import kr.co.bcoben.component.BaseActivity;
@@ -65,14 +59,15 @@ import kr.co.bcoben.model.DrawingPointData;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
+import static kr.co.bcoben.util.CommonUtil.getCameraImage;
+import static kr.co.bcoben.util.CommonUtil.getImageResult;
+import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
+import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
-    private List<String> listCategory, listArchitecture, listResearch, listFacility;
-    private String category, architecture, research, facility;
-
-    // image
+    // drawing
     private float initScale;
     private int currentScale = 2;
     private List<DrawingPointData> pinList = new ArrayList<>();
@@ -84,8 +79,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private ArrayList<JSONObject> listTableData;
 
     // popup
-    private PictureListAdapter pictureListAdapter;
-    private ArrayList<JSONObject> listPictureData;
+    private InputPopupPictureListAdapter inputPopupPictureListAdapter;
+    private List<String> pictureDataList = new ArrayList<>();
 
     private int audioSource = MediaRecorder.AudioSource.MIC;
     private int sampleRate = 44100;
@@ -97,9 +92,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private boolean isRecoding = false;
     private RecodeListAdapter recodeListAdapter;
     private ArrayList<JSONObject> listRecodingData;
+    private Uri photoUri;
 
     // Dummy Data
-    private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1800}, {500, 1200}, {2300, 1800}};
+    private String[] inputDataArray = {"부풀음", "점부식", "박리", "백악화", "직접입력", ""};
+    private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1700}, {500, 1200}, {2300, 1400}};
     private DrawingType[] pinTypeArray = {DrawingType.NORMAL, DrawingType.NORMAL, DrawingType.IMAGE, DrawingType.VOICE, DrawingType.VOICE, DrawingType.MEMO};
     private String[] urlArray = {
             "https://cdn.pixabay.com/photo/2019/08/19/10/37/stone-4416019_1280.jpg",
@@ -114,22 +111,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void initView() {
-        // Spinner
-        listCategory = getIntent().getStringArrayListExtra("category_list");
-        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
-        listResearch = getIntent().getStringArrayListExtra("research_list");
-        listFacility = getIntent().getStringArrayListExtra("facility_list");
-        category = getIntent().getStringExtra("category");
-        architecture = getIntent().getStringExtra("architecture");
-        research = getIntent().getStringExtra("research");
-        facility = getIntent().getStringExtra("facility");
-
-        initSpinner(dataBinding.spnCategory, listCategory, category);
-        initSpinner(dataBinding.spnArchitecture, listArchitecture, architecture);
-        initSpinner(dataBinding.spnResearch, listResearch, research);
-        initSpinner(dataBinding.spnFacility, listFacility, facility);
-
+        initTopSpinner();
         initDrawing();
+        initInputPopup();
 
         // 집계표
         dataBinding.checkboxNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -146,62 +130,41 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.recyclerTable.setAdapter(tableListAdapter);
 
         requestTableDataList();
+    }
 
-        // popup
-        // 사진 탭
-        dataBinding.researchPopup.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri photoUri = getImageResult(this, requestCode, resultCode, data);
+        if (photoUri != null) {
+            inputPopupPictureListAdapter.addImage(photoUri);
+        }
+    }
 
-        listPictureData = new ArrayList<>();
-        pictureListAdapter = new PictureListAdapter(this, listPictureData);
-        dataBinding.researchPopup.recyclerPicture.setAdapter(pictureListAdapter);
-        // 음성 탭
-        dataBinding.researchPopup.recodeView.recyclerRecode.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+    private void initTopSpinner() {
+        List<String> categoryList = getIntent().getStringArrayListExtra("category_list");
+        List<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
+        List<String> researchList = getIntent().getStringArrayListExtra("research_list");
+        List<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
+        String category = getIntent().getStringExtra("category");
+        String architecture = getIntent().getStringExtra("architecture");
+        String research = getIntent().getStringExtra("research");
+        String facility = getIntent().getStringExtra("facility");
 
-        listRecodingData = new ArrayList<>();
-        recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
-        dataBinding.researchPopup.recodeView.recyclerRecode.setAdapter(recodeListAdapter);
-
-        recordThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                byte[] readData = new byte[bufferSize];
-                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.pcm";
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(filePath);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                while (isRecoding) {
-                    int ret = audioRecord.read(readData, 0, bufferSize);
-                    Log.e("aaa", "read bytes is " + ret);
-
-                    try {
-                        fos.write(readData, 0, bufferSize);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                audioRecord.stop();
-                audioRecord.release();
-                audioRecord = null;
-
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        // 메모 탭
-        initCanvas();
+        setSpinnerData(dataBinding.spnCategory, categoryList, category);
+        setSpinnerData(dataBinding.spnArchitecture, architectureList, architecture);
+        setSpinnerData(dataBinding.spnResearch, researchList, research);
+        setSpinnerData(dataBinding.spnFacility, facilityList, facility);
+    }
+    private void setSpinnerData(AppCompatSpinner spinner, List<String> list, String selectData) {
+        spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, list));
+        int selectIndex = list.indexOf(selectData);
+        if (selectIndex > -1) {
+            spinner.setSelection(selectIndex);
+        }
     }
 
     // 도면 이미지 Initialize
-    @SuppressLint("ClickableViewAccessibility")
     private void initDrawing() {
         final GestureDetector gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -215,8 +178,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         DecimalFormat df = new DecimalFormat("00");
                         dataBinding.txtNewPin.setText(df.format(pinList.size() + 1));
 
-                        initPopupView();
-                        getPictureDataList();
+                        resetInputPopup();
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -278,7 +240,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.recyclerPicturePopup.setAdapter(drawingPictureListAdapter);
         dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
     }
-
     public int setDrawingPictureListAdapter(int size) {
         ViewGroup.LayoutParams params = dataBinding.layoutPictureListPopup.getLayoutParams();
         if (size == 1) {
@@ -290,6 +251,138 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         }
         dataBinding.layoutPictureListPopup.setLayoutParams(params);
         return params.width;
+    }
+
+    public void initInputPopup() {
+        // 입력 탭
+        dataBinding.researchPopup.spnMaterial.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+
+        setSpinnerListener(dataBinding.researchPopup.spnMaterial, dataBinding.researchPopup.editMaterial, dataBinding.researchPopup.txtMaterial);
+        setSpinnerListener(dataBinding.researchPopup.spnDirection, dataBinding.researchPopup.editDirection, dataBinding.researchPopup.txtDirection);
+        setSpinnerListener(dataBinding.researchPopup.spnDefect, dataBinding.researchPopup.editDefect, dataBinding.researchPopup.txtDefect);
+        setSpinnerListener(dataBinding.researchPopup.spnArchitecture, dataBinding.researchPopup.editArchitecture, dataBinding.researchPopup.txtArchitecture);
+
+        dataBinding.researchPopup.editLength.setOnFocusChangeListener(popupEditFocusChangeListener());
+        dataBinding.researchPopup.editWidth.setOnFocusChangeListener(popupEditFocusChangeListener());
+        dataBinding.researchPopup.editHeight.setOnFocusChangeListener(popupEditFocusChangeListener());
+        dataBinding.researchPopup.editCount.setOnFocusChangeListener(popupEditFocusChangeListener());
+
+        // 사진 탭
+        inputPopupPictureListAdapter = new InputPopupPictureListAdapter(this, pictureDataList);
+        dataBinding.researchPopup.recyclerPicture.setAdapter(inputPopupPictureListAdapter);
+        dataBinding.researchPopup.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+
+        // 음성 탭
+        listRecodingData = new ArrayList<>();
+        recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
+        dataBinding.researchPopup.recodeView.recyclerRecode.setAdapter(recodeListAdapter);
+        dataBinding.researchPopup.recodeView.recyclerRecode.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        recordThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] readData = new byte[bufferSize];
+                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.pcm";
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(filePath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                while (isRecoding) {
+                    int ret = audioRecord.read(readData, 0, bufferSize);
+                    Log.e("aaa", "read bytes is " + ret);
+
+                    try {
+                        fos.write(readData, 0, bufferSize);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                audioRecord.stop();
+                audioRecord.release();
+                audioRecord = null;
+
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // 메모 탭
+        dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
+        dataBinding.researchPopup.memoView.layoutCanvas.setDrawer(CanvasView.Drawer.PEN);
+        dataBinding.researchPopup.memoView.layoutCanvas.setBaseColor(getResources().getColor(R.color.colorWhite));
+        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStyle(Paint.Style.STROKE);
+        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeColor(getResources().getColor(R.color.colorBlack));
+        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeWidth(8);
+        dataBinding.researchPopup.memoView.layoutCanvas.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.GONE);
+                return false;
+            }
+        });
+    }
+    private void setSpinnerListener(AppCompatSpinner spinner, final EditText editText, final TextView textView) {
+        spinner.setSelection(spinner.getCount());
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (parent.getSelectedItemPosition() == parent.getCount() - 1) {
+                    editText.setText("");
+                    textView.setText("");
+                    editText.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.GONE);
+                    showKeyboard(activity, editText);
+                } else {
+                    editText.setText(parent.getSelectedItem().toString());
+                    textView.setText(parent.getSelectedItem().toString());
+                    editText.setVisibility(View.GONE);
+                    textView.setVisibility(View.VISIBLE);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+    private View.OnFocusChangeListener popupEditFocusChangeListener() {
+        return new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                resetInputPopupContentLayout();
+                if (hasFocus) {
+                    ((RelativeLayout) v.getParent()).setSelected(true);
+                }
+            }
+        };
+    }
+    private void resetInputPopup() {
+        setSelectedTab(DrawingType.NORMAL);
+        resetInputPopupContentLayout();
+        dataBinding.researchPopup.spnMaterial.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
+        dataBinding.researchPopup.spnDirection.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
+        dataBinding.researchPopup.spnDefect.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
+        dataBinding.researchPopup.spnArchitecture.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
+        dataBinding.researchPopup.editLength.setText("");
+        dataBinding.researchPopup.editWidth.setText("");
+        dataBinding.researchPopup.editHeight.setText("");
+        dataBinding.researchPopup.editCount.setText("");
+
+        dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
+        dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
+        dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.memoView.layoutCanvas.clear();
+        dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -305,6 +398,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     public void onClick(View v) {
+        hideKeyboard(this);
         switch (v.getId()) {
             case R.id.btn_home:
             case R.id.btn_close:
@@ -357,37 +451,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
 
             // popup
-            case R.id.btn_popup_close:
-                dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.txt_input_tab:
-                setSelectedTab(DrawingType.NORMAL);
-                break;
-            case R.id.txt_picture_tab:
-                setSelectedTab(DrawingType.IMAGE);
-                break;
-            case R.id.txt_recode_tab:
-                setSelectedTab(DrawingType.VOICE);
-                break;
-            case R.id.txt_memo_tab:
-                setSelectedTab(DrawingType.MEMO);
-                break;
-
-            case R.id.layout_sub_title:
-                dataBinding.researchPopup.layoutSubTitle.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
-
-            case R.id.layout_direction:
-                dataBinding.researchPopup.layoutDirection.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
-
-            case R.id.layout_defect_content:
-                dataBinding.researchPopup.layoutDefectContent.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
-
-            case R.id.layout_architecture:
-                dataBinding.researchPopup.layoutArchitecture.setBackground(getResources().getDrawable(R.drawable.background_pink_popup_menu));
-                break;
 
             case R.id.btn_reg:
                 //TODO
@@ -420,16 +483,63 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         }
     }
 
-    private void initSpinner(AppCompatSpinner spinner, List<String> list, String selectData) {
-        spinner.setAdapter(new CustomSpinnerAdapter(this, R.layout.item_spinner, list));
-
-        for (int i = 0; i < list.size(); i++) {
-            String cate = list.get(i);
-            if (cate.equals(selectData)) {
-                spinner.setSelection(i);
-                break;
-            }
+    public void onInputPopupTabClick(View v) {
+        hideKeyboard(this);
+        switch (v.getId()) {
+            case R.id.btn_popup_close: dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE); break;
+            case R.id.txt_input_tab: setSelectedTab(DrawingType.NORMAL); break;
+            case R.id.txt_picture_tab: setSelectedTab(DrawingType.IMAGE); break;
+            case R.id.txt_recode_tab: setSelectedTab(DrawingType.VOICE); break;
+            case R.id.txt_memo_tab: setSelectedTab(DrawingType.MEMO); break;
         }
+    }
+    private void setSelectedTab(DrawingType type) {
+        dataBinding.researchPopup.txtInputTab.setSelected(false);
+        dataBinding.researchPopup.txtPictureTab.setSelected(false);
+        dataBinding.researchPopup.txtRecodeTab.setSelected(false);
+        dataBinding.researchPopup.txtMemoTab.setSelected(false);
+
+        switch (type) {
+            case NORMAL: dataBinding.researchPopup.txtInputTab.setSelected(true); break;
+            case IMAGE: dataBinding.researchPopup.txtPictureTab.setSelected(true); break;
+            case VOICE: dataBinding.researchPopup.txtRecodeTab.setSelected(true); break;
+            case MEMO: dataBinding.researchPopup.txtMemoTab.setSelected(true); break;
+        }
+
+        dataBinding.researchPopup.layoutInput.setVisibility(type == DrawingType.NORMAL ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutInputPicture.setVisibility((type == DrawingType.NORMAL || type == DrawingType.IMAGE) ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutRecode.setVisibility(type == DrawingType.VOICE ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutMemo.setVisibility(type == DrawingType.MEMO ? View.VISIBLE : View.GONE);
+
+        regPointData.setType(type);
+    }
+
+    public void onInputPopupContentClick(View v) {
+        hideKeyboard(this);
+        resetInputPopupContentLayout();
+        v.setSelected(true);
+
+        switch (v.getId()) {
+            case R.id.layout_material: dataBinding.researchPopup.spnMaterial.performClick(); break;
+            case R.id.layout_direction: dataBinding.researchPopup.spnDirection.performClick(); break;
+            case R.id.layout_defect: dataBinding.researchPopup.spnDefect.performClick(); break;
+            case R.id.layout_architecture: dataBinding.researchPopup.spnArchitecture.performClick(); break;
+            case R.id.layout_length: showKeyboard(this, dataBinding.researchPopup.editLength); break;
+            case R.id.layout_width: showKeyboard(this, dataBinding.researchPopup.editWidth); break;
+            case R.id.layout_height: showKeyboard(this, dataBinding.researchPopup.editHeight); break;
+            case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.editCount); break;
+            case R.id.layout_picture: getCameraImage(this); break;
+        }
+    }
+    private void resetInputPopupContentLayout() {
+        dataBinding.researchPopup.layoutMaterial.setSelected(false);
+        dataBinding.researchPopup.layoutDirection.setSelected(false);
+        dataBinding.researchPopup.layoutDefect.setSelected(false);
+        dataBinding.researchPopup.layoutArchitecture.setSelected(false);
+        dataBinding.researchPopup.layoutLength.setSelected(false);
+        dataBinding.researchPopup.layoutWidth.setSelected(false);
+        dataBinding.researchPopup.layoutHeight.setSelected(false);
+        dataBinding.researchPopup.layoutCount.setSelected(false);
     }
 
     // 도면 선택 다이얼로그 출력
@@ -541,86 +651,33 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     //TODO request table data list api
     private void requestDrawingPointDataList() {
-        pinList.clear();
-        for (int i = 0; i < pinPointArray.length; i++) {
-            final DrawingPointData data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i]);
-            if (pinTypeArray[i] == DrawingType.NORMAL || pinTypeArray[i] == DrawingType.IMAGE) {
-                int count = i % 3 + 1;
-                final List<String> regUrlList = new ArrayList<>(Arrays.asList(urlArray));
-                regUrlList.subList(count, regUrlList.size()).clear();
-
-                final List<Bitmap> regImageList = new ArrayList<>();
-                for (int j = 0; j < regUrlList.size(); j++) {
-                    final int index = j;
-                    Glide.with(AppApplication.getContext()).asBitmap().load(regUrlList.get(j)).into(new CustomTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
-                            regImageList.add(bitmap);
-                            if (regImageList.size() == regUrlList.size()) {
-                                data.setRegImageList(regImageList);
-                                dataBinding.imgDrawings.invalidate();
-                            }
-                        }
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {}
-                    });
-                }
-            }
-            pinList.add(data);
-        }
+//        pinList.clear();
+//        for (int i = 0; i < pinPointArray.length; i++) {
+//            final DrawingPointData data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i]);
+//            if (pinTypeArray[i] == DrawingType.NORMAL || pinTypeArray[i] == DrawingType.IMAGE) {
+//                int count = i % 3 + 1;
+//                final List<String> regUrlList = new ArrayList<>(Arrays.asList(urlArray));
+//                regUrlList.subList(count, regUrlList.size()).clear();
+//
+//                final List<Bitmap> regImageList = new ArrayList<>();
+//                for (String uri : regUrlList) {
+//                    Glide.with(AppApplication.getContext()).asBitmap().load(uri).into(new CustomTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
+//                            regImageList.add(bitmap);
+//                            if (regImageList.size() == regUrlList.size()) {
+//                                data.setRegImageList(regImageList);
+//                                dataBinding.imgDrawings.invalidate();
+//                            }
+//                        }
+//                        @Override
+//                        public void onLoadCleared(@Nullable Drawable placeholder) {}
+//                    });
+//                }
+//            }
+//            pinList.add(data);
+//        }
         dataBinding.imgDrawings.setPinList(pinList);
-    }
-
-    private void initPopupView() {
-        setSelectedTab(DrawingType.NORMAL);
-        dataBinding.researchPopup.layoutPictureList.setVisibility(View.GONE);
-        dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
-        dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
-        dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
-        dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
-        dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
-        dataBinding.researchPopup.memoView.layoutCanvas.clear();
-        dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
-    }
-
-    // popup tab update isSelected
-    private void setSelectedTab(DrawingType type) {
-        dataBinding.researchPopup.txtInputTab.setSelected(false);
-        dataBinding.researchPopup.txtPictureTab.setSelected(false);
-        dataBinding.researchPopup.txtRecodeTab.setSelected(false);
-        dataBinding.researchPopup.txtMemoTab.setSelected(false);
-
-        switch (type) {
-            case NORMAL: dataBinding.researchPopup.txtInputTab.setSelected(true); break;
-            case IMAGE: dataBinding.researchPopup.txtPictureTab.setSelected(true); break;
-            case VOICE: dataBinding.researchPopup.txtRecodeTab.setSelected(true); break;
-            case MEMO: dataBinding.researchPopup.txtMemoTab.setSelected(true); break;
-        }
-
-        dataBinding.researchPopup.layoutInput.setVisibility(type == DrawingType.NORMAL ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutInputPicture.setVisibility((type == DrawingType.NORMAL || type == DrawingType.IMAGE) ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutRecode.setVisibility(type == DrawingType.VOICE ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutMemo.setVisibility(type == DrawingType.MEMO ? View.VISIBLE : View.GONE);
-
-        regPointData.setType(type);
-    }
-
-    //TODO get picture data
-    private void getPictureDataList() {
-        listPictureData.clear();
-
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("img_url", "https://www.dropbox.com/s/puuidymupu4tmon/sample_img.png?dl=0");
-            listPictureData.add(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        pictureListAdapter.setList(listPictureData);
-        pictureListAdapter.notifyDataSetChanged();
-
-        dataBinding.researchPopup.layoutPictureList.setVisibility(View.VISIBLE);
     }
 
     private void recode() {
@@ -658,23 +715,5 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     public void startRecodePlay() {
         dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
         dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.VISIBLE);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void initCanvas() {
-        dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
-        dataBinding.researchPopup.memoView.layoutCanvas.setDrawer(CanvasView.Drawer.PEN);
-        dataBinding.researchPopup.memoView.layoutCanvas.setBaseColor(getResources().getColor(R.color.colorWhite));
-        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStyle(Paint.Style.STROKE);
-        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeColor(getResources().getColor(R.color.colorBlack));
-        dataBinding.researchPopup.memoView.layoutCanvas.setPaintStrokeWidth(8);
-
-        dataBinding.researchPopup.memoView.layoutCanvas.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.GONE);
-                return false;
-            }
-        });
     }
 }

@@ -1,7 +1,17 @@
 package kr.co.bcoben.activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
+
+import androidx.core.app.ActivityCompat;
+
+import java.util.UUID;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.component.BaseActivity;
@@ -21,7 +31,15 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
     }
 
     @Override
-    protected void initView() {}
+    protected void initView() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        String tmDevice = tm.getDeviceId();
+        Log.e(TAG, "Device IMEI : " + tmDevice);
+    }
 
     @Override
     public void onBackPressed() {

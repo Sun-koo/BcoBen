@@ -3,6 +3,7 @@ package kr.co.bcoben.activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,6 +54,7 @@ import tellh.com.recyclertreeview_lib.TreeViewAdapter;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.getAppVersion;
+import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
@@ -177,6 +180,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         requestProjectList();
         requestProjectDataList();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri uri = getImageResult(this, requestCode, resultCode, data);
+        if (uri != null) {
+            Log.e(TAG, "onActivityResult : " + uri);
+        }
     }
 
     @Override

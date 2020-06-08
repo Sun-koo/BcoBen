@@ -22,6 +22,7 @@
     <color name="colorTextNavy">#636780</color>
     <color name="colorTextGray">#B2B2B2</color>
     <color name="colorTextLightGray">#A3A3A3</color>
+    <color name="colorTextDialogContent">#707070</color>
     <color name="colorHintBlue">#C5C9E3</color>
     <color name="colorHintPink">#EBD0CE</color>
     <color name="colorHintGray">#C3C3C3</color>
