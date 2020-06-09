@@ -20,6 +20,7 @@
     <string name="cancel">취소</string>
     <string name="delete">삭제</string>
     <string name="confirm">확인</string>
+    <string name="registration">등록</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="plus_button">+ 등록</string>
@@ -88,9 +89,11 @@
     <string name="side_menu_architecture">구조형식</string>
     <string name="side_menu_research_category">조사종류</string>
     <string name="side_menu_research_button">조사 입력하기</string>
+    <string name="side_menu_research_move_home">홈 이동</string>
     <string name="side_menu_please_select">선택하세요</string>
     <string name="side_menu_detail_safe_check">정밀안전진단</string>
     <string name="side_menu_hint_self">직접입력</string>
+    <string name="side_menu_hint_goal_count">목표개소</string>
     <string name="side_menu_summary">프로젝트 개요</string>
     <string name="side_menu_drawings">도면</string>
     <string name="side_menu_project_button">프로젝트 생성하기</string>
@@ -110,6 +113,7 @@
     <string name="toast_input_facility_category">시설을 분류를 입력해주세요</string>
     <string name="toast_input_architecture">구조형식을 입력해주세요</string>
     <string name="toast_input_research">조사종류를 입력해주세요</string>
+    <string name="toast_input_research_count">목표개소를 입력해주세요</string>
     <string name="toast_input_project_name">프로젝트명을 입력해주세요</string>
     <string name="toast_input_project_date">프로젝트 기간을 입력해주세요</string>
     <string name="toast_input_select_grade">진단등급을 선택해주세요</string>

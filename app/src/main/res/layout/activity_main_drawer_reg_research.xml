@@ -226,6 +226,19 @@
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/btn_input_research_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="22.5dp"
+                android:layout_marginBottom="22.5dp"
+                android:background="@null"
+                android:onClick="onClick"
+                android:text="@string/side_menu_research_move_home"
+                android:textColor="@color/colorWhite"
+                android:textSize="18dp"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -250,15 +263,6 @@
                     android:textColor="@color/colorTextLabel"
                     android:textSize="21dp" />
 
-                <ImageButton
-                    android:id="@+id/btn_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@null"
-                    android:onClick="onClick"
-                    android:src="@drawable/btn_next" />
             </RelativeLayout>
 
             <View

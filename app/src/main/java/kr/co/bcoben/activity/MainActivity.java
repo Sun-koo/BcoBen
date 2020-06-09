@@ -224,15 +224,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             case R.id.btn_input_research:
                 goToDrawingsPage();
                 break;
-            case R.id.btn_next:
-                researchNextStep();
+            case R.id.btn_input_research_home: case R.id.btn_input_project_cancel:
+                closeDrawer();
                 break;
             // side menu(project)
             case R.id.btn_input_project:
 
-                break;
-            case R.id.btn_input_project_cancel:
-                closeDrawer();
                 break;
             case R.id.btn_project_next:
                 projectNextStep();
@@ -400,23 +397,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         switch (currentResearchStep) {
             case GRADE:
                 dataBinding.mainDrawer.layoutRegResearch.layoutGrade.setSelected(true);
-                menuSelectListAdapter.setList(regResearchGrade);
+                menuSelectListAdapter.setList(regResearchGrade, false);
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegResearch.layoutFacility.setSelected(true);
-                menuSelectListAdapter.setList(regResearchFacility);
+                menuSelectListAdapter.setList(regResearchFacility, false);
                 break;
             case FACILITY_CATEGORY:
                 dataBinding.mainDrawer.layoutRegResearch.layoutFacilityCategory.setSelected(true);
-                menuSelectListAdapter.setList(regResearchFacCate);
+                menuSelectListAdapter.setList(regResearchFacCate, false);
                 break;
             case ARCHITECTURE:
                 dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setSelected(true);
-                menuSelectListAdapter.setList(regResearchArchitecture);
+                menuSelectListAdapter.setList(regResearchArchitecture, false);
                 break;
             case RESEARCH:
                 dataBinding.mainDrawer.layoutRegResearch.layoutResearch.setSelected(true);
-                menuSelectListAdapter.setList(regResearchResearch);
+                menuSelectListAdapter.setList(regResearchResearch, true);
                 break;
         }
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
@@ -487,7 +484,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 //        dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
     }
 
-    private void researchNextStep() {
+    public void researchNextStep() {
         String name = menuSelectListAdapter.getEditName();
         switch (currentResearchStep) {
             case GRADE:
@@ -519,10 +516,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 regResearchArchitecture.add(name);
                 break;
             case RESEARCH:
+                String count = menuSelectListAdapter.getEditCount();
+                if (count.isEmpty()) {
+                    showToast(R.string.toast_input_research_count);
+                    return;
+                }
                 if (name.isEmpty()) {
                     showToast(R.string.toast_input_research);
                     return;
                 }
+                name = "(" + count + "개소) " + name;
                 regResearchResearch.add(name);
                 break;
         }
@@ -810,7 +813,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             regResearchResearch.add("(20개소) " + projectResearchTitle[i]);
         }
 
-        menuSelectListAdapter.setList(regResearchGrade);
+        menuSelectListAdapter.setList(regResearchGrade, false);
     }
 
     private void initMenuFacilityTreeData() {
