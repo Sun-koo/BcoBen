@@ -20,6 +20,7 @@ import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
 
 public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBinding> implements View.OnClickListener {
 
+    static boolean isHomeReturn = false;
     private List<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
 
@@ -54,6 +55,15 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         dataBinding.recyclerDrawings.setAdapter(drawingsListAdapter);
 
         requestDrawingsList();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isHomeReturn) {
+            finish();
+        }
+        isHomeReturn = false;
     }
 
     @Override

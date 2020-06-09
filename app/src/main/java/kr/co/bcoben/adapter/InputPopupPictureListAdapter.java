@@ -1,6 +1,7 @@
 package kr.co.bcoben.adapter;
 
-import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,26 +9,29 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-
-import org.json.JSONObject;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.activity.DrawingsActivity;
+import kr.co.bcoben.component.DrawingPictureDialog;
 
 public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopupPictureListAdapter.InputPopupPictureHolder> {
 
-    private Activity activity;
+    private DrawingsActivity activity;
     private List<String> list;
     private List<Uri> uploadList;
 
-    public InputPopupPictureListAdapter(Activity activity, List<String> list) {
+    public InputPopupPictureListAdapter(DrawingsActivity activity, List<String> list) {
         this.activity = activity;
         this.list = list;
         this.uploadList = new ArrayList<>();
@@ -54,22 +58,36 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
                 } else {
                     uploadList.remove(position - list.size());
                 }
+                activity.setPictureCount(getItemCount());
                 notifyDataSetChanged();
             }
         });
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Glide.with(activity)
+                        .asBitmap()
+                        .load(position < list.size() ? list.get(position) : uploadList.get(position - list.size()))
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                DrawingPictureDialog.builder(activity)
+                                        .setPicture(resource)
+                                        .build()
+                                        .show();
+                            }
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {}
+                        });
             }
         });
+        activity.setPictureCount(getItemCount());
     }
 
     @Override
     public int getItemCount() {
         return list.size() + uploadList.size();
     }
-
     public void setList(List<String> list) {
         this.list = list;
         notifyDataSetChanged();

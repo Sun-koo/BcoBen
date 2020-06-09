@@ -20,7 +20,8 @@ import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
+    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
+
     private Handler handler = new Handler();
     private Runnable runnable;
 
@@ -29,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        if (requestPermission(this, permission)) {
+        if (requestPermission(this, PERMISSION)) {
             startApp();
         }
     }
@@ -54,7 +55,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         final PermissionState state = resultRequestPermission(this, permissions, grantResults);
 
@@ -62,7 +63,8 @@ public class SplashActivity extends AppCompatActivity {
             startApp();
         } else {
             PermissionDialog.builder(this)
-                    .setConfirmListener(new PermissionDialog.BtnClickListener() {
+                    .setTxtPermissionContent(R.string.dialog_permission_content)
+                    .setBtnConfirmListener(new PermissionDialog.BtnClickListener() {
                         @Override
                         public void onClick(PermissionDialog dialog) {
                             if (state == PermissionState.ALWAYS_DENY) {
@@ -71,8 +73,15 @@ public class SplashActivity extends AppCompatActivity {
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                                 startActivityForResult(intent, 123);
                             } else if (state == PermissionState.DENY) {
-                                requestPermission(SplashActivity.this, permissions);
+                                requestPermission(SplashActivity.this, PERMISSION);
                             }
+                            dialog.dismiss();
+                        }
+                    })
+                    .setBtnCloseListener(new PermissionDialog.BtnClickListener() {
+                        @Override
+                        public void onClick(PermissionDialog dialog) {
+                            startApp();
                             dialog.dismiss();
                         }
                     }).show();

@@ -75,7 +75,6 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         spinnerList.add("전체");
         spinnerList.add("건축");
         spinnerList.add("지하도상가");
-        spinnerList.add("지하도상가지하도상가");
 
         dataBinding.spnResearchOrder.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_research, spinnerList));
 

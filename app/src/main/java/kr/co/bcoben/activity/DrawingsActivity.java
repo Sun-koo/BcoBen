@@ -1,5 +1,6 @@
 package kr.co.bcoben.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.PointF;
@@ -15,10 +16,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -26,6 +25,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -66,6 +66,8 @@ import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
+
+    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
 
     // drawing
     private float initScale;
@@ -133,11 +135,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Uri photoUri = getImageResult(this, requestCode, resultCode, data);
         if (photoUri != null) {
             inputPopupPictureListAdapter.addImage(photoUri);
-            dataBinding.researchPopup.txtPictureCount.setText("(" + inputPopupPictureListAdapter.getItemCount() + "건)");
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -267,10 +274,19 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         setSpinnerListener(dataBinding.researchPopup.spnDefect, dataBinding.researchPopup.editDefect, dataBinding.researchPopup.txtDefect);
         setSpinnerListener(dataBinding.researchPopup.spnArchitecture, dataBinding.researchPopup.editArchitecture, dataBinding.researchPopup.txtArchitecture);
 
-        dataBinding.researchPopup.editLength.setOnFocusChangeListener(popupEditFocusChangeListener());
-        dataBinding.researchPopup.editWidth.setOnFocusChangeListener(popupEditFocusChangeListener());
-        dataBinding.researchPopup.editHeight.setOnFocusChangeListener(popupEditFocusChangeListener());
-        dataBinding.researchPopup.editCount.setOnFocusChangeListener(popupEditFocusChangeListener());
+        View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                resetInputPopupContentLayout();
+                if (hasFocus) {
+                    ((RelativeLayout) v.getParent()).setSelected(true);
+                }
+            }
+        };
+        dataBinding.researchPopup.editLength.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.editWidth.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.editHeight.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.editCount.setOnFocusChangeListener(focusChangeListener);
 
         // 사진 탭
         inputPopupPictureListAdapter = new InputPopupPictureListAdapter(this, pictureDataList);
@@ -355,17 +371,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
-    private View.OnFocusChangeListener popupEditFocusChangeListener() {
-        return new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                resetInputPopupContentLayout();
-                if (hasFocus) {
-                    ((RelativeLayout) v.getParent()).setSelected(true);
-                }
-            }
-        };
-    }
     private void resetInputPopup() {
         setSelectedTab(DrawingType.NORMAL);
         resetInputPopupContentLayout();
@@ -385,8 +390,62 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
         dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
+    }
+    private void calculateScale(boolean plus) {
+        if (plus) {
+            switch (currentScale) {
+                case 2: currentScale = 3; break;
+                case 3: currentScale = 4; break;
+                case 4: currentScale = 8; break;
+                case 8: currentScale = 12; break;
+                default: return;
+            }
+        } else {
+            switch (currentScale) {
+                case 3: currentScale = 2; break;
+                case 4: currentScale = 3; break;
+                case 8: currentScale = 4; break;
+                case 12: currentScale = 8; break;
+                default: return;
+            }
+        }
+        dataBinding.imgDrawings.animateScale(initScale * currentScale / 2.0f).withDuration(500).start();
+        showScaleView();
+    }
+    private void showScaleView() {
+        DecimalFormat df = new DecimalFormat("0.#");
+        String scaleStr = "x" + df.format(currentScale / 2.0f) + "배";
 
-        dataBinding.researchPopup.txtPictureCount.setText("(" + inputPopupPictureListAdapter.getItemCount() + "건)");
+        dataBinding.layoutScale.setVisibility(View.VISIBLE);
+        dataBinding.txtScale.setText(scaleStr);
+
+        final Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                dataBinding.layoutScale.setVisibility(View.GONE);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                dataBinding.layoutScale.startAnimation(fadeOut);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        dataBinding.layoutScale.startAnimation(fadeIn);
+    }
+    public void setPictureCount(int count) {
+        dataBinding.researchPopup.txtPictureCount.setText("(" + count + "건)");
     }
 
     @Override
@@ -404,13 +463,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     public void onClick(View v) {
         hideKeyboard(this);
         switch (v.getId()) {
-            case R.id.btn_home:
-            case R.id.btn_close:
-                finish();
-                break;
-
+            case R.id.btn_home: DrawingsListActivity.isHomeReturn = true;
+            case R.id.btn_close: finish(); break;
             case R.id.btn_save:
-                //TODO For Test
                 showDrawingsSelectDialog();
                 break;
             case R.id.layout_picture_popup:
@@ -422,7 +477,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.btn_zoom_out:
                 calculateScale(false);
                 break;
-
             case R.id.btn_table_handle:
                 boolean isSelected = dataBinding.btnTableHandle.isSelected();
                 dataBinding.btnTableHandle.setSelected(!isSelected);
@@ -568,67 +622,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             }
         });
         dialog.show();
-    }
-
-    private void calculateScale(boolean plus) {
-        if (plus) {
-            switch (currentScale) {
-                case 2: currentScale = 3; break;
-                case 3: currentScale = 4; break;
-                case 4: currentScale = 8; break;
-                case 8: currentScale = 12; break;
-                default: return;
-            }
-        } else {
-            switch (currentScale) {
-                case 3: currentScale = 2; break;
-                case 4: currentScale = 3; break;
-                case 8: currentScale = 4; break;
-                case 12: currentScale = 8; break;
-                default: return;
-            }
-        }
-        dataBinding.imgDrawings.animateScale(initScale * currentScale / 2.0f).withDuration(500).start();
-        showScaleView();
-    }
-
-    // 현재 줌 배수 출력
-    private void showScaleView() {
-        DecimalFormat df = new DecimalFormat("0.#");
-        String scaleStr = "x" + df.format(currentScale / 2.0f) + "배";
-
-        dataBinding.layoutScale.setVisibility(View.VISIBLE);
-        dataBinding.txtScale.setText(scaleStr);
-
-        final Animation fadeOut = new AlphaAnimation(1, 0);
-        fadeOut.setInterpolator(new AccelerateInterpolator());
-        fadeOut.setDuration(1000);
-        fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                dataBinding.layoutScale.setVisibility(View.GONE);
-            }
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
-
-        Animation fadeIn = new AlphaAnimation(0, 1);
-        fadeIn.setInterpolator(new DecelerateInterpolator());
-        fadeIn.setDuration(1000);
-        fadeIn.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                dataBinding.layoutScale.startAnimation(fadeOut);
-            }
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
-
-        dataBinding.layoutScale.startAnimation(fadeIn);
     }
 
     //TODO request table data list api

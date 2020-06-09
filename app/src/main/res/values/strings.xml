@@ -3,7 +3,7 @@
     <string name="dialog_app_finish_title">서비스 종료</string>
     <string name="dialog_app_finish_content">앱을 종료 하시겠습니까?</string>
     <string name="dialog_permission_title">앱 권한</string>
-    <string name="dialog_permission_content">권한을 허용하지 않으면 앱을 사용할 수 없습니다</string>
+    <string name="dialog_permission_content">정상적인 앱 사용을 위해 권한을 허용해 주십시오</string>
     <string name="dialog_permission_exit">종료</string>
     <string name="dialog_permission_setting">권한 설정</string>
 
@@ -34,6 +34,7 @@
     <string name="toast_input_pw">비밀번호를 입력해주세요</string>
     <string name="toast_invalid_id">아이디 양식이 맞지 않습니다. 확인해 주세요</string>
     <string name="toast_invalid_pw">비밀번호 양식이 맞지 않습니다. 확인해 주세요</string>
+    <string name="dialog_permission_content_phone">로그인 하시려면 디바이스 정보를 가져오기 위해\n[전화] 권한을 허용해 주십시오</string>
 
     <!--인증 번호 입력 화면-->
     <string name="certificate_title">휴대전화로 전송된\n인증 번호를 입력하세요.</string>
