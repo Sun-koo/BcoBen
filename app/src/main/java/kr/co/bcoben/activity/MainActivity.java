@@ -48,6 +48,7 @@ import kr.co.bcoben.component.CameraDialog;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 import kr.co.bcoben.model.MenuCheckData;
+import kr.co.bcoben.model.MenuDrawingsData;
 import kr.co.bcoben.model.MenuSelectFacilityData;
 import kr.co.bcoben.model.ProjectData;
 import kr.co.bcoben.model.ProjectListData;
@@ -100,7 +101,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<MenuCheckData> regProjectGrade = new ArrayList<>();
     private List<MenuSelectFacilityData> regProjectFacility = new ArrayList<>();
     private List<MenuCheckData> regProjectResearch = new ArrayList<>();
-    private List<String> regDrawingsList = new ArrayList<>();
+    private List<MenuDrawingsData> regDrawingsList = new ArrayList<>();
+    private String checkedFacility = "";
 
     private List<CheckBox> cbList = new ArrayList<>();
 
@@ -198,7 +200,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = getImageResult(this, requestCode, resultCode, data);
         if (uri != null) {
-            menuDrawingsListAdapter.addImage(uri);
+            regDrawingsList.add(new MenuDrawingsData(uri.getLastPathSegment(), checkedFacility, uri));
+            menuDrawingsListAdapter.setList(regDrawingsList);
             dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("(" + menuDrawingsListAdapter.getItemCount() + "건)");
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -255,6 +258,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dialog_end.show();
                 break;
             case R.id.btn_drawings_upload:
+                if (checkedFacility.equals("")) {
+                    showToast(R.string.toast_input_select_facility);
+                    return;
+                }
                 showCameraDialog();
                 break;
 
@@ -718,7 +725,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dialog.selectCameraListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
                 dialog.dismiss();
                 getCameraImage(MainActivity.this);
             }
@@ -726,7 +732,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dialog.selectAlbumInputListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
                 dialog.dismiss();
                 getGalleryImage(MainActivity.this);
             }
@@ -891,7 +896,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void facilityCheckListItemAdd(String item) {
         LinearLayout view = (LinearLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_menu_check_facility, null);
 
-        TextView facilityName = view.findViewById(R.id.txt_facility_name);
+        final TextView facilityName = view.findViewById(R.id.txt_facility_name);
         final CheckBox cbFacility = view.findViewById(R.id.cb_facility);
 
         cbList.add(cbFacility);
@@ -905,6 +910,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 for (CheckBox cb : cbList) {
                     cb.setChecked(cb == cbFacility);
                 }
+                checkedFacility = facilityName.getText().toString();
             }
         });
         dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.addView(view);

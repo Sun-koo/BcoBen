@@ -24,17 +24,16 @@ import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsListActivity;
+import kr.co.bcoben.model.MenuDrawingsData;
 
 public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsListAdapter.MenuDrawingsHolder> {
 
     private Activity activity;
-    private List<String> list;
-    private List<Uri> uploadList;
+    private List<MenuDrawingsData> list;
 
-    public MenuDrawingsListAdapter(Activity activity, List<String> list) {
+    public MenuDrawingsListAdapter(Activity activity, List<MenuDrawingsData> list) {
         this.activity = activity;
         this.list = list;
-        this.uploadList = new ArrayList<>();
     }
 
     @NonNull
@@ -46,17 +45,17 @@ public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsLi
 
     @Override
     public void onBindViewHolder(@NonNull MenuDrawingsHolder holder, final int position) {
-//        holder.txtName.setText(list.get(position));
-        holder.txtFacilityName.setText("본관동");
+        holder.txtName.setText(list.get(position).getName());
+        holder.txtFacilityName.setText(list.get(position).getFacility());
 
         Glide.with(activity.getApplicationContext())
-                .load(uploadList.get(position))
+                .load(list.get(position).getUri())
                 .into(holder.ivDrawings);
 
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadList.remove(position);
+                list.remove(position);
                 notifyDataSetChanged();
             }
         });
@@ -64,15 +63,11 @@ public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsLi
 
     @Override
     public int getItemCount() {
-        return uploadList.size();
+        return list.size();
     }
 
-    public void setList(List<String> list) {
+    public void setList(List<MenuDrawingsData> list) {
         this.list = list;
-        notifyDataSetChanged();
-    }
-    public void addImage(Uri uri) {
-        uploadList.add(uri);
         notifyDataSetChanged();
     }
 
