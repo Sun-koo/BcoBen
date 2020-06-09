@@ -28,6 +28,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -56,18 +57,23 @@ import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
+import kr.co.bcoben.util.CommonUtil.PermissionState;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
 import static kr.co.bcoben.util.CommonUtil.getFileChooserImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
+import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
-    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
+    private final String[] RECODE_PERMISSION = {Manifest.permission.RECORD_AUDIO};
+    private final String[] IMAGE_PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+    private final int RECODE_PERMISSION_CODE = 301;
+    private final int IMAGE_PERMISSION_CODE = 302;
 
     // drawing
     private float initScale;
@@ -137,7 +143,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionState state = resultRequestPermission(this, permissions, grantResults);
 
+        if (state == PermissionState.GRANT) {
+
+        } else {
+
+        }
     }
 
     @Override
@@ -264,40 +276,40 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     public void initInputPopup() {
         // 입력 탭
-        dataBinding.researchPopup.spnMaterial.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
-        dataBinding.researchPopup.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
-        dataBinding.researchPopup.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
-        dataBinding.researchPopup.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.inputView.spnMaterial.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.inputView.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.inputView.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.inputView.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
 
-        setSpinnerListener(dataBinding.researchPopup.spnMaterial, dataBinding.researchPopup.editMaterial, dataBinding.researchPopup.txtMaterial);
-        setSpinnerListener(dataBinding.researchPopup.spnDirection, dataBinding.researchPopup.editDirection, dataBinding.researchPopup.txtDirection);
-        setSpinnerListener(dataBinding.researchPopup.spnDefect, dataBinding.researchPopup.editDefect, dataBinding.researchPopup.txtDefect);
-        setSpinnerListener(dataBinding.researchPopup.spnArchitecture, dataBinding.researchPopup.editArchitecture, dataBinding.researchPopup.txtArchitecture);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnMaterial, dataBinding.researchPopup.inputView.editMaterial, dataBinding.researchPopup.inputView.txtMaterial);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnDirection, dataBinding.researchPopup.inputView.editDirection, dataBinding.researchPopup.inputView.txtDirection);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnDefect, dataBinding.researchPopup.inputView.editDefect, dataBinding.researchPopup.inputView.txtDefect);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnArchitecture, dataBinding.researchPopup.inputView.editArchitecture, dataBinding.researchPopup.inputView.txtArchitecture);
 
         View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 resetInputPopupContentLayout();
                 if (hasFocus) {
-                    ((RelativeLayout) v.getParent()).setSelected(true);
+                    ((ConstraintLayout) v.getParent()).setSelected(true);
                 }
             }
         };
-        dataBinding.researchPopup.editLength.setOnFocusChangeListener(focusChangeListener);
-        dataBinding.researchPopup.editWidth.setOnFocusChangeListener(focusChangeListener);
-        dataBinding.researchPopup.editHeight.setOnFocusChangeListener(focusChangeListener);
-        dataBinding.researchPopup.editCount.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editLength.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editWidth.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editHeight.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editCount.setOnFocusChangeListener(focusChangeListener);
 
         // 사진 탭
         inputPopupPictureListAdapter = new InputPopupPictureListAdapter(this, pictureDataList);
-        dataBinding.researchPopup.recyclerPicture.setAdapter(inputPopupPictureListAdapter);
-        dataBinding.researchPopup.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        dataBinding.researchPopup.pictureView.recyclerPicture.setAdapter(inputPopupPictureListAdapter);
+        dataBinding.researchPopup.pictureView.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
 
         // 음성 탭
         listRecodingData = new ArrayList<>();
         recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
-        dataBinding.researchPopup.recodeView.recyclerRecode.setAdapter(recodeListAdapter);
-        dataBinding.researchPopup.recodeView.recyclerRecode.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        dataBinding.researchPopup.recodeView.recyclerRecord.setAdapter(recodeListAdapter);
+        dataBinding.researchPopup.recodeView.recyclerRecord.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         recordThread = new Thread(new Runnable() {
             @Override
@@ -373,21 +385,25 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
     private void resetInputPopup() {
         setSelectedTab(DrawingType.NORMAL);
-        resetInputPopupContentLayout();
-        dataBinding.researchPopup.spnMaterial.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
-        dataBinding.researchPopup.spnDirection.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
-        dataBinding.researchPopup.spnDefect.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
-        dataBinding.researchPopup.spnArchitecture.setSelection(dataBinding.researchPopup.spnMaterial.getCount());
-        dataBinding.researchPopup.editLength.setText("");
-        dataBinding.researchPopup.editWidth.setText("");
-        dataBinding.researchPopup.editHeight.setText("");
-        dataBinding.researchPopup.editCount.setText("");
 
-        dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
-        dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
-        dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
-        dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
-        dataBinding.researchPopup.memoView.layoutGuideContainer.setVisibility(View.VISIBLE);
+        // 입력탭
+        resetInputPopupContentLayout();
+        dataBinding.researchPopup.inputView.spnMaterial.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
+        dataBinding.researchPopup.inputView.spnDirection.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
+        dataBinding.researchPopup.inputView.spnDefect.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
+        dataBinding.researchPopup.inputView.spnArchitecture.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
+        dataBinding.researchPopup.inputView.editLength.setText("");
+        dataBinding.researchPopup.inputView.editWidth.setText("");
+        dataBinding.researchPopup.inputView.editHeight.setText("");
+        dataBinding.researchPopup.inputView.editCount.setText("");
+
+        // 사진탭
+        pictureDataList = new ArrayList<>();
+        inputPopupPictureListAdapter.setList(pictureDataList);
+
+        // 음성탭
+
+        // 메모탭
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
         dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
     }
@@ -445,7 +461,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.layoutScale.startAnimation(fadeIn);
     }
     public void setPictureCount(int count) {
-        dataBinding.researchPopup.txtPictureCount.setText("(" + count + "건)");
+        dataBinding.researchPopup.pictureView.txtPictureCount.setText("(" + count + "건)");
     }
 
     @Override
@@ -516,24 +532,24 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 dataBinding.imgDrawings.addPin(regPointData);
                 break;
 
-            case R.id.btn_recode:
-                dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.GONE);
-                dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.VISIBLE);
-                dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
-                dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.GONE);
+            case R.id.btn_record:
+                dataBinding.researchPopup.recodeView.btnRecord.setVisibility(View.GONE);
+                dataBinding.researchPopup.recodeView.layoutRecording.setVisibility(View.VISIBLE);
+                dataBinding.researchPopup.recodeView.recyclerRecord.setVisibility(View.GONE);
+                dataBinding.researchPopup.recodeView.layoutRecordPlay.setVisibility(View.GONE);
 
                 recode();
                 break;
 
-            case R.id.btn_recode_stop:
+            case R.id.btn_record_stop:
                 if (isRecoding) {
-                    dataBinding.researchPopup.recodeView.btnRecodeStop.setText(R.string.popup_reg_research_recode_save);
+                    dataBinding.researchPopup.recodeView.btnRecordStop.setText(R.string.popup_reg_research_recode_save);
                 } else {
-                    dataBinding.researchPopup.recodeView.btnRecode.setVisibility(View.VISIBLE);
-                    dataBinding.researchPopup.recodeView.layoutRecoding.setVisibility(View.GONE);
+                    dataBinding.researchPopup.recodeView.btnRecord.setVisibility(View.VISIBLE);
+                    dataBinding.researchPopup.recodeView.layoutRecording.setVisibility(View.GONE);
                     //TODO get recoded real data
                     getRecodeDataList();
-                    dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.VISIBLE);
+                    dataBinding.researchPopup.recodeView.recyclerRecord.setVisibility(View.VISIBLE);
                 }
 
                 isRecoding = false;
@@ -565,7 +581,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         }
 
         dataBinding.researchPopup.layoutInput.setVisibility(type == DrawingType.NORMAL ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutInputPicture.setVisibility((type == DrawingType.NORMAL || type == DrawingType.IMAGE) ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutPicture.setVisibility((type == DrawingType.NORMAL || type == DrawingType.IMAGE) ? View.VISIBLE : View.GONE);
         dataBinding.researchPopup.layoutRecode.setVisibility(type == DrawingType.VOICE ? View.VISIBLE : View.GONE);
         dataBinding.researchPopup.layoutMemo.setVisibility(type == DrawingType.MEMO ? View.VISIBLE : View.GONE);
 
@@ -578,26 +594,26 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         v.setSelected(true);
 
         switch (v.getId()) {
-            case R.id.layout_material: dataBinding.researchPopup.spnMaterial.performClick(); break;
-            case R.id.layout_direction: dataBinding.researchPopup.spnDirection.performClick(); break;
-            case R.id.layout_defect: dataBinding.researchPopup.spnDefect.performClick(); break;
-            case R.id.layout_architecture: dataBinding.researchPopup.spnArchitecture.performClick(); break;
-            case R.id.layout_length: showKeyboard(this, dataBinding.researchPopup.editLength); break;
-            case R.id.layout_width: showKeyboard(this, dataBinding.researchPopup.editWidth); break;
-            case R.id.layout_height: showKeyboard(this, dataBinding.researchPopup.editHeight); break;
-            case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.editCount); break;
-            case R.id.layout_picture: getFileChooserImage(this); break;
+            case R.id.layout_material: dataBinding.researchPopup.inputView.spnMaterial.performClick(); break;
+            case R.id.layout_direction: dataBinding.researchPopup.inputView.spnDirection.performClick(); break;
+            case R.id.layout_defect: dataBinding.researchPopup.inputView.spnDefect.performClick(); break;
+            case R.id.layout_architecture: dataBinding.researchPopup.inputView.spnArchitecture.performClick(); break;
+            case R.id.layout_length: showKeyboard(this, dataBinding.researchPopup.inputView.editLength); break;
+            case R.id.layout_width: showKeyboard(this, dataBinding.researchPopup.inputView.editWidth); break;
+            case R.id.layout_height: showKeyboard(this, dataBinding.researchPopup.inputView.editHeight); break;
+            case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.inputView.editCount); break;
+            case R.id.layout_picture_register: getFileChooserImage(this); break;
         }
     }
     private void resetInputPopupContentLayout() {
-        dataBinding.researchPopup.layoutMaterial.setSelected(false);
-        dataBinding.researchPopup.layoutDirection.setSelected(false);
-        dataBinding.researchPopup.layoutDefect.setSelected(false);
-        dataBinding.researchPopup.layoutArchitecture.setSelected(false);
-        dataBinding.researchPopup.layoutLength.setSelected(false);
-        dataBinding.researchPopup.layoutWidth.setSelected(false);
-        dataBinding.researchPopup.layoutHeight.setSelected(false);
-        dataBinding.researchPopup.layoutCount.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutMaterial.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutDirection.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutDefect.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutArchitecture.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutLength.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutWidth.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutHeight.setSelected(false);
+        dataBinding.researchPopup.inputView.layoutCount.setSelected(false);
     }
 
     // 도면 선택 다이얼로그 출력
@@ -680,7 +696,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private void recode() {
         if (isRecoding) {
             isRecoding = false;
-            dataBinding.researchPopup.recodeView.btnRecodeStop.setText(R.string.popup_reg_research_recode_save);
+            dataBinding.researchPopup.recodeView.btnRecordStop.setText(R.string.popup_reg_research_recode_save);
         } else {
             isRecoding = true;
 
@@ -710,7 +726,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     public void startRecodePlay() {
-        dataBinding.researchPopup.recodeView.recyclerRecode.setVisibility(View.GONE);
-        dataBinding.researchPopup.recodeView.layoutRecodePlay.setVisibility(View.VISIBLE);
+        dataBinding.researchPopup.recodeView.recyclerRecord.setVisibility(View.GONE);
+        dataBinding.researchPopup.recodeView.layoutRecordPlay.setVisibility(View.VISIBLE);
     }
 }
