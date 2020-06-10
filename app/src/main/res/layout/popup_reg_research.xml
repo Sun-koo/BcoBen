@@ -59,7 +59,7 @@
                         android:textSize="14dp"/>
 
                     <TextView
-                        android:id="@+id/txt_recode_tab"
+                        android:id="@+id/txt_record_tab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_drawing_input_tab"
@@ -68,7 +68,7 @@
                         android:paddingBottom="9dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
-                        android:text="@string/popup_reg_research_recode"
+                        android:text="@string/popup_reg_research_record"
                         android:textColor="@color/text_drawing_input_tab"
                         android:textSize="14dp"/>
 
@@ -156,14 +156,14 @@
                 </ScrollView>
 
                 <LinearLayout
-                    android:id="@+id/layout_recode"
+                    android:id="@+id/layout_record"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone">
 
                     <include
-                        android:id="@+id/recode_view"
+                        android:id="@+id/record_view"
                         layout="@layout/popup_reg_research_record"
                         android:layout_width="match_parent"
                         android:layout_height="306dp"/>

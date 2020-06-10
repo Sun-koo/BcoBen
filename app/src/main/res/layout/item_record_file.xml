@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_white_popup_menu"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layout_record_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="22dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="39dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/txt_record_info_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="11 음성녹음-1"
+            android:textColor="@color/colorBlack"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/txt_record_info_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="03:20"
+            android:textColor="@color/colorBlack"
+            android:textSize="13dp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_record_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_keycolor_popup_menu"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt_record_play_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="11 음성녹음 - 1(자동완성)"
+                android:textColor="@color/colorWhite"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/txt_record_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="4dp"
+                android:padding="14dp"
+                android:text="@string/delete"
+                android:textColor="@color/colorWhite"
+                android:textSize="13dp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="9dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="9dp">
+
+            <TextView
+                android:id="@+id/txt_record_current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/colorWhite"
+                android:textSize="13dp" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/seek_record_play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/txt_record_total_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/colorWhite"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="11dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_backwards"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/btn_round_pink"
+                android:text="@string/popup_reg_research_record_backwards"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/btn_stop"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_round_pink"
+                android:text="@string/popup_reg_research_record_stop"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/btn_forward"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/btn_round_pink"
+                android:text="@string/popup_reg_research_record_forward"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

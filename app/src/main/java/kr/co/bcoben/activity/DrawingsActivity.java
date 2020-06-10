@@ -20,9 +20,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,40 +39,47 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingInputSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
 import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
-import kr.co.bcoben.adapter.RecodeListAdapter;
+import kr.co.bcoben.adapter.RecordListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
+import kr.co.bcoben.model.RecordData;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
+import kr.co.bcoben.util.RecordUtil;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
 import static kr.co.bcoben.util.CommonUtil.getFileChooserImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
+import static kr.co.bcoben.util.CommonUtil.requestPermission;
 import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
+import static kr.co.bcoben.util.RecordUtil.stopAudio;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
-    private final String[] RECODE_PERMISSION = {Manifest.permission.RECORD_AUDIO};
+    private final String[] RECORD_PERMISSION = {Manifest.permission.RECORD_AUDIO};
     private final String[] IMAGE_PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
-    private final int RECODE_PERMISSION_CODE = 301;
+    private final int RECORD_PERMISSION_CODE = 301;
     private final int IMAGE_PERMISSION_CODE = 302;
 
     // drawing
@@ -98,9 +105,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     public AudioRecord audioRecord = null;
     public Thread recordThread = null;
     private boolean isRecoding = false;
-    private RecodeListAdapter recodeListAdapter;
-    private ArrayList<JSONObject> listRecodingData;
-    private Uri photoUri;
+
+    private String recordName;
+    private int recordTime;
+    private Timer recordTimer;
+    private File recordFile;
+    private RecordListAdapter recordListAdapter;
+    private List<RecordData> recordDataList = new ArrayList<>();
 
     // Dummy Data
     private String[] inputDataArray = {"부풀음", "점부식", "박리", "백악화", "직접입력", ""};
@@ -146,7 +157,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         PermissionState state = resultRequestPermission(this, permissions, grantResults);
 
         if (state == PermissionState.GRANT) {
-
+            if (requestCode == RECORD_PERMISSION_CODE) {
+                startRecord();
+            } else if (requestCode == IMAGE_PERMISSION_CODE) {
+                getFileChooserImage(this);
+            }
         } else {
 
         }
@@ -306,10 +321,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.pictureView.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
 
         // 음성 탭
-        listRecodingData = new ArrayList<>();
-        recodeListAdapter = new RecodeListAdapter(this, listRecodingData);
-        dataBinding.researchPopup.recodeView.recyclerRecord.setAdapter(recodeListAdapter);
-        dataBinding.researchPopup.recodeView.recyclerRecord.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recordListAdapter = new RecordListAdapter(this, recordDataList);
+        dataBinding.researchPopup.recordView.recyclerRecord.setAdapter(recordListAdapter);
+        dataBinding.researchPopup.recordView.recyclerRecord.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         recordThread = new Thread(new Runnable() {
             @Override
@@ -532,28 +546,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 dataBinding.imgDrawings.addPin(regPointData);
                 break;
 
-            case R.id.btn_record:
-                dataBinding.researchPopup.recodeView.btnRecord.setVisibility(View.GONE);
-                dataBinding.researchPopup.recodeView.layoutRecording.setVisibility(View.VISIBLE);
-                dataBinding.researchPopup.recodeView.recyclerRecord.setVisibility(View.GONE);
-                dataBinding.researchPopup.recodeView.layoutRecordPlay.setVisibility(View.GONE);
-
-                recode();
-                break;
-
-            case R.id.btn_record_stop:
-                if (isRecoding) {
-                    dataBinding.researchPopup.recodeView.btnRecordStop.setText(R.string.popup_reg_research_recode_save);
-                } else {
-                    dataBinding.researchPopup.recodeView.btnRecord.setVisibility(View.VISIBLE);
-                    dataBinding.researchPopup.recodeView.layoutRecording.setVisibility(View.GONE);
-                    //TODO get recoded real data
-                    getRecodeDataList();
-                    dataBinding.researchPopup.recodeView.recyclerRecord.setVisibility(View.VISIBLE);
-                }
-
-                isRecoding = false;
-                break;
         }
     }
 
@@ -563,26 +555,26 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.btn_popup_close: dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE); break;
             case R.id.txt_input_tab: setSelectedTab(DrawingType.NORMAL); break;
             case R.id.txt_picture_tab: setSelectedTab(DrawingType.IMAGE); break;
-            case R.id.txt_recode_tab: setSelectedTab(DrawingType.VOICE); break;
+            case R.id.txt_record_tab: setSelectedTab(DrawingType.VOICE); break;
             case R.id.txt_memo_tab: setSelectedTab(DrawingType.MEMO); break;
         }
     }
     private void setSelectedTab(DrawingType type) {
         dataBinding.researchPopup.txtInputTab.setSelected(false);
         dataBinding.researchPopup.txtPictureTab.setSelected(false);
-        dataBinding.researchPopup.txtRecodeTab.setSelected(false);
+        dataBinding.researchPopup.txtRecordTab.setSelected(false);
         dataBinding.researchPopup.txtMemoTab.setSelected(false);
 
         switch (type) {
             case NORMAL: dataBinding.researchPopup.txtInputTab.setSelected(true); break;
             case IMAGE: dataBinding.researchPopup.txtPictureTab.setSelected(true); break;
-            case VOICE: dataBinding.researchPopup.txtRecodeTab.setSelected(true); break;
+            case VOICE: dataBinding.researchPopup.txtRecordTab.setSelected(true); break;
             case MEMO: dataBinding.researchPopup.txtMemoTab.setSelected(true); break;
         }
 
         dataBinding.researchPopup.layoutInput.setVisibility(type == DrawingType.NORMAL ? View.VISIBLE : View.GONE);
         dataBinding.researchPopup.layoutPicture.setVisibility((type == DrawingType.NORMAL || type == DrawingType.IMAGE) ? View.VISIBLE : View.GONE);
-        dataBinding.researchPopup.layoutRecode.setVisibility(type == DrawingType.VOICE ? View.VISIBLE : View.GONE);
+        dataBinding.researchPopup.layoutRecord.setVisibility(type == DrawingType.VOICE ? View.VISIBLE : View.GONE);
         dataBinding.researchPopup.layoutMemo.setVisibility(type == DrawingType.MEMO ? View.VISIBLE : View.GONE);
 
         regPointData.setType(type);
@@ -602,7 +594,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.layout_width: showKeyboard(this, dataBinding.researchPopup.inputView.editWidth); break;
             case R.id.layout_height: showKeyboard(this, dataBinding.researchPopup.inputView.editHeight); break;
             case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.inputView.editCount); break;
-            case R.id.layout_picture_register: getFileChooserImage(this); break;
+            case R.id.layout_picture_register:
+                if (requestPermission(this, IMAGE_PERMISSION, IMAGE_PERMISSION_CODE)) {
+                    getFileChooserImage(this);
+                }
+                break;
         }
     }
     private void resetInputPopupContentLayout() {
@@ -614,6 +610,30 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.layoutWidth.setSelected(false);
         dataBinding.researchPopup.inputView.layoutHeight.setSelected(false);
         dataBinding.researchPopup.inputView.layoutCount.setSelected(false);
+    }
+
+    public void onInputPopupRecordClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_record:
+                if (requestPermission(this, RECORD_PERMISSION, RECORD_PERMISSION_CODE)) {
+                    startRecord();
+                }
+                break;
+            case R.id.btn_record_stop:
+                String txt = ((Button) v).getText().toString();
+                if (txt.equals(getString(R.string.popup_reg_research_record_stop))) {
+                    RecordUtil.stopRecord();
+                    recordTimer.cancel();
+                    dataBinding.researchPopup.recordView.btnRecordStop.setText(R.string.popup_reg_research_record_save);
+                } else {
+                    dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.VISIBLE);
+                    dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.GONE);
+
+                    RecordData recordData = new RecordData(recordFile, null, recordName, recordTime);
+                    recordListAdapter.addData(recordData);
+                }
+                break;
+        }
     }
 
     // 도면 선택 다이얼로그 출력
@@ -693,40 +713,30 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.imgDrawings.setPinList(pinList);
     }
 
-    private void recode() {
-        if (isRecoding) {
-            isRecoding = false;
-            dataBinding.researchPopup.recodeView.btnRecordStop.setText(R.string.popup_reg_research_recode_save);
-        } else {
-            isRecoding = true;
+    private void startRecord() {
+        stopAudio();
+        dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.GONE);
+        dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.VISIBLE);
+        recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (recordDataList.size() + 1);
+        dataBinding.researchPopup.recordView.txtRecordingName.setText(recordName + "(자동완성)");
 
-            if (audioRecord == null) {
-                audioRecord = new AudioRecord(audioSource, sampleRate, channelCount, audioFormat, bufferSize);
-                audioRecord.startRecording();
+        recordFile = RecordUtil.startRecord(recordName);
+        recordTimer = new Timer();
+        recordTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                DecimalFormat df = new DecimalFormat("00");
+                int min = recordTime / 60;
+                int sec = recordTime % 60;
+                final String time = df.format(min) + ":" + df.format(sec);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataBinding.researchPopup.recordView.txtRecordingTimer.setText(time);
+                    }
+                });
+                recordTime++;
             }
-            recordThread.start();
-        }
-    }
-
-    //TODO get recoding data
-    private void getRecodeDataList() {
-        listRecodingData.clear();
-
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", "11 음성녹음-1");
-            jsonObject.put("time", "03:20");
-            listRecodingData.add(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        recodeListAdapter.setList(listRecodingData);
-        recodeListAdapter.notifyDataSetChanged();
-    }
-
-    public void startRecodePlay() {
-        dataBinding.researchPopup.recodeView.recyclerRecord.setVisibility(View.GONE);
-        dataBinding.researchPopup.recodeView.layoutRecordPlay.setVisibility(View.VISIBLE);
+        }, 0, 1000);
     }
 }

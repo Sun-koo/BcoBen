@@ -128,7 +128,7 @@
 
     <!--도면 상세 화면-->
     <string name="drawings_memo">메모</string>
-    <string name="drawings_recode">녹음</string>
+    <string name="drawings_record">녹음</string>
     <string name="drawings_picture">사진</string>
     <string name="drawings_input">입력</string>
 
@@ -149,7 +149,7 @@
     <!--조사 데이터 등록 팝업-->
     <string name="popup_reg_research_input">입력</string>
     <string name="popup_reg_research_picture">사진</string>
-    <string name="popup_reg_research_recode">음성</string>
+    <string name="popup_reg_research_record">음성</string>
     <string name="popup_reg_research_memo">메모</string>
     <string name="popup_reg_research_reg">등록하기</string>
 
@@ -170,11 +170,12 @@
     <string name="popup_reg_research_picture_count_title">등록 항목</string>
 
     <!--조사 데이터 등록 팝업 음성 Tab-->
-    <string name="popup_reg_research_recode_click">클릭하여 녹음하세요</string>
-    <string name="popup_reg_research_recode_stop">일시중지</string>
-    <string name="popup_reg_research_recode_backwards">-10초</string>
-    <string name="popup_reg_research_recode_forward">+10초</string>
-    <string name="popup_reg_research_recode_save">저장</string>
+    <string name="popup_reg_research_record_click">클릭하여 녹음하세요</string>
+    <string name="popup_reg_research_record_start">재생</string>
+    <string name="popup_reg_research_record_stop">일시중지</string>
+    <string name="popup_reg_research_record_backwards">-10초</string>
+    <string name="popup_reg_research_record_forward">+10초</string>
+    <string name="popup_reg_research_record_save">저장</string>
 
     <!--조사 데이터 등록 팝업 메모 Tab-->
     <string name="popup_reg_research_memo_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>
