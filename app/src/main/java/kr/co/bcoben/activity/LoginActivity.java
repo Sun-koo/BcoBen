@@ -18,6 +18,7 @@ import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.databinding.ActivityLoginBinding;
 import kr.co.bcoben.model.LoginResponseData;
 import kr.co.bcoben.model.ResponseData;
+import kr.co.bcoben.model.UserData;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil;
 import retrofit2.Call;
@@ -103,6 +104,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                         @Override
                         public void onResponse(Call<ResponseData<LoginResponseData>> call, Response<ResponseData<LoginResponseData>> response) {
                             if (response.body().isResult()) {
+                                UserData.getInstance().setCompanyId(response.body().getData().getUser().getCompany_id());
                                 Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
                                 startActivity(intent_login);
                                 overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);

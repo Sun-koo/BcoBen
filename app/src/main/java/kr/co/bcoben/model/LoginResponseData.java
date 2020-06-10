@@ -16,26 +16,26 @@ public class LoginResponseData implements DataModel {
     }
 
     public class User {
-        private int userId;
+        private int user_id;
         private String id;
         private String name;
-        private String companyId;
-        private String deviceId;
+        private String company_id;
+        private String device_id;
 
-        public User(int userId, String id, String name, String companyId, String deviceId) {
-            this.userId = userId;
+        public User(int user_id, String id, String name, String company_id, String device_id) {
+            this.user_id = user_id;
             this.id = id;
             this.name = name;
-            this.companyId = companyId;
-            this.deviceId = deviceId;
+            this.company_id = company_id;
+            this.device_id = device_id;
         }
 
-        public int getUserId() {
-            return userId;
+        public int getUser_id() {
+            return user_id;
         }
 
-        public void setUserId(int userId) {
-            this.userId = userId;
+        public void setUser_id(int user_id) {
+            this.user_id = user_id;
         }
 
         public String getId() {
@@ -54,20 +54,20 @@ public class LoginResponseData implements DataModel {
             this.name = name;
         }
 
-        public String getCompanyId() {
-            return companyId;
+        public String getCompany_id() {
+            return company_id;
         }
 
-        public void setCompanyId(String companyId) {
-            this.companyId = companyId;
+        public void setCompany_id(String company_id) {
+            this.company_id = company_id;
         }
 
-        public String getDeviceId() {
-            return deviceId;
+        public String getDevice_id() {
+            return device_id;
         }
 
-        public void setDeviceId(String deviceId) {
-            this.deviceId = deviceId;
+        public void setDevice_id(String device_id) {
+            this.device_id = device_id;
         }
     }
 }
