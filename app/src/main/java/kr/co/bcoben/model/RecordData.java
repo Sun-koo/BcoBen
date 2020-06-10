@@ -49,7 +49,13 @@ public class RecordData {
         return playTime;
     }
     public void setPlayTime(int playTime) {
-        this.playTime = playTime;
+        if (playTime < 0) {
+            this.playTime = 0;
+        } else if (playTime > recordTime) {
+            this.playTime = recordTime;
+        } else {
+            this.playTime = playTime;
+        }
     }
     public boolean isPlay() {
         return isPlay;

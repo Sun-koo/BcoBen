@@ -8,9 +8,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class RecordUtil {
+
+    private static final String TAG = "RecordUtil";
     private static MediaRecorder recorder;
     private static MediaPlayer player;
     private static int playPosition = 0;
+    private static PlayCompleteListener playCompleteListener;
+
+    public interface PlayCompleteListener {
+        void onComplete();
+    }
 
     // 녹음 시작
     public static File startRecord(String filename) {
@@ -35,6 +42,7 @@ public class RecordUtil {
     public static void stopRecord() {
         if (recorder != null) {
             recorder.stop();
+            recorder.reset();
             recorder.release();
             recorder = null;
         }
@@ -43,15 +51,31 @@ public class RecordUtil {
     // 오디오 파일 재생
     public static void playAudio(String filename) {
         if (player != null) {
-            player.release();
+            player.stop();
             player = null;
         }
 
         try {
             player = new MediaPlayer();
             player.setDataSource(filename);
-            player.prepare();
-            player.start();
+            player.prepareAsync();
+            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    playPosition = 0;
+                    mp.start();
+                }
+            });
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    Log.e(TAG, mp.getCurrentPosition() + "");
+                    playPosition = 0;
+                    if (playCompleteListener != null) {
+                        playCompleteListener.onComplete();
+                    }
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,7 +84,6 @@ public class RecordUtil {
     // 오디오 파일 일시중지
     public static void pauseAudio() {
         if (player != null) {
-            Log.e("RecordUtil", "pauseAudio : " + playPosition);
             playPosition = player.getCurrentPosition();
             player.pause();
         }
@@ -69,7 +92,6 @@ public class RecordUtil {
     // 오디오 파일 다시재생
     public static void resumeAudio() {
         if (player != null && !player.isPlaying()) {
-            Log.e("RecordUtil", "resumeAudio : " + playPosition);
             player.seekTo(playPosition);
             player.start();
         }
@@ -84,8 +106,18 @@ public class RecordUtil {
         }
     }
 
+    // 오디오 재생위치 변경
+    public static void setPlayPosition(int sec) {
+        player.seekTo(player.getCurrentPosition() + sec);
+    }
+
     // 오디오 파일 재생 플래그
     public static boolean isPlaying() {
         return player.isPlaying();
+    }
+
+    // 오디오 파일 재생 완료 리스너
+    public static void setPlayCompleteListener(PlayCompleteListener playCompleteListener) {
+        RecordUtil.playCompleteListener = playCompleteListener;
     }
 }
