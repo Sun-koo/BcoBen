@@ -18,8 +18,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="2dp"
-                android:onClick="onClick">
-            </kr.co.bcoben.component.CanvasView>
+                android:onClick="onClick"/>
 
             <TextView
                 android:id="@+id/txt_guide"

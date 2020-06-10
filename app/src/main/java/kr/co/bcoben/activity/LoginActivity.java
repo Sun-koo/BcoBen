@@ -16,12 +16,21 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.databinding.ActivityLoginBinding;
+import kr.co.bcoben.model.LoginResponseData;
+import kr.co.bcoben.model.ResponseData;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.requestPermission;
 import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 import static kr.co.bcoben.util.CommonUtil.showToast;
+import static kr.co.bcoben.util.ValidateUtil.StringPattern.ALPHA_NUM;
+import static kr.co.bcoben.util.ValidateUtil.StringPattern.CASE_ALPHA_NUM;
+import static kr.co.bcoben.util.ValidateUtil.stringPatternCheck;
 
 public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements View.OnClickListener{
 
@@ -90,9 +99,21 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
 
                 if (checkValidInput(id, pw)) {
                     //TODO request login api
-                    Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
-                    startActivity(intent_login);
-                    overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+                    RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new Callback<ResponseData<LoginResponseData>>() {
+                        @Override
+                        public void onResponse(Call<ResponseData<LoginResponseData>> call, Response<ResponseData<LoginResponseData>> response) {
+                            if (response.body().isResult()) {
+                                Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
+                                startActivity(intent_login);
+                                overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseData<LoginResponseData>> call, Throwable t) {
+
+                        }
+                    });
                 }
                 break;
         }
@@ -100,22 +121,22 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
 
     // 아이디, 비밀번호 유효성 검사
     private boolean checkValidInput(String id, String pw) {
-//        if (id.isEmpty()) {
-//            showToast(R.string.toast_input_id);
-//            return false;
-//        }
-//        if (pw.isEmpty()) {
-//            showToast(R.string.toast_input_pw);
-//            return false;
-//        }
-//        if (!stringPatternCheck(id, ALPHA_NUM, 6, -1)) {
-//            showToast(R.string.toast_invalid_id);
-//            return false;
-//        }
-//        if (!stringPatternCheck(pw, CASE_ALPHA_NUM, 10, -1)) {
-//            showToast(R.string.toast_invalid_pw);
-//            return false;
-//        }
+        if (id.isEmpty()) {
+            showToast(R.string.toast_input_id);
+            return false;
+        }
+        if (pw.isEmpty()) {
+            showToast(R.string.toast_input_pw);
+            return false;
+        }
+        if (!stringPatternCheck(id, ALPHA_NUM, 6, -1)) {
+            showToast(R.string.toast_invalid_id);
+            return false;
+        }
+        if (!stringPatternCheck(pw, CASE_ALPHA_NUM, 10, -1)) {
+            showToast(R.string.toast_invalid_pw);
+            return false;
+        }
         if (deviceId == null) {
             return requestPermission(this, PERMISSION);
         }
