@@ -778,46 +778,46 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //TODO request project list api
     private void requestProjectList() {
-        projectList.clear();
-
-        RetrofitClient.getRetrofitApi().userProjectList(UserData.getInstance().getCompanyId()).enqueue(new Callback<ResponseData<UserProjectListResponseData>>() {
-            @Override
-            public void onResponse(Call<ResponseData<UserProjectListResponseData>> call, Response<ResponseData<UserProjectListResponseData>> response) {
-                boolean isFirst = true;
-                if (response.body().isResult()) {
-                    ArrayList<UserProjectListResponseData.UserProjectList> list = response.body().getData().getUserProjectList();
-
-                    for (UserProjectListResponseData.UserProjectList data : list) {
-                        ProjectListData projectListData = new ProjectListData(data.getProject_name());
-                        if (isFirst) {
-                            projectListData.setSelected(true);
-                            isFirst = false;
-                        }
-                        projectList.add(projectListData);
-                    }
-                    projectListAdapter.setList(projectList);
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseData<UserProjectListResponseData>> call, Throwable t) {
-
-            }
-        });
-
 //        projectList.clear();
-//        boolean isFirst = true;
-//        for (String name : projectName) {
-//            ProjectListData data = new ProjectListData(name);
-//            if (isFirst) {
-//                data.setSelected(true);
-//                isFirst = false;
+//
+//        RetrofitClient.getRetrofitApi().userProjectList(UserData.getInstance().getCompanyId()).enqueue(new Callback<ResponseData<UserProjectListResponseData>>() {
+//            @Override
+//            public void onResponse(Call<ResponseData<UserProjectListResponseData>> call, Response<ResponseData<UserProjectListResponseData>> response) {
+//                boolean isFirst = true;
+//                if (response.body().isResult()) {
+//                    ArrayList<UserProjectListResponseData.UserProjectList> list = response.body().getData().getUserProjectList();
+//
+//                    for (UserProjectListResponseData.UserProjectList data : list) {
+//                        ProjectListData projectListData = new ProjectListData(data.getProject_name());
+//                        if (isFirst) {
+//                            projectListData.setSelected(true);
+//                            isFirst = false;
+//                        }
+//                        projectList.add(projectListData);
+//                    }
+//                    projectListAdapter.setList(projectList);
+//                } else {
+//
+//                }
 //            }
-//            projectList.add(data);
-//        }
-//        projectListAdapter.setList(projectList);
+//
+//            @Override
+//            public void onFailure(Call<ResponseData<UserProjectListResponseData>> call, Throwable t) {
+//
+//            }
+//        });
+
+        projectList.clear();
+        boolean isFirst = true;
+        for (String name : projectName) {
+            ProjectListData data = new ProjectListData(name);
+            if (isFirst) {
+                data.setSelected(true);
+                isFirst = false;
+            }
+            projectList.add(data);
+        }
+        projectListAdapter.setList(projectList);
     }
 
     //TODO request project data list api
@@ -935,25 +935,25 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void requestRegResearchData() {
-//        regResearchGrade.clear();
-//        regResearchFacility.clear();
-//        regResearchFacCate.clear();
-//        regResearchArchitecture.clear();
-//        regResearchResearch.clear();
-//
-//        regResearchGrade.addAll(Arrays.asList(projectGrade));
-//        regResearchFacility.addAll(Arrays.asList(projectFacility));
-//        regResearchFacCate.addAll(Arrays.asList(projectResearchFacCate));
-//        regResearchArchitecture.addAll(Arrays.asList(projectRew esearchArch));
-//        for (int i = 0; i < projectResearchTitle.length; i++) {
-//            regResearchResearch.add("(20개소) " + projectResearchTitle[i]);
-//        }
-//
-//        menuSelectListAdapter.setList(regResearchGrade, false);
-        requestResearchFacilityData("3");
-        requestResearchFacCateData("3");
-        requestResearchArchData("3");
-        requestResearchResearchData("3");
+        regResearchGrade.clear();
+        regResearchFacility.clear();
+        regResearchFacCate.clear();
+        regResearchArchitecture.clear();
+        regResearchResearch.clear();
+
+        regResearchGrade.addAll(Arrays.asList(projectGrade));
+        regResearchFacility.addAll(Arrays.asList(projectFacility));
+        regResearchFacCate.addAll(Arrays.asList(projectResearchFacCate));
+        regResearchArchitecture.addAll(Arrays.asList(projectResearchArch));
+        for (int i = 0; i < projectResearchTitle.length; i++) {
+            regResearchResearch.add("(20개소) " + projectResearchTitle[i]);
+        }
+
+        menuSelectListAdapter.setList(regResearchGrade, false);
+//        requestResearchFacilityData("3");
+//        requestResearchFacCateData("3");
+//        requestResearchArchData("3");
+//        requestResearchResearchData("3");
     }
 
     private void initMenuFacilityTreeData() {
