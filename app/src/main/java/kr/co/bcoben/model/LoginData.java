@@ -1,9 +1,9 @@
 package kr.co.bcoben.model;
 
-public class LoginResponseData implements DataModel {
+public class LoginData implements DataModel {
     private User user;
 
-    public LoginResponseData(User user) {
+    public LoginData(User user) {
         this.user = user;
     }
 

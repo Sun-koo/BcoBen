@@ -1,24 +1,25 @@
 package kr.co.bcoben.model;
 
-import java.util.ArrayList;
 
-public class UserResearchListResponseData implements DataModel {
-    private ArrayList<UserResearchList> userCheckTypeList;
+import java.util.List;
 
-    public ArrayList<UserResearchList> getUserCheckTypeList() {
-        return userCheckTypeList;
+public class ResearchListData implements DataModel {
+    private List<ResearchList> user_checktype_list;
+
+    public List<ResearchList> getUser_checktype_list() {
+        return user_checktype_list;
     }
 
-    public void setUserCheckTypeList(ArrayList<UserResearchList> userCheckTypeList) {
-        this.userCheckTypeList = userCheckTypeList;
+    public void setUser_checktype_list(List<ResearchList> user_checktype_list) {
+        this.user_checktype_list = user_checktype_list;
     }
 
-    public class UserResearchList {
+    public class ResearchList {
         private String checktype_id;
         private String checktype_name;
         private int goalcount;
 
-        public UserResearchList(String checktype_id, String checktype_name, int goalcount) {
+        public ResearchList(String checktype_id, String checktype_name, int goalcount) {
             this.checktype_id = checktype_id;
             this.checktype_name = checktype_name;
             this.goalcount = goalcount;

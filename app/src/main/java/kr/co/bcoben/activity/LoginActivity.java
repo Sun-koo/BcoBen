@@ -16,7 +16,7 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.databinding.ActivityLoginBinding;
-import kr.co.bcoben.model.LoginResponseData;
+import kr.co.bcoben.model.LoginData;
 import kr.co.bcoben.model.ResponseData;
 import kr.co.bcoben.model.UserData;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
@@ -100,9 +100,9 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
 
                 if (checkValidInput(id, pw)) {
                     //TODO request login api
-                    RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new Callback<ResponseData<LoginResponseData>>() {
+                    RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new Callback<ResponseData<LoginData>>() {
                         @Override
-                        public void onResponse(Call<ResponseData<LoginResponseData>> call, Response<ResponseData<LoginResponseData>> response) {
+                        public void onResponse(Call<ResponseData<LoginData>> call, Response<ResponseData<LoginData>> response) {
                             if (response.body().isResult()) {
                                 UserData.getInstance().setCompanyId(response.body().getData().getUser().getCompany_id());
                                 Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
@@ -112,7 +112,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                         }
 
                         @Override
-                        public void onFailure(Call<ResponseData<LoginResponseData>> call, Throwable t) {
+                        public void onFailure(Call<ResponseData<LoginData>> call, Throwable t) {
 
                         }
                     });

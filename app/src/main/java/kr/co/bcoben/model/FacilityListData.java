@@ -1,23 +1,24 @@
 package kr.co.bcoben.model;
 
-import java.util.ArrayList;
 
-public class UserFacilityListResponseData implements DataModel {
-    private ArrayList<UserFacilityList> userFacilityList;
+import java.util.List;
 
-    public ArrayList<UserFacilityList> getUserFacilityList() {
-        return userFacilityList;
+public class FacilityListData implements DataModel {
+    private List<FacilityList> user_facility_list;
+
+    public List<FacilityList> getUser_facility_list() {
+        return user_facility_list;
     }
 
-    public void setUserFacilityList(ArrayList<UserFacilityList> userFacilityList) {
-        this.userFacilityList = userFacilityList;
+    public void setUser_facility_list(List<FacilityList> user_facility_list) {
+        this.user_facility_list = user_facility_list;
     }
 
-    public class UserFacilityList {
+    public class FacilityList {
         private String facility_id;
         private String facility_name;
 
-        public UserFacilityList(String facility_id, String facility_name) {
+        public FacilityList(String facility_id, String facility_name) {
             this.facility_id = facility_id;
             this.facility_name = facility_name;
         }

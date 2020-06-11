@@ -6,12 +6,10 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,7 +31,6 @@ import java.util.Locale;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.Dir;
-import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
 import kr.co.bcoben.adapter.MenuCheckFacilityListAdapter;
 import kr.co.bcoben.adapter.MenuCheckInputListAdapter;
 import kr.co.bcoben.adapter.MenuCheckListAdapter;
@@ -45,7 +42,6 @@ import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CameraDialog;
-import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.MenuDrawingsData;
@@ -54,12 +50,11 @@ import kr.co.bcoben.model.ProjectData;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectResearchData;
 import kr.co.bcoben.model.ResponseData;
-import kr.co.bcoben.model.UserArchListResponseData;
+import kr.co.bcoben.model.ArchitectureListData;
+import kr.co.bcoben.model.FacCateListData;
+import kr.co.bcoben.model.FacilityListData;
+import kr.co.bcoben.model.ResearchListData;
 import kr.co.bcoben.model.UserData;
-import kr.co.bcoben.model.UserFacCateListResponseData;
-import kr.co.bcoben.model.UserFacilityListResponseData;
-import kr.co.bcoben.model.UserProjectListResponseData;
-import kr.co.bcoben.model.UserResearchListResponseData;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -120,8 +115,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     // main
     private ProjectListAdapter projectListAdapter;
     private ProjectDataPageAdapter projectPageAdapter;
-    private List<ProjectListData> projectList = new ArrayList<>();
+    private List<ProjectListData.ProjectList> projectList = new ArrayList<>();
     private List<ProjectData> projectDataList = new ArrayList<>();
+    private String currentProjectId;
 
     // Dummy Data
     private String[] projectGrade = {"정밀안전진단", "긴급안전점검"};
@@ -161,10 +157,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         menuSelectListAdapter = new MenuSelectListAdapter(this, regResearchGrade);
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setAdapter(menuSelectListAdapter);
         dataBinding.mainDrawer.layoutRegResearch.recyclerContent.setLayoutManager(new LinearLayoutManager(this));
-
-        requestRegResearchData();
-        //TODO Delete For Test
-//        requestResearchFacilityData("3");
 
         menuCheckListAdapter = new MenuCheckListAdapter(this, regProjectGrade);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setAdapter(menuCheckListAdapter);
@@ -513,6 +505,28 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     return;
                 }
                 regResearchFacility.add(name);
+                //TODO
+//                RetrofitClient.getRetrofitApi().regFacility(currentProjectId, name).enqueue(new Callback<ResponseData<FacilityListData>>() {
+//                    @Override
+//                    public void onResponse(Call<ResponseData<FacilityListData>> call, Response<ResponseData<FacilityListData>> response) {
+//                        regResearchFacility.clear();
+//                        if (response.body().isResult()) {
+//                            List<FacilityListData.FacilityList> list = response.body().getData().getUser_facility_list();
+//
+//                            for (FacilityListData.FacilityList data : list) {
+//                                regResearchFacility.add(data.getFacility_name());
+//                            }
+//                            menuSelectListAdapter.setList(regResearchFacility, false);
+//                        } else {
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ResponseData<FacilityListData>> call, Throwable t) {
+//
+//                    }
+//                });
                 break;
             case FACILITY_CATEGORY:
                 if (name.isEmpty()) {
@@ -520,6 +534,28 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     return;
                 }
                 regResearchFacCate.add(name);
+                //TODO
+//                RetrofitClient.getRetrofitApi().regFacCate(currentProjectId, name).enqueue(new Callback<ResponseData<FacCateListData>>() {
+//                    @Override
+//                    public void onResponse(Call<ResponseData<FacCateListData>> call, Response<ResponseData<FacCateListData>> response) {
+//                        regResearchFacCate.clear();
+//                        if (response.body().isResult()) {
+//                            List<FacCateListData.FacCateList> list = response.body().getData().getUser_group_list();
+//
+//                            for (FacCateListData.FacCateList data : list) {
+//                                regResearchFacCate.add(data.getGroup_name());
+//                            }
+//                            menuSelectListAdapter.setList(regResearchFacCate, false);
+//                        } else {
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ResponseData<FacCateListData>> call, Throwable t) {
+//
+//                    }
+//                });
                 break;
             case ARCHITECTURE:
                 if (name.isEmpty()) {
@@ -527,6 +563,26 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     return;
                 }
                 regResearchArchitecture.add(name);
+//                RetrofitClient.getRetrofitApi().regArchitecture(currentProjectId, name).enqueue(new Callback<ResponseData<ArchitectureListData>>() {
+//                    @Override
+//                    public void onResponse(Call<ResponseData<ArchitectureListData>> call, Response<ResponseData<ArchitectureListData>> response) {
+//                        if (response.body().isResult()) {
+//                            List<ArchitectureListData.ArchitectureList> list = response.body().getData().getUser_structure_list();
+//
+//                            for (ArchitectureListData.ArchitectureList data : list) {
+//                                regResearchArchitecture.add(data.getStructure_name());
+//                            }
+//                            menuSelectListAdapter.setList(regResearchArchitecture, false);
+//                        } else {
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ResponseData<ArchitectureListData>> call, Throwable t) {
+//
+//                    }
+//                });
                 break;
             case RESEARCH:
                 String count = menuSelectListAdapter.getEditCount();
@@ -538,6 +594,27 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     showToast(R.string.toast_input_research);
                     return;
                 }
+//                RetrofitClient.getRetrofitApi().regResearch(currentProjectId, name, count).enqueue(new Callback<ResponseData<ResearchListData>>() {
+//                    @Override
+//                    public void onResponse(Call<ResponseData<ResearchListData>> call, Response<ResponseData<ResearchListData>> response) {
+//                        if (response.body().isResult()) {
+//                            List<ResearchListData.ResearchList> list = response.body().getData().getUser_checktype_list();
+//
+//                            for (ResearchListData.ResearchList data : list) {
+//                                regResearchResearch.add("(" + data.getGoalcount() + "개소) " + data.getChecktype_name());
+//                            }
+//                            menuSelectListAdapter.setList(regResearchResearch, true);
+//                        } else {
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ResponseData<ResearchListData>> call, Throwable t) {
+//
+//                    }
+//                });
+
                 name = "(" + count + "개소) " + name;
                 regResearchResearch.add(name);
                 break;
@@ -778,46 +855,29 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //TODO request project list api
     private void requestProjectList() {
-//        projectList.clear();
-//
-//        RetrofitClient.getRetrofitApi().userProjectList(UserData.getInstance().getCompanyId()).enqueue(new Callback<ResponseData<UserProjectListResponseData>>() {
-//            @Override
-//            public void onResponse(Call<ResponseData<UserProjectListResponseData>> call, Response<ResponseData<UserProjectListResponseData>> response) {
-//                boolean isFirst = true;
-//                if (response.body().isResult()) {
-//                    ArrayList<UserProjectListResponseData.UserProjectList> list = response.body().getData().getUserProjectList();
-//
-//                    for (UserProjectListResponseData.UserProjectList data : list) {
-//                        ProjectListData projectListData = new ProjectListData(data.getProject_name());
-//                        if (isFirst) {
-//                            projectListData.setSelected(true);
-//                            isFirst = false;
-//                        }
-//                        projectList.add(projectListData);
-//                    }
-//                    projectListAdapter.setList(projectList);
-//                } else {
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseData<UserProjectListResponseData>> call, Throwable t) {
-//
-//            }
-//        });
-
         projectList.clear();
-        boolean isFirst = true;
-        for (String name : projectName) {
-            ProjectListData data = new ProjectListData(name);
-            if (isFirst) {
-                data.setSelected(true);
-                isFirst = false;
+
+        RetrofitClient.getRetrofitApi().userProjectList(UserData.getInstance().getCompanyId()).enqueue(new Callback<ResponseData<ProjectListData>>() {
+            @Override
+            public void onResponse(Call<ResponseData<ProjectListData>> call, Response<ResponseData<ProjectListData>> response) {
+                if (response.body().isResult()) {
+                    List<ProjectListData.ProjectList> list = response.body().getData().getUser_project_list();
+                    list.get(0).setSelected(true);
+                    projectList = list;
+                    projectListAdapter.setList(projectList);
+
+                    requestRegResearchData();
+
+                } else {
+
+                }
             }
-            projectList.add(data);
-        }
-        projectListAdapter.setList(projectList);
+
+            @Override
+            public void onFailure(Call<ResponseData<ProjectListData>> call, Throwable t) {
+
+            }
+        });
     }
 
     //TODO request project data list api
@@ -839,17 +899,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
         projectPageAdapter.setProjectDataList(projectDataList);
     }
+
     // 등록된 시설물 리스트 조회 API
-    private void requestResearchFacilityData(String projectId) {
+    private void requestResearchFacilityData() {
         regResearchFacility.clear();
 
-        RetrofitClient.getRetrofitApi().userFacilityList(projectId).enqueue(new Callback<ResponseData<UserFacilityListResponseData>>() {
+        RetrofitClient.getRetrofitApi().userFacilityList(currentProjectId).enqueue(new Callback<ResponseData<FacilityListData>>() {
             @Override
-            public void onResponse(Call<ResponseData<UserFacilityListResponseData>> call, Response<ResponseData<UserFacilityListResponseData>> response) {
+            public void onResponse(Call<ResponseData<FacilityListData>> call, Response<ResponseData<FacilityListData>> response) {
                 if (response.body().isResult()) {
-                    ArrayList<UserFacilityListResponseData.UserFacilityList> list = response.body().getData().getUserFacilityList();
+                    List<FacilityListData.FacilityList> list = response.body().getData().getUser_facility_list();
 
-                    for (UserFacilityListResponseData.UserFacilityList data : list) {
+                    for (FacilityListData.FacilityList data : list) {
                         regResearchFacility.add(data.getFacility_name());
                     }
                     menuSelectListAdapter.setList(regResearchFacility, false);
@@ -859,22 +920,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
 
             @Override
-            public void onFailure(Call<ResponseData<UserFacilityListResponseData>> call, Throwable t) {
+            public void onFailure(Call<ResponseData<FacilityListData>> call, Throwable t) {
 
             }
         });
     }
     // 등록된 시설물 분류 리스트 조회 API
-    private void requestResearchFacCateData(String projectId) {
+    private void requestResearchFacCateData() {
         regResearchFacCate.clear();
 
-        RetrofitClient.getRetrofitApi().userFacCateList(projectId).enqueue(new Callback<ResponseData<UserFacCateListResponseData>>() {
+        RetrofitClient.getRetrofitApi().userFacCateList(currentProjectId).enqueue(new Callback<ResponseData<FacCateListData>>() {
             @Override
-            public void onResponse(Call<ResponseData<UserFacCateListResponseData>> call, Response<ResponseData<UserFacCateListResponseData>> response) {
+            public void onResponse(Call<ResponseData<FacCateListData>> call, Response<ResponseData<FacCateListData>> response) {
                 if (response.body().isResult()) {
-                    ArrayList<UserFacCateListResponseData.UserFacCateList> list = response.body().getData().getUserGroupList();
+                    List<FacCateListData.FacCateList> list = response.body().getData().getUser_group_list();
 
-                    for (UserFacCateListResponseData.UserFacCateList data : list) {
+                    for (FacCateListData.FacCateList data : list) {
                         regResearchFacCate.add(data.getGroup_name());
                     }
                     menuSelectListAdapter.setList(regResearchFacCate, false);
@@ -882,22 +943,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
 
             @Override
-            public void onFailure(Call<ResponseData<UserFacCateListResponseData>> call, Throwable t) {
+            public void onFailure(Call<ResponseData<FacCateListData>> call, Throwable t) {
 
             }
         });
     }
     // 등록된 구조형식 리스트 조회 API
-    private void requestResearchArchData(String projectId) {
+    private void requestResearchArchData() {
         regResearchArchitecture.clear();
 
-        RetrofitClient.getRetrofitApi().userArchList(projectId).enqueue(new Callback<ResponseData<UserArchListResponseData>>() {
+        RetrofitClient.getRetrofitApi().userArchList(currentProjectId).enqueue(new Callback<ResponseData<ArchitectureListData>>() {
             @Override
-            public void onResponse(Call<ResponseData<UserArchListResponseData>> call, Response<ResponseData<UserArchListResponseData>> response) {
+            public void onResponse(Call<ResponseData<ArchitectureListData>> call, Response<ResponseData<ArchitectureListData>> response) {
                 if (response.body().isResult()) {
-                    ArrayList<UserArchListResponseData.UserArchList> list = response.body().getData().getUserStructureList();
+                    List<ArchitectureListData.ArchitectureList> list = response.body().getData().getUser_structure_list();
 
-                    for (UserArchListResponseData.UserArchList data : list) {
+                    for (ArchitectureListData.ArchitectureList data : list) {
                         regResearchArchitecture.add(data.getStructure_name());
                     }
                     menuSelectListAdapter.setList(regResearchArchitecture, false);
@@ -905,22 +966,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
 
             @Override
-            public void onFailure(Call<ResponseData<UserArchListResponseData>> call, Throwable t) {
+            public void onFailure(Call<ResponseData<ArchitectureListData>> call, Throwable t) {
 
             }
         });
     }
     // 등록된 조사종류 리스트 조회 API
-    private void requestResearchResearchData(String projectId) {
+    private void requestResearchResearchData() {
         regResearchResearch.clear();
 
-        RetrofitClient.getRetrofitApi().userResearchList(projectId).enqueue(new Callback<ResponseData<UserResearchListResponseData>>() {
+        RetrofitClient.getRetrofitApi().userResearchList(currentProjectId).enqueue(new Callback<ResponseData<ResearchListData>>() {
             @Override
-            public void onResponse(Call<ResponseData<UserResearchListResponseData>> call, Response<ResponseData<UserResearchListResponseData>> response) {
+            public void onResponse(Call<ResponseData<ResearchListData>> call, Response<ResponseData<ResearchListData>> response) {
                 if (response.body().isResult()) {
-                    ArrayList<UserResearchListResponseData.UserResearchList> list = response.body().getData().getUserCheckTypeList();
+                    List<ResearchListData.ResearchList> list = response.body().getData().getUser_checktype_list();
 
-                    for (UserResearchListResponseData.UserResearchList data : list) {
+                    for (ResearchListData.ResearchList data : list) {
                         regResearchResearch.add("(" + data.getGoalcount() + "개소) " + data.getChecktype_name());
                     }
                     menuSelectListAdapter.setList(regResearchResearch, true);
@@ -928,32 +989,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
 
             @Override
-            public void onFailure(Call<ResponseData<UserResearchListResponseData>> call, Throwable t) {
+            public void onFailure(Call<ResponseData<ResearchListData>> call, Throwable t) {
 
             }
         });
     }
-
-    private void requestRegResearchData() {
-        regResearchGrade.clear();
-        regResearchFacility.clear();
-        regResearchFacCate.clear();
-        regResearchArchitecture.clear();
-        regResearchResearch.clear();
-
-        regResearchGrade.addAll(Arrays.asList(projectGrade));
-        regResearchFacility.addAll(Arrays.asList(projectFacility));
-        regResearchFacCate.addAll(Arrays.asList(projectResearchFacCate));
-        regResearchArchitecture.addAll(Arrays.asList(projectResearchArch));
-        for (int i = 0; i < projectResearchTitle.length; i++) {
-            regResearchResearch.add("(20개소) " + projectResearchTitle[i]);
+    // 조사 등록 시 (시설물,시설물분류,구조형식,조사종류) 리스트 데이터 조회
+    public void requestRegResearchData() {
+        for (ProjectListData.ProjectList data : projectList) {
+            if (data.isSelected()) {
+                currentProjectId = data.getProject_id();
+            }
         }
-
-        menuSelectListAdapter.setList(regResearchGrade, false);
-//        requestResearchFacilityData("3");
-//        requestResearchFacCateData("3");
-//        requestResearchArchData("3");
-//        requestResearchResearchData("3");
+        requestResearchFacilityData();
+        requestResearchFacCateData();
+        requestResearchArchData();
+        requestResearchResearchData();
     }
 
     private void initMenuFacilityTreeData() {

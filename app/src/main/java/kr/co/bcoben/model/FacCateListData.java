@@ -1,23 +1,24 @@
 package kr.co.bcoben.model;
 
-import java.util.ArrayList;
 
-public class UserFacCateListResponseData implements DataModel {
-    private ArrayList<UserFacCateList> userGroupList;
+import java.util.List;
 
-    public ArrayList<UserFacCateList> getUserGroupList() {
-        return userGroupList;
+public class FacCateListData implements DataModel {
+    private List<FacCateList> user_group_list;
+
+    public List<FacCateList> getUser_group_list() {
+        return user_group_list;
     }
 
-    public void setUserGroupList(ArrayList<UserFacCateList> userGroupList) {
-        this.userGroupList = userGroupList;
+    public void setUser_group_list(List<FacCateList> user_group_list) {
+        this.user_group_list = user_group_list;
     }
 
-    public class UserFacCateList {
+    public class FacCateList {
         private String group_id;
         private String group_name;
 
-        public UserFacCateList(String group_id, String group_name) {
+        public FacCateList(String group_id, String group_name) {
             this.group_id = group_id;
             this.group_name = group_name;
         }

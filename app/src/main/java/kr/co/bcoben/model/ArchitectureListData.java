@@ -1,23 +1,23 @@
 package kr.co.bcoben.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class UserArchListResponseData implements DataModel {
-    private ArrayList<UserArchList> userStructureList;
+public class ArchitectureListData implements DataModel {
+    private List<ArchitectureList> user_structure_list;
 
-    public ArrayList<UserArchList> getUserStructureList() {
-        return userStructureList;
+    public List<ArchitectureList> getUser_structure_list() {
+        return user_structure_list;
     }
 
-    public void setUserStructureList(ArrayList<UserArchList> userStructureList) {
-        this.userStructureList = userStructureList;
+    public void setUser_structure_list(List<ArchitectureList> user_structure_list) {
+        this.user_structure_list = user_structure_list;
     }
 
-    public class UserArchList {
+    public class ArchitectureList {
         private String structure_id;
         private String structure_name;
 
-        public UserArchList(String structure_id, String structure_name) {
+        public ArchitectureList(String structure_id, String structure_name) {
             this.structure_id = structure_id;
             this.structure_name = structure_name;
         }

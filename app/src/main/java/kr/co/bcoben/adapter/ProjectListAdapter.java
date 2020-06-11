@@ -17,9 +17,9 @@ import kr.co.bcoben.model.ProjectListData;
 public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.ProjectHolder> {
 
     private MainActivity activity;
-    private List<ProjectListData> list;
+    private List<ProjectListData.ProjectList> list;
 
-    public ProjectListAdapter(MainActivity activity, List<ProjectListData> list) {
+    public ProjectListAdapter(MainActivity activity, List<ProjectListData.ProjectList> list) {
         this.activity = activity;
         this.list = list;
     }
@@ -40,14 +40,14 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     public int getItemCount() {
         return list.size();
     }
-    public void setList(List<ProjectListData> list) {
+    public void setList(List<ProjectListData.ProjectList> list) {
         this.list = list;
         notifyDataSetChanged();
     }
     public String getSelectedProject() {
-        for (ProjectListData data : list) {
+        for (ProjectListData.ProjectList data : list) {
             if (data.isSelected()) {
-                return data.getProjectName();
+                return data.getProject_name();
             }
         }
         return null;
@@ -64,8 +64,8 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             txtName = view.findViewById(R.id.txt_name);
         }
 
-        void onBind(final ProjectListData item) {
-            txtName.setText(item.getProjectName());
+        void onBind(final ProjectListData.ProjectList item) {
+            txtName.setText(item.getProject_name());
             view.setSelected(item.isSelected());
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +76,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                         return;
                     }
 
-                    for (ProjectListData data : list) {
+                    for (ProjectListData.ProjectList data : list) {
                         data.setSelected(false);
                     }
                     item.setSelected(true);
