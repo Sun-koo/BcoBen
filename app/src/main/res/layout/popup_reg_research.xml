@@ -151,39 +151,40 @@
                                 android:layout_height="wrap_content"/>
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:id="@+id/layout_record"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <include
+                                android:id="@+id/record_view"
+                                layout="@layout/popup_reg_research_record"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/layout_memo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <include
+                                android:id="@+id/memo_view"
+                                layout="@layout/popup_reg_research_memo"
+                                android:layout_width="match_parent"
+                                android:layout_height="390dp"/>
+
+                        </LinearLayout>
+
                     </LinearLayout>
                     
                 </ScrollView>
 
-                <LinearLayout
-                    android:id="@+id/layout_record"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <include
-                        android:id="@+id/record_view"
-                        layout="@layout/popup_reg_research_record"
-                        android:layout_width="match_parent"
-                        android:layout_height="306dp"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_memo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <include
-                        android:id="@+id/memo_view"
-                        layout="@layout/popup_reg_research_memo"
-                        android:layout_width="match_parent"
-                        android:layout_height="390dp"/>
-
-                </LinearLayout>
 
                 <Button
                     android:id="@+id/btn_reg"

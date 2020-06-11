@@ -9,9 +9,7 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,9 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +57,6 @@ import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
 import kr.co.bcoben.model.RecordData;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
-import kr.co.bcoben.util.RecordUtil;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
@@ -73,7 +67,9 @@ import static kr.co.bcoben.util.CommonUtil.requestPermission;
 import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
+import static kr.co.bcoben.util.RecordUtil.startRecord;
 import static kr.co.bcoben.util.RecordUtil.stopAudio;
+import static kr.co.bcoben.util.RecordUtil.stopRecord;
 
 public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> implements View.OnClickListener {
 
@@ -158,7 +154,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
         if (state == PermissionState.GRANT) {
             if (requestCode == RECORD_PERMISSION_CODE) {
-                startRecord();
+                recording();
             } else if (requestCode == IMAGE_PERMISSION_CODE) {
                 getFileChooserImage(this);
             }
@@ -175,6 +171,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopRecord();
+        stopAudio();
     }
 
     private void initTopSpinner() {
@@ -324,7 +327,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         recordListAdapter = new RecordListAdapter(this, recordDataList);
         dataBinding.researchPopup.recordView.recyclerRecord.setAdapter(recordListAdapter);
         dataBinding.researchPopup.recordView.recyclerRecord.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
+/*
         recordThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -358,7 +361,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
 
         // 메모 탭
         dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
@@ -539,7 +542,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
 
             // popup
-
             case R.id.btn_reg:
                 //TODO
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
@@ -616,24 +618,63 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         switch (v.getId()) {
             case R.id.btn_record:
                 if (requestPermission(this, RECORD_PERMISSION, RECORD_PERMISSION_CODE)) {
-                    startRecord();
+                    recording();
                 }
                 break;
             case R.id.btn_record_stop:
                 String txt = ((Button) v).getText().toString();
                 if (txt.equals(getString(R.string.popup_reg_research_record_stop))) {
-                    RecordUtil.stopRecord();
+                    if (recordTime < 1000) {
+                        return;
+                    }
+
+                    stopRecord();
                     recordTimer.cancel();
+                    recordTimer.purge();
                     dataBinding.researchPopup.recordView.btnRecordStop.setText(R.string.popup_reg_research_record_save);
                 } else {
                     dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.VISIBLE);
                     dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.GONE);
+                    dataBinding.researchPopup.recordView.btnRecordStop.setText(R.string.popup_reg_research_record_stop);
 
+                    recordListAdapter.setRecording(false);
                     RecordData recordData = new RecordData(recordFile, null, recordName, recordTime);
                     recordListAdapter.addData(recordData);
                 }
                 break;
         }
+    }
+
+    private void recording() {
+
+        dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.GONE);
+        dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.VISIBLE);
+        recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (recordDataList.size() + 1) + "(자동완성)";
+        dataBinding.researchPopup.recordView.txtRecordingName.setText(recordName);
+
+        recordListAdapter.setRecording(true);
+        recordListAdapter.resetData();
+        recordListAdapter.notifyDataSetChanged();
+
+        recordFile = startRecord(recordName + ".mp3");
+        recordTime = 0;
+        recordTimer = new Timer();
+        recordTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                DecimalFormat df = new DecimalFormat("00");
+                int min = recordTime / 1000 / 60;
+                int sec = (recordTime / 1000) % 60;
+                final String time = df.format(min) + ":" + df.format(sec);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataBinding.researchPopup.recordView.txtRecordingTimer.setText(time);
+                    }
+                });
+                recordTime += 10;
+            }
+        }, 0, 10);
     }
 
     // 도면 선택 다이얼로그 출력
@@ -711,32 +752,5 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 //            pinList.add(data);
 //        }
         dataBinding.imgDrawings.setPinList(pinList);
-    }
-
-    private void startRecord() {
-        stopAudio();
-        dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.GONE);
-        dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.VISIBLE);
-        recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (recordDataList.size() + 1);
-        dataBinding.researchPopup.recordView.txtRecordingName.setText(recordName + "(자동완성)");
-
-        recordFile = RecordUtil.startRecord(recordName);
-        recordTimer = new Timer();
-        recordTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                DecimalFormat df = new DecimalFormat("00");
-                int min = recordTime / 60;
-                int sec = recordTime % 60;
-                final String time = df.format(min) + ":" + df.format(sec);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataBinding.researchPopup.recordView.txtRecordingTimer.setText(time);
-                    }
-                });
-                recordTime++;
-            }
-        }, 0, 1000);
     }
 }

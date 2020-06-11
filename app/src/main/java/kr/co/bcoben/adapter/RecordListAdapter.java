@@ -1,7 +1,9 @@
 package kr.co.bcoben.adapter;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,17 +22,22 @@ import java.util.TimerTask;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.model.RecordData;
+import kr.co.bcoben.util.RecordUtil;
 
 import static kr.co.bcoben.util.RecordUtil.isPlaying;
 import static kr.co.bcoben.util.RecordUtil.pauseAudio;
 import static kr.co.bcoben.util.RecordUtil.playAudio;
 import static kr.co.bcoben.util.RecordUtil.resumeAudio;
+import static kr.co.bcoben.util.RecordUtil.setPlayCompleteListener;
+import static kr.co.bcoben.util.RecordUtil.setPlayPosition;
+import static kr.co.bcoben.util.RecordUtil.stopAudio;
 
 public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordHolder> {
 
     private Activity activity;
     private List<RecordData> list;
     private Timer playTimer;
+    private boolean isRecording = false;
 
     public RecordListAdapter(Activity activity, List<RecordData> list) {
         this.activity = activity;
@@ -49,7 +56,72 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         final RecordData data = list.get(position);
         holder.onBind(data);
 
-        final TimerTask playTask = new TimerTask() {
+        holder.layoutRecordInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isRecording) {
+                    if (playTimer != null) {
+                        playTimer.cancel();
+                        playTimer = null;
+                    }
+
+                    resetData();
+                    data.setPlay(true);
+                    notifyDataSetChanged();
+
+                    playAudio(data.getRecordFile().getAbsolutePath());
+                    setPlayCompleteListener(new RecordUtil.PlayCompleteListener() {
+                        @Override
+                        public void onComplete() {
+                            Log.e("RecordListAdapter", "onComplete");
+                            holder.btnStop.setText(R.string.popup_reg_research_record_start);
+                            data.setPlayTime(0);
+                        }
+                    });
+
+                    playTimer = new Timer();
+                    playTimer.schedule(getPlayTask(holder, data), 0, 10);
+                }
+            }
+        });
+
+        holder.btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPlaying()) {
+                    pauseAudio();
+                    holder.btnStop.setText(R.string.popup_reg_research_record_start);
+                    playTimer.cancel();
+                    playTimer = null;
+                } else {
+                    resumeAudio();
+                    holder.btnStop.setText(R.string.popup_reg_research_record_stop);
+                    playTimer = new Timer();
+                    playTimer.schedule(getPlayTask(holder, data), 0, 10);
+                }
+            }
+        });
+
+        holder.btnBackwards.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int sec = -10 * 1000;
+                setPlayPosition(sec);
+                data.setPlayTime(data.getPlayTime() + sec);
+            }
+        });
+        holder.btnForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int sec = 10 * 1000;
+                setPlayPosition(sec);
+                data.setPlayTime(data.getPlayTime() + sec);
+            }
+        });
+    }
+
+    private TimerTask getPlayTask(final RecordHolder holder, final RecordData data) {
+        return new TimerTask() {
             @Override
             public void run() {
                 activity.runOnUiThread(new Runnable() {
@@ -57,44 +129,17 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
                     public void run() {
                         holder.txtRecordCurrentTime.setText(getPlayTime(data.getPlayTime()));
                         holder.seekRecordPlay.setProgress(data.getPlayTime());
+                        if (data.getPlayTime() == data.getRecordTime()) {
+                            if (playTimer != null) {
+                                playTimer.cancel();
+                                playTimer = null;
+                            }
+                        }
                     }
                 });
-                data.setPlayTime(data.getPlayTime() + 1);
+                data.setPlayTime(data.getPlayTime() + 10);
             }
         };
-
-        holder.layoutRecordInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (playTimer != null) {
-                    playTimer.cancel();
-                    playTimer = null;
-                }
-
-                data.setPlay(true);
-                data.setPlayTime(0);
-                notifyDataSetChanged();
-
-                playAudio(data.getRecordFile().getAbsolutePath());
-
-                playTimer = new Timer();
-                playTimer.schedule(playTask, 0, 1000);
-            }
-        });
-        holder.btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isPlaying()) {
-                    pauseAudio();
-                    holder.btnStop.setText(R.string.popup_reg_research_record_start);
-                    playTask.cancel();
-                } else {
-                    resumeAudio();
-                    holder.btnStop.setText(R.string.popup_reg_research_record_stop);
-                    playTask.run();
-                }
-            }
-        });
     }
 
     @Override
@@ -107,10 +152,28 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
     }
     public void addData(RecordData data) {
         list.add(data);
-        notifyItemChanged(list.size() - 1);
+        notifyDataSetChanged();
+    }
+    public void resetData() {
+        for (RecordData data : list) {
+            data.setPlay(false);
+            data.setPlayTime(0);
+        }
+    }
+    public void setRecording(boolean isRecording) {
+        this.isRecording = isRecording;
+        if (isRecording) {
+            stopAudio();
+            if (playTimer != null) {
+                playTimer.cancel();
+                playTimer.purge();
+                playTimer = null;
+            }
+        }
     }
 
     static String getPlayTime(int time) {
+        time /= 1000;
         DecimalFormat df = new DecimalFormat("00");
         int min = time / 60;
         int sec = time % 60;
@@ -158,6 +221,13 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
                 layoutRecordInfo.setVisibility(View.VISIBLE);
                 layoutRecordPlay.setVisibility(View.GONE);
             }
+
+            seekRecordPlay.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
         }
 
     }
