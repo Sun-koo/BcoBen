@@ -12,6 +12,13 @@ import java.util.Locale;
 import kr.co.bcoben.R;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityResetCertificateBinding;
+import kr.co.bcoben.model.LoginData;
+import kr.co.bcoben.model.ResponseData;
+import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kr.co.bcoben.util.CommonUtil.showToast;
 import static kr.co.bcoben.util.ValidateUtil.StringPattern.ALPHA_NUM;
@@ -62,9 +69,30 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                 String phone = dataBinding.editPhone.getText().toString();
 
                 if (checkValidInputInfo(id, phone)) {
-                    showToast(R.string.toast_send_number);
-                    dataBinding.txtRemainTime.setVisibility(View.VISIBLE);
-                    startAuth();
+                    RetrofitClient.getRetrofitApi().resetPassword(id, phone, UserData.getInstance().getDeviceId()).enqueue(new Callback<ResponseData<LoginData>>() {
+                        @Override
+                        public void onResponse(Call<ResponseData<LoginData>> call, Response<ResponseData<LoginData>> response) {
+                            if (response.body().isResult()) {
+                                //TODO Delete code (For Test)
+                                dataBinding.editCertificateNumber.setText(response.body().getData().getAuth_no());
+
+                                UserData.getInstance().setUserId(response.body().getData().getUser_id());
+                                showToast(R.string.toast_send_number);
+                                dataBinding.txtRemainTime.setVisibility(View.VISIBLE);
+                                authHandler.removeCallbacks(runnable);
+                                startAuth();
+                            } else {
+                                String errorCode = response.body().getError().toLowerCase();
+                                int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                                showToast(errorCodeId);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseData<LoginData>> call, Throwable t) {
+                            showToast(R.string.toast_error_server);
+                        }
+                    });
                 }
                 break;
 
@@ -76,10 +104,26 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                 String number = dataBinding.editCertificateNumber.getText().toString();
 
                 if (checkValidInputCertificate(number)) {
-                    Intent intent = new Intent(ResetCertificateActivity.this, ResetPwActivity.class);
-                    startActivity(intent);
-                    finishAffinity();
-                    overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+                    RetrofitClient.getRetrofitApi().checkAuth(UserData.getInstance().getUserId(), "reset", number).enqueue(new Callback<ResponseData>() {
+                        @Override
+                        public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
+                            if (response.body().isResult()) {
+                                Intent intent = new Intent(ResetCertificateActivity.this, ResetPwActivity.class);
+                                startActivity(intent);
+                                finishAffinity();
+                                overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+                            } else {
+                                String errorCode = response.body().getError().toLowerCase();
+                                int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                                showToast(errorCodeId);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseData> call, Throwable t) {
+                            showToast(R.string.toast_error_server);
+                        }
+                    });
                 }
                 break;
         }

@@ -15,7 +15,28 @@ import retrofit2.http.POST;
 public interface RetrofitApi {
     @FormUrlEncoded
     @POST("/app/user/login")
-    Call<ResponseData<LoginData>> userLogin(@Field("user_id") String id, @Field("password") String pw, @Field("device_id") String deviceId);
+    Call<ResponseData<LoginData>> userLogin(@Field("id") String id, @Field("password") String pw, @Field("device_serial") String deviceSerial);
+
+    @FormUrlEncoded
+    @POST("/app/user/check_auth")
+    Call<ResponseData> checkAuth(@Field("user_id") int id, @Field("auth_type") String type, @Field("auth_no") String authNo);
+
+    @FormUrlEncoded
+    @POST("/app/user/send_auth")
+    Call<ResponseData<LoginData>> sendAuth(@Field("user_id") int id, @Field("auth_type") String type);
+
+    @FormUrlEncoded
+    @POST("/app/user/reset_password")
+    Call<ResponseData<LoginData>> resetPassword(@Field("id") String id, @Field("phone") String phone, @Field("device_serial") String deviceSerial);
+
+    @FormUrlEncoded
+    @POST("/app/user/update_password")
+    Call<ResponseData> updatePassword(@Field("user_id") int id, @Field("password") String pw);
+
+    @FormUrlEncoded
+    @POST("/app/user/logout")
+    Call<ResponseData> logout(@Field("user_id") int id);
+
 
     @FormUrlEncoded
     @POST("/app/main/user_projectlist")

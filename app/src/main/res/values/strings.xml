@@ -25,6 +25,12 @@
     <string name="minus">-</string>
     <string name="plus_button">+ 등록</string>
     <string name="minus_button">- 제거</string>
+    <string name="toast_error_server">통신 중 에러가 발생했습니다.\n잠시 후 다시 시도해주세요.</string>
+
+    <string name="not_found_user_data">존재하지 않는 계정입니다</string>
+    <string name="no_match_device">계정에 등록된 기기를 확인해주세요</string>
+    <string name="expire_device">계정에 등록된 기기를 확인해주세요</string>
+    <string name="no_match_auth_no">인증번호가 일치하지 않습니다</string>
 
     <!--로그인 화면-->
     <string name="login_title">현장조사 관리자 시스템에\n로그인하세요.</string>

@@ -9,6 +9,13 @@ import java.util.Locale;
 import kr.co.bcoben.R;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityCertificateBinding;
+import kr.co.bcoben.model.LoginData;
+import kr.co.bcoben.model.ResponseData;
+import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
@@ -27,6 +34,10 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
 
     @Override
     protected void initView() {
+        //TODO Delete code(For Test)
+        String authNo = getIntent().getStringExtra("auth_no");
+        dataBinding.editCertificateNumber.setText(authNo);
+
         // 인증 시간 타이머
         runnable = new Runnable() {
             @Override
@@ -52,9 +63,28 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send:
-                if (authTimerCount == 0) {
-                    startAuth();
-                }
+                RetrofitClient.getRetrofitApi().sendAuth(UserData.getInstance().getUserId(), "login").enqueue(new Callback<ResponseData<LoginData>>() {
+                    @Override
+                    public void onResponse(Call<ResponseData<LoginData>> call, Response<ResponseData<LoginData>> response) {
+                        if (response.body().isResult()) {
+                            //TODO Delete Code (For Test)
+                            dataBinding.editCertificateNumber.setText(response.body().getData().getAuth_no());
+
+                            showToast(R.string.toast_send_number);
+                            authHandler.removeCallbacks(runnable);
+                            startAuth();
+                        } else {
+                            String errorCode = response.body().getError().toLowerCase();
+                            int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                            showToast(errorCodeId);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseData<LoginData>> call, Throwable t) {
+                        showToast(R.string.toast_error_server);
+                    }
+                });
                 break;
             case R.id.btn_back:
                 finish();
@@ -62,11 +92,27 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
             case R.id.btn_complete:
                 String number = dataBinding.editCertificateNumber.getText().toString();
 
-//                if (checkValidInput(number)) {
-                    Intent intent = new Intent(CertificateActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finishAffinity();
-//                }
+                if (checkValidInput(number)) {
+                    RetrofitClient.getRetrofitApi().checkAuth(UserData.getInstance().getUserId(), "login", number).enqueue(new Callback<ResponseData>() {
+                        @Override
+                        public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
+                            if (response.body().isResult()) {
+                                Intent intent = new Intent(CertificateActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finishAffinity();
+                            } else {
+                                String errorCode = response.body().getError().toLowerCase();
+                                int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                                showToast(errorCodeId);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseData> call, Throwable t) {
+                            showToast(R.string.toast_error_server);
+                        }
+                    });
+                }
                 break;
         }
     }

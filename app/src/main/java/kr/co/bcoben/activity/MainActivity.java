@@ -196,7 +196,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
 
-        requestProjectList();
+//        requestProjectList();
         requestProjectDataList();
     }
 
@@ -274,9 +274,26 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 openDrawerProject();
                 break;
             case R.id.txt_logout:
-                Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent_logout);
-                finish();
+                RetrofitClient.getRetrofitApi().logout(UserData.getInstance().getUserId()).enqueue(new Callback<ResponseData>() {
+                    @Override
+                    public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
+                        if (response.body().isResult()) {
+                            UserData.getInstance().removeData();
+                            Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent_logout);
+                            finish();
+                        } else {
+                            String errorCode = response.body().getError();
+                            int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                            showToast(errorCodeId);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseData> call, Throwable t) {
+                        showToast(R.string.toast_error_server);
+                    }
+                });
                 break;
             case R.id.btn_update:
                 break;

@@ -99,21 +99,27 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                 String pw = dataBinding.editPw.getText().toString();
 
                 if (checkValidInput(id, pw)) {
-                    //TODO request login api
                     RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new Callback<ResponseData<LoginData>>() {
                         @Override
                         public void onResponse(Call<ResponseData<LoginData>> call, Response<ResponseData<LoginData>> response) {
                             if (response.body().isResult()) {
-                                UserData.getInstance().setCompanyId(response.body().getData().getUser().getCompany_id());
+                                UserData.getInstance().setUserId(response.body().getData().getUser_id());
+                                String authNo = response.body().getData().getAuth_no();
+
                                 Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
+                                intent_login.putExtra("auth_no", authNo);
                                 startActivity(intent_login);
                                 overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+                            } else {
+                                String errorCode = response.body().getError().toLowerCase();
+                                int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                                showToast(errorCodeId);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseData<LoginData>> call, Throwable t) {
-
+                            showToast(R.string.toast_error_server);
                         }
                     });
                 }
@@ -149,5 +155,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
     private void getDeviceId() {
         TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         deviceId = tm != null ? tm.getDeviceId() : null;
+        UserData.getInstance().setDeviceId(deviceId);
     }
 }

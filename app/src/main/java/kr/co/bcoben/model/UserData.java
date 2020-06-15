@@ -7,6 +7,7 @@ public class UserData {
     private int userId;
     private String name;
     private String companyId;
+    private String deviceId;
 
     private UserData() {}
     public static UserData getInstance() {
@@ -46,5 +47,17 @@ public class UserData {
 
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public void removeData() {
+        userData = new UserData();
     }
 }
