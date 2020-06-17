@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
 import tellh.com.recyclertreeview_lib.TreeNode;
@@ -45,7 +48,11 @@ public class MenuNodeBinder extends TreeViewBinder<MenuNodeBinder.ViewHolder> {
                     Dir parentDir = (Dir) node.getParent().getContent();
                     Dir childDir = (Dir) node.getContent();
 
-                    ((MainActivity) activity).setSelectedFacilityData(masterDir.getDirName(), parentDir.getDirName(), childDir.getDirName());
+                    List<Integer> idList = new ArrayList<>();
+                    idList.add(masterDir.getId());
+                    idList.add(parentDir.getId());
+                    idList.add(childDir.getId());
+                    ((MainActivity) activity).setSelectedFacilityData(masterDir.getDirName(), parentDir.getDirName(), childDir.getDirName(), idList);
                 }
             });
         } else {

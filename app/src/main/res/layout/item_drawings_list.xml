@@ -32,8 +32,7 @@
                 android:layout_marginTop="14dp"
                 android:layout_marginBottom="13dp"
                 android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp"
-                android:src="@drawable/drawings"/>
+                android:layout_marginEnd="9dp" />
 
         </LinearLayout>
 

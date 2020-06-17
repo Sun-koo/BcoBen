@@ -3,6 +3,7 @@ package kr.co.bcoben.fragment;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
@@ -52,14 +53,14 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     }
     @Override
     protected void initView() {
-        String count = getString(R.string.main_research_count, projectData.getRegCount(), projectData.getTotCount());
-        String percent = projectData.getTotCount() == 0 ? "0%" : ((projectData.getRegCount() * 100 / projectData.getTotCount()) + "%");
+        String count = getString(R.string.main_research_count, projectData.getReg_count(), projectData.getTot_count());
+        String percent = projectData.getTot_count() == 0 ? "0%" : ((projectData.getReg_count() * 100 / projectData.getTot_count()) + "%");
 
         dataBinding.txtFacilityPercent.setText(percent);
         dataBinding.txtFacilityCount.setText(count);
-        dataBinding.txtResearchNone.setVisibility(projectData.getResearchList().isEmpty() ? View.VISIBLE : View.GONE);
+        dataBinding.txtResearchNone.setVisibility(projectData.getResearch_list().isEmpty() ? View.VISIBLE : View.GONE);
 
-        adapter = new ResearchDataListAdapter(getActivity(), projectData.getResearchList());
+        adapter = new ResearchDataListAdapter(getActivity(), projectData.getResearch_list());
         dataBinding.recyclerResearch.setLayoutManager(new GridLayoutManager(getContext(), 2));
         dataBinding.recyclerResearch.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -72,16 +73,27 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         dataBinding.recyclerResearch.setAdapter(adapter);
 
         List<String> spinnerList = new ArrayList<>();
-        spinnerList.add("전체");
-        spinnerList.add("건축");
-        spinnerList.add("지하도상가");
+        spinnerList.add("진척율순");
+        spinnerList.add("최근작업일순");
 
         dataBinding.spnResearchOrder.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_research, spinnerList));
+        dataBinding.spnResearchOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                activity.currentOrder = (parent.getSelectedItem().toString()).equals("진척율순") ? "progress" : "recent";
+                activity.requestProjectDataList();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         dataBinding.layoutRegisterResearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.openDrawerResearch(projectData.getFacility());
+                activity.openDrawerResearch(projectData.getFacility_name());
             }
         });
     }

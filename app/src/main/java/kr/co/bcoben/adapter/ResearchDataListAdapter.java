@@ -68,11 +68,11 @@ public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataLi
 
         void onBind(final ProjectResearchData item) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
-            String arch = item.getFacilityCategory() + ", " + item.getArchitecture();
-            String title = item.getResearchTitle();
-            String date = sdf.format(item.getRegDate());
-            String percent = (item.getRegCount() * 100 / item.getTotCount()) + "%";
-            String count = activity.getString(R.string.main_research_count, item.getRegCount(), item.getTotCount());
+            String arch = item.getFac_cate_name() + ", " + item.getStructure_name();
+            String title = item.getResearch_name();
+            String date = sdf.format(item.getUpdate_date());
+            String percent = (item.getReg_count() * 100 / item.getTot_count()) + "%";
+            String count = activity.getString(R.string.main_research_count, item.getReg_count(), item.getTot_count());
 
             txtResearchArchitecture.setText(arch);
             txtResearchTitle.setText(title);

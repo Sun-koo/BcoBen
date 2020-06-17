@@ -36,7 +36,7 @@ public class ProjectDataPageAdapter extends FragmentStatePagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return projectDataList.get(position).getFacility();
+        return projectDataList.get(position).getFacility_name();
     }
 
     public void setProjectDataList(List<ProjectData> projectDataList) {

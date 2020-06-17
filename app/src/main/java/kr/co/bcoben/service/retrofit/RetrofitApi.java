@@ -1,12 +1,10 @@
 package kr.co.bcoben.service.retrofit;
 
 import kr.co.bcoben.model.LoginData;
+import kr.co.bcoben.model.MenuCheckListData;
 import kr.co.bcoben.model.ProjectListData;
+import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ResponseData;
-import kr.co.bcoben.model.ArchitectureListData;
-import kr.co.bcoben.model.FacCateListData;
-import kr.co.bcoben.model.FacilityListData;
-import kr.co.bcoben.model.ResearchListData;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -37,40 +35,15 @@ public interface RetrofitApi {
     @POST("/app/user/logout")
     Call<ResponseData> logout(@Field("user_id") int id);
 
+    @FormUrlEncoded
+    @POST("/app/project/list")
+    Call<ResponseData<ProjectListData>> projectList(@Field("user_id") int id);
 
     @FormUrlEncoded
-    @POST("/app/main/user_projectlist")
-    Call<ResponseData<ProjectListData>> userProjectList(@Field("company_id") String companyId);
+    @POST("/app/project/data")
+    Call<ResponseData<ProjectMainData>> projectData(@Field("user_id") int id, @Field("project_id") int projectId, @Field("order") String order);
 
     @FormUrlEncoded
-    @POST("/app/main/user_facilitylist")
-    Call<ResponseData<FacilityListData>> userFacilityList(@Field("project_id") String projectId);
-
-    @FormUrlEncoded
-    @POST("/app/main/user_grouplist")
-    Call<ResponseData<FacCateListData>> userFacCateList(@Field("project_id") String projectId);
-
-    @FormUrlEncoded
-    @POST("/app/main/user_structurelist")
-    Call<ResponseData<ArchitectureListData>> userArchList(@Field("project_id") String projectId);
-
-    @FormUrlEncoded
-    @POST("/app/main/user_checktypelist")
-    Call<ResponseData<ResearchListData>> userResearchList(@Field("project_id") String projectId);
-
-    @FormUrlEncoded
-    @POST("/app/main/reg_facility")
-    Call<ResponseData<FacilityListData>> regFacility(@Field("project_id") String projectId, @Field("facility") String facility);
-
-    @FormUrlEncoded
-    @POST("/app/main/reg_fac_cate")
-    Call<ResponseData<FacCateListData>> regFacCate(@Field("project_id") String projectId, @Field("fac_cate") String facCate);
-
-    @FormUrlEncoded
-    @POST("/app/main/reg_architecture")
-    Call<ResponseData<ArchitectureListData>> regArchitecture(@Field("project_id") String projectId, @Field("architecture") String architecture);
-
-    @FormUrlEncoded
-    @POST("/app/main/reg_research")
-    Call<ResponseData<ResearchListData>> regResearch(@Field("project_id") String projectId, @Field("research") String research, @Field("count") String count);
+    @POST("/app/project/reg_data_list")
+    Call<ResponseData<MenuCheckListData>> projectRegDataList(@Field("user_id") int id);
 }

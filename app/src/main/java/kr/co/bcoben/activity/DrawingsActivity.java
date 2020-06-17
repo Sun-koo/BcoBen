@@ -190,10 +190,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         String research = getIntent().getStringExtra("research");
         String facility = getIntent().getStringExtra("facility");
 
+        dataBinding.spnCategory.setEnabled(false);
+        dataBinding.spnArchitecture.setEnabled(false);
         setSpinnerData(dataBinding.spnCategory, categoryList, category);
         setSpinnerData(dataBinding.spnArchitecture, architectureList, architecture);
         setSpinnerData(dataBinding.spnResearch, researchList, research);
-        setSpinnerData(dataBinding.spnFacility, facilityList, facility);
+//        setSpinnerData(dataBinding.spnFacility, facilityList, facility);
     }
     private void setSpinnerData(AppCompatSpinner spinner, List<String> list, String selectData) {
         spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, list));

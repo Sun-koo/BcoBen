@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -44,16 +45,13 @@ import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CameraDialog;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 import kr.co.bcoben.model.MenuCheckData;
+import kr.co.bcoben.model.MenuCheckListData;
 import kr.co.bcoben.model.MenuDrawingsData;
 import kr.co.bcoben.model.MenuSelectFacilityData;
 import kr.co.bcoben.model.ProjectData;
 import kr.co.bcoben.model.ProjectListData;
-import kr.co.bcoben.model.ProjectResearchData;
+import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ResponseData;
-import kr.co.bcoben.model.ArchitectureListData;
-import kr.co.bcoben.model.FacCateListData;
-import kr.co.bcoben.model.FacilityListData;
-import kr.co.bcoben.model.ResearchListData;
 import kr.co.bcoben.model.UserData;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
 import retrofit2.Call;
@@ -117,11 +115,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private ProjectDataPageAdapter projectPageAdapter;
     private List<ProjectListData.ProjectList> projectList = new ArrayList<>();
     private List<ProjectData> projectDataList = new ArrayList<>();
-    private String currentProjectId;
+    private int currentProjectId;
+    public String currentOrder = "progress";
 
     // Dummy Data
-    private String[] projectGrade = {"정밀안전진단", "긴급안전점검"};
-    private String[] projectName = {"서초구청", "성수초등학교", "프로젝트명"};
     private String[] projectFacility = {"본관동", "별관동", "기숙사동", "대극장"};
     private String[] projectResearchFacCate = {"건축", "지하도상가", "교량", "터널", "지하차도", "복개구조물", "항만", "항만외곽", "댐"};
     private String[] projectResearchArch = {"RC조", "S조", "SRC조", "조적도", "RC교", "T Beam교", "프리플렉스교", "사장교", "현수교"};
@@ -161,10 +158,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         menuCheckListAdapter = new MenuCheckListAdapter(this, regProjectGrade);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setAdapter(menuCheckListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setLayoutManager(new LinearLayoutManager(this));
-//
-        requestRegProjectCheckData();
-
-        initMenuFacilityTreeData();
 
         menuCheckFacilityListAdapter = new MenuCheckFacilityListAdapter(this, regProjectFacility);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.setAdapter(menuCheckFacilityListAdapter);
@@ -174,7 +167,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setAdapter(menuCheckInputListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setLayoutManager(new LinearLayoutManager(this));
 
-        requestRegProjectCheckInputData();
+        requestRegProjectCheckData();
 
         menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, regProjectResearch);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
@@ -195,9 +188,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.mainContents.pagerProjectData.setOffscreenPageLimit(5);
 
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
+    }
 
-//        requestProjectList();
-        requestProjectDataList();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        requestProjectList();
     }
 
     @Override
@@ -766,9 +762,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 for (MenuCheckData data : value) {
                     if (data.isChecked()) {
                         if (grade.equals("")) {
-                            grade = data.getName();
+                            grade = data.getItem_name();
                         } else {
-                            grade += ", " + data.getName();
+                            grade += ", " + data.getItem_name();
                         }
                     }
                 }
@@ -852,6 +848,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void goToDrawingsPage() {
         Intent intent = new Intent(MainActivity.this, DrawingsListActivity.class);
 
+        //TODO Delete code (For Test)
+        regResearchFacCate.addAll(Arrays.asList(projectResearchFacCate));
+        regResearchArchitecture.addAll(Arrays.asList(projectResearchArch));
+        regResearchResearch.addAll(Arrays.asList(projectResearchTitle));
+        regResearchFacility.addAll(Arrays.asList(projectFacility));
+
         intent.putStringArrayListExtra("category_list", (ArrayList<String>) regResearchFacCate);
         intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) regResearchArchitecture);
         intent.putStringArrayListExtra("research_list", (ArrayList<String>) regResearchResearch);
@@ -870,178 +872,135 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }, 1000);
     }
 
-    //TODO request project list api
+    //프로젝트 리스트 조회 API 호출
     private void requestProjectList() {
         projectList.clear();
 
-        RetrofitClient.getRetrofitApi().userProjectList(UserData.getInstance().getCompanyId()).enqueue(new Callback<ResponseData<ProjectListData>>() {
+        RetrofitClient.getRetrofitApi().projectList(UserData.getInstance().getUserId()).enqueue(new Callback<ResponseData<ProjectListData>>() {
             @Override
             public void onResponse(Call<ResponseData<ProjectListData>> call, Response<ResponseData<ProjectListData>> response) {
                 if (response.body().isResult()) {
-                    List<ProjectListData.ProjectList> list = response.body().getData().getUser_project_list();
-                    list.get(0).setSelected(true);
+                    List<ProjectListData.ProjectList> list = response.body().getData().getProject_list();
+
+                    boolean existSelected = false;
+                    for (ProjectListData.ProjectList data : list) {
+                        if (data.isSelected()) {
+                            existSelected = true;
+                            dataBinding.mainDrawer.mainContents.txtSubTitle.setText("(" + data.getGrade_name() + ")");
+                        }
+                    }
+                    if (!existSelected) {
+                        list.get(0).setSelected(true);
+                        dataBinding.mainDrawer.mainContents.txtSubTitle.setText("(" + list.get(0).getGrade_name() + ")");
+                    }
                     projectList = list;
                     projectListAdapter.setList(projectList);
 
-                    requestRegResearchData();
-
+                    requestProjectDataList();
                 } else {
-
+                    String errorCode = response.body().getError().toLowerCase();
+                    int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                    showToast(errorCodeId);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseData<ProjectListData>> call, Throwable t) {
-
+                showToast(R.string.toast_error_server);
             }
         });
     }
-
-    //TODO request project data list api
-    private void requestProjectDataList() {
+    //프로젝트 조사 내용 및 조사등록용 데이터 API 호출
+    public void requestProjectDataList() {
         projectDataList.clear();
-        int count = 0;
-        for (String facility : projectFacility) {
-            List<ProjectResearchData> researchDataList = new ArrayList<>();
-            if (++count < projectFacility.length) {
-                for (int i = 0; i < projectResearchFacCate.length; i++) {
-                    Calendar c = Calendar.getInstance();
-                    c.set(Calendar.MONTH, c.get(Calendar.MONTH) - i);
-                    c.set(Calendar.DATE, c.get(Calendar.DATE) - (i * 2));
-                    researchDataList.add(new ProjectResearchData(projectResearchFacCate[i], projectResearchArch[i], projectResearchTitle[i], c.getTime(), (i + 1) * 3 + 2, 3));
-                }
-            }
-            ProjectData data = new ProjectData(facility, researchDataList);
-            projectDataList.add(data);
-        }
-        projectPageAdapter.setProjectDataList(projectDataList);
-    }
 
-    // 등록된 시설물 리스트 조회 API
-    private void requestResearchFacilityData() {
-        regResearchFacility.clear();
-
-        RetrofitClient.getRetrofitApi().userFacilityList(currentProjectId).enqueue(new Callback<ResponseData<FacilityListData>>() {
-            @Override
-            public void onResponse(Call<ResponseData<FacilityListData>> call, Response<ResponseData<FacilityListData>> response) {
-                if (response.body().isResult()) {
-                    List<FacilityListData.FacilityList> list = response.body().getData().getUser_facility_list();
-
-                    for (FacilityListData.FacilityList data : list) {
-                        regResearchFacility.add(data.getFacility_name());
-                    }
-                    menuSelectListAdapter.setList(regResearchFacility, false);
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseData<FacilityListData>> call, Throwable t) {
-
-            }
-        });
-    }
-    // 등록된 시설물 분류 리스트 조회 API
-    private void requestResearchFacCateData() {
-        regResearchFacCate.clear();
-
-        RetrofitClient.getRetrofitApi().userFacCateList(currentProjectId).enqueue(new Callback<ResponseData<FacCateListData>>() {
-            @Override
-            public void onResponse(Call<ResponseData<FacCateListData>> call, Response<ResponseData<FacCateListData>> response) {
-                if (response.body().isResult()) {
-                    List<FacCateListData.FacCateList> list = response.body().getData().getUser_group_list();
-
-                    for (FacCateListData.FacCateList data : list) {
-                        regResearchFacCate.add(data.getGroup_name());
-                    }
-                    menuSelectListAdapter.setList(regResearchFacCate, false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseData<FacCateListData>> call, Throwable t) {
-
-            }
-        });
-    }
-    // 등록된 구조형식 리스트 조회 API
-    private void requestResearchArchData() {
-        regResearchArchitecture.clear();
-
-        RetrofitClient.getRetrofitApi().userArchList(currentProjectId).enqueue(new Callback<ResponseData<ArchitectureListData>>() {
-            @Override
-            public void onResponse(Call<ResponseData<ArchitectureListData>> call, Response<ResponseData<ArchitectureListData>> response) {
-                if (response.body().isResult()) {
-                    List<ArchitectureListData.ArchitectureList> list = response.body().getData().getUser_structure_list();
-
-                    for (ArchitectureListData.ArchitectureList data : list) {
-                        regResearchArchitecture.add(data.getStructure_name());
-                    }
-                    menuSelectListAdapter.setList(regResearchArchitecture, false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseData<ArchitectureListData>> call, Throwable t) {
-
-            }
-        });
-    }
-    // 등록된 조사종류 리스트 조회 API
-    private void requestResearchResearchData() {
-        regResearchResearch.clear();
-
-        RetrofitClient.getRetrofitApi().userResearchList(currentProjectId).enqueue(new Callback<ResponseData<ResearchListData>>() {
-            @Override
-            public void onResponse(Call<ResponseData<ResearchListData>> call, Response<ResponseData<ResearchListData>> response) {
-                if (response.body().isResult()) {
-                    List<ResearchListData.ResearchList> list = response.body().getData().getUser_checktype_list();
-
-                    for (ResearchListData.ResearchList data : list) {
-                        regResearchResearch.add("(" + data.getGoalcount() + "개소) " + data.getChecktype_name());
-                    }
-                    menuSelectListAdapter.setList(regResearchResearch, true);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseData<ResearchListData>> call, Throwable t) {
-
-            }
-        });
-    }
-    // 조사 등록 시 (시설물,시설물분류,구조형식,조사종류) 리스트 데이터 조회
-    public void requestRegResearchData() {
         for (ProjectListData.ProjectList data : projectList) {
             if (data.isSelected()) {
                 currentProjectId = data.getProject_id();
             }
         }
-        requestResearchFacilityData();
-        requestResearchFacCateData();
-        requestResearchArchData();
-        requestResearchResearchData();
+        RetrofitClient.getRetrofitApi().projectData(UserData.getInstance().getUserId(), currentProjectId, currentOrder).enqueue(new Callback<ResponseData<ProjectMainData>>() {
+            @Override
+            public void onResponse(Call<ResponseData<ProjectMainData>> call, Response<ResponseData<ProjectMainData>> response) {
+                if (response.body().isResult()) {
+                    projectDataList = response.body().getData().getFacility_list();
+                    projectPageAdapter.setProjectDataList(projectDataList);
+
+                    List<ProjectMainData.ResearchRegData.FacilityList> facilityList = response.body().getData().getResearch_reg_data().getFacility_list();
+                    setResearchFacilityData(facilityList);
+                    List<ProjectMainData.ResearchRegData.ResearchList> researchList = response.body().getData().getResearch_reg_data().getResearch_list();
+                    setResearchResearchData(researchList);
+
+                } else {
+                    String errorCode = response.body().getError();
+                    int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                    showToast(errorCodeId);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseData<ProjectMainData>> call, Throwable t) {
+                showToast(R.string.toast_error_server);
+            }
+        });
     }
 
-    private void initMenuFacilityTreeData() {
+    // 조사등록 시설물/시설물 분류/구조형식
+    private void setResearchFacilityData(List<ProjectMainData.ResearchRegData.FacilityList> list) {
+        regResearchFacility.clear();
+        regResearchFacCate.clear();
+        regResearchArchitecture.clear();
+
+        for (ProjectMainData.ResearchRegData.FacilityList facilityData : list) {
+            if (!regResearchFacility.contains(facilityData.getItem_name())) {
+                regResearchFacility.add(facilityData.getItem_name());
+            }
+
+            for (ProjectMainData.ResearchRegData.FacilityList.FacCateList facCateData : facilityData.getFac_cate_list()) {
+                if (!regResearchFacCate.contains(facCateData.getItem_name())) {
+                    regResearchFacCate.add(facCateData.getItem_name());
+                }
+
+                for (ProjectMainData.ResearchRegData.FacilityList.FacCateList.ArchitectureList archData : facCateData.getStructure_list()) {
+                    if (!regResearchArchitecture.contains(archData.getItem_name())) {
+                        regResearchArchitecture.add(archData.getItem_name());
+                    }
+                }
+            }
+        }
+        menuSelectListAdapter.setList(regResearchFacility, false);
+        menuSelectListAdapter.setList(regResearchFacCate, false);
+        menuSelectListAdapter.setList(regResearchArchitecture, false);
+    }
+    // 조사등록 조사종류
+    private void setResearchResearchData(List<ProjectMainData.ResearchRegData.ResearchList> list) {
+        regResearchResearch.clear();
+
+        for (ProjectMainData.ResearchRegData.ResearchList data : list) {
+            regResearchResearch.add("(" + data.getTot_count() + "개소) " + data.getItem_name());
+        }
+        menuSelectListAdapter.setList(regResearchResearch, true);
+    }
+
+    private void initMenuFacilityTreeData(List<MenuCheckData> facilityList, List<MenuCheckData> facCateList, List<MenuCheckData> archList) {
         final List<TreeNode> nodes = new ArrayList<>();
 
-        for (String facilityData : projectFacility) {
-            TreeNode<Dir> facility = new TreeNode<>(new Dir(facilityData));
+        for (MenuCheckData facilityData : facilityList) {
+            TreeNode<Dir> facility = new TreeNode<>(new Dir(facilityData.getItem_name(), facilityData.getItem_id()));
             nodes.add(facility);
 
-            for (String facCateData : projectResearchFacCate) {
-                TreeNode<Dir> facCate = new TreeNode<>(new Dir(facCateData));
+            for (MenuCheckData facCateData : facCateList) {
+                TreeNode<Dir> facCate = new TreeNode<>(new Dir(facCateData.getItem_name(), facCateData.getItem_id()));
 
-                for (String archData : projectResearchArch) {
-                    facCate.addChild(new TreeNode<>(new Dir(archData)));
+                for (MenuCheckData archData : archList) {
+                    facCate.addChild(new TreeNode<>(new Dir(archData.getItem_name(), archData.getItem_id())));
                 }
                 facility.addChild(facCate);
             }
         }
+
         // for next button
-        nodes.add(new TreeNode<>(new Dir("")));
+        nodes.add(new TreeNode<>(new Dir("", 0)));
 
         dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setLayoutManager(new LinearLayoutManager(this));
         treeViewAdapter = new TreeViewAdapter(nodes, Arrays.asList(new MenuNodeBinder(this)));
@@ -1068,39 +1027,38 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setAdapter(treeViewAdapter);
     }
 
-    public void setSelectedFacilityData(String facility, String facCate, String arch) {
-        regProjectFacility.add(new MenuSelectFacilityData(facility, facCate, arch));
+    public void setSelectedFacilityData(String facility, String facCate, String arch, List<Integer> list) {
+        regProjectFacility.add(new MenuSelectFacilityData(facility, facCate, arch, list));
         menuCheckFacilityListAdapter.setList(regProjectFacility);
 
         dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
     }
 
-    public void removeSelectedFacilityData(int position) {
-        regProjectFacility.remove(position);
-        menuCheckFacilityListAdapter.setList(regProjectFacility);
-    }
-
+    //프로젝트 등록용 시설물 리스트 조회 API 호출
     private void requestRegProjectCheckData() {
-        regProjectGrade.clear();
-        regProjectFacility.clear();
+       regProjectGrade.clear();
+       regProjectFacility.clear();
 
-        for (int i=0;i<projectGrade.length;i++) {
-            MenuCheckData menuCheckData = new MenuCheckData(projectGrade[i]);
-            regProjectGrade.add(menuCheckData);
-        }
+       RetrofitClient.getRetrofitApi().projectRegDataList(UserData.getInstance().getUserId()).enqueue(new Callback<ResponseData<MenuCheckListData>>() {
+           @Override
+           public void onResponse(Call<ResponseData<MenuCheckListData>> call, Response<ResponseData<MenuCheckListData>> response) {
+               if (response.body().isResult()) {
+                   regProjectGrade = response.body().getData().getGrade_list();
+                   regProjectResearch = response.body().getData().getResearch_list();
 
-        menuCheckListAdapter.setList(regProjectGrade);
-    }
+                   initMenuFacilityTreeData(response.body().getData().getFacility_list(), response.body().getData().getFac_cate_list(), response.body().getData().getStructure_list());
+               } else {
+                   String errorCode = response.body().getError();
+                   int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
+                   showToast(errorCodeId);
+               }
+           }
 
-    private void requestRegProjectCheckInputData() {
-        regProjectResearch.clear();
-
-        for (int i=0;i<projectResearchTitle.length;i++) {
-            MenuCheckData menuCheckData = new MenuCheckData(projectResearchTitle[i]);
-            regProjectResearch.add(menuCheckData);
-        }
-
-        menuCheckInputListAdapter.setList(regProjectResearch);
+           @Override
+           public void onFailure(Call<ResponseData<MenuCheckListData>> call, Throwable t) {
+                showToast(R.string.toast_error_server);
+           }
+       });
     }
 
     //TODO checkbox select only one

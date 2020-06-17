@@ -5,9 +5,11 @@ import tellh.com.recyclertreeview_lib.LayoutItemType;
 
 public class Dir implements LayoutItemType {
     public String dirName;
+    public int id;
 
-    public Dir(String dirName) {
+    public Dir(String dirName, int id) {
         this.dirName = dirName;
+        this.id = id;
     }
 
     @Override
@@ -21,5 +23,13 @@ public class Dir implements LayoutItemType {
 
     public void setDirName(String dirName) {
         this.dirName = dirName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

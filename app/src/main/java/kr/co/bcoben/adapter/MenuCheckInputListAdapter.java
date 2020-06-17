@@ -106,7 +106,7 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
             layoutMenuInput.setVisibility(View.VISIBLE);
             btnNext.setVisibility(View.GONE);
 
-            txtName.setText(data.getName());
+            txtName.setText(data.getItem_name());
             checkBox.setChecked(data.isChecked());
             editCount.setEnabled(data.isChecked());
             editCount.setAlpha(data.isChecked() ? 1f : 0.38f);

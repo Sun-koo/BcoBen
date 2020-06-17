@@ -54,7 +54,7 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
             view.bottomLine.setVisibility(View.VISIBLE);
             view.btnNext.setVisibility(View.GONE);
 
-            view.txtName.setText(list.get(position).getName());
+            view.txtName.setText(list.get(position).getItem_name());
             view.checkBox.setChecked(list.get(position).isChecked());
 
             view.listLayout.setOnClickListener(new View.OnClickListener() {
