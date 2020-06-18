@@ -60,9 +60,14 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
             view.listLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    view.checkBox.setChecked(!view.checkBox.isChecked());
+                    for (MenuCheckData data : list) {
+                        data.setChecked(false);
+                    }
+                    list.get(position).setChecked(true);
+                    notifyDataSetChanged();
 
-                    list.get(position).setChecked(view.checkBox.isChecked());
+//                    view.checkBox.setChecked(!view.checkBox.isChecked());
+//                    list.get(position).setChecked(view.checkBox.isChecked());
                 }
             });
         } else {

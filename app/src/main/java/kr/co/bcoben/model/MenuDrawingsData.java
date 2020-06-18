@@ -6,11 +6,13 @@ import android.net.Uri;
 public class MenuDrawingsData {
     private String name;
     private String facility;
+    private int facilityId;
     private Uri uri;
 
-    public MenuDrawingsData(String name, String facility, Uri uri) {
+    public MenuDrawingsData(String name, String facility, Uri uri, int facilityId) {
         this.name = name;
         this.facility = facility;
+        this.facilityId = facilityId;
         this.uri = uri;
     }
 
@@ -31,5 +33,12 @@ public class MenuDrawingsData {
     }
     public void setUri(Uri uri) {
         this.uri = uri;
+    }
+    public int getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(int facilityId) {
+        this.facilityId = facilityId;
     }
 }

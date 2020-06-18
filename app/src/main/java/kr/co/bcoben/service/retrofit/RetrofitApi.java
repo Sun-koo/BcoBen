@@ -1,14 +1,22 @@
 package kr.co.bcoben.service.retrofit;
 
+import java.util.List;
+import java.util.Map;
+
 import kr.co.bcoben.model.LoginData;
 import kr.co.bcoben.model.MenuCheckListData;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ResponseData;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 
 public interface RetrofitApi {
     @FormUrlEncoded
@@ -46,4 +54,10 @@ public interface RetrofitApi {
     @FormUrlEncoded
     @POST("/app/project/reg_data_list")
     Call<ResponseData<MenuCheckListData>> projectRegDataList(@Field("user_id") int id);
+
+    @Multipart
+    @POST("/app/project/register")
+    Call<ResponseData<ProjectListData>> regProject(@Part("user_id") int id, @Part("project_name") RequestBody projectName, @Part("start_date") RequestBody startDate, @Part("end_date") RequestBody endDate,
+                                                   @Part("grade_id") int gradeId, @Part("facility_list") RequestBody facilityList, @Part("research_list") RequestBody researchList,
+                                                   @PartMap Map<String, List<MultipartBody.Part>> planList);
 }
