@@ -64,20 +64,20 @@ public class ProjectMainData implements DataModel {
         }
 
         public class FacilityList {
-            private String item_id;
+            private int item_id;
             private String item_name;
             private List<FacCateList> fac_cate_list;
 
-            public FacilityList(String item_id, String item_name, List<FacCateList> fac_cate_list) {
+            public FacilityList(int item_id, String item_name, List<FacCateList> fac_cate_list) {
                 this.item_id = item_id;
                 this.item_name = item_name;
                 this.fac_cate_list = fac_cate_list;
             }
 
-            public String getItem_id() {
+            public int getItem_id() {
                 return item_id;
             }
-            public void setItem_id(String item_id) {
+            public void setItem_id(int item_id) {
                 this.item_id = item_id;
             }
             public String getItem_name() {
@@ -94,20 +94,20 @@ public class ProjectMainData implements DataModel {
             }
 
             public class FacCateList {
-                private String item_id;
+                private int item_id;
                 private String item_name;
                 private List<ArchitectureList> structure_list;
 
-                public FacCateList(String item_id, String item_name, List<ArchitectureList> structure_list) {
+                public FacCateList(int item_id, String item_name, List<ArchitectureList> structure_list) {
                     this.item_id = item_id;
                     this.item_name = item_name;
                     this.structure_list = structure_list;
                 }
 
-                public String getItem_id() {
+                public int getItem_id() {
                     return item_id;
                 }
-                public void setItem_id(String item_id) {
+                public void setItem_id(int item_id) {
                     this.item_id = item_id;
                 }
                 public String getItem_name() {
@@ -124,18 +124,18 @@ public class ProjectMainData implements DataModel {
                 }
 
                 public class ArchitectureList {
-                    private String item_id;
+                    private int item_id;
                     private String item_name;
 
-                    public ArchitectureList(String item_id, String item_name) {
+                    public ArchitectureList(int item_id, String item_name) {
                         this.item_id = item_id;
                         this.item_name = item_name;
                     }
 
-                    public String getItem_id() {
+                    public int getItem_id() {
                         return item_id;
                     }
-                    public void setItem_id(String item_id) {
+                    public void setItem_id(int item_id) {
                         this.item_id = item_id;
                     }
                     public String getItem_name() {

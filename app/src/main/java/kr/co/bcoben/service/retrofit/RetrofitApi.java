@@ -59,5 +59,14 @@ public interface RetrofitApi {
     @POST("/app/project/register")
     Call<ResponseData<ProjectListData>> regProject(@Part("user_id") int id, @Part("project_name") RequestBody projectName, @Part("start_date") RequestBody startDate, @Part("end_date") RequestBody endDate,
                                                    @Part("grade_id") int gradeId, @Part("facility_list") RequestBody facilityList, @Part("research_list") RequestBody researchList,
-                                                   @PartMap Map<String, List<MultipartBody.Part>> planList);
+                                                   @Part List<MultipartBody.Part> planList);
+
+    @FormUrlEncoded
+    @POST("/app/project/research/register")
+    Call<ResponseData> regResearch(@Field("user_id") int id, @Field("project_id") int projectId, @Field("facility_name") String faciltiyName, @Field("fac_cate_name") String facCateName,
+                                   @Field("structure_name") String structureName, @Field("research_name") String researchName, @Field("tot_count") int totCount);
+
+    @FormUrlEncoded
+    @POST("/app/project/item_click")
+    Call<ResponseData> itemClick(@Field("user_id") int id, @Field("project_id") int projectId, @Field("item_id") int itemId);
 }

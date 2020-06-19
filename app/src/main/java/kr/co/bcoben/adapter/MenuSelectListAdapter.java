@@ -20,15 +20,16 @@ import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
+import kr.co.bcoben.model.MenuCheckData;
 
 public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAdapter.MenuSelectHolder> {
 
     private MainActivity activity;
-    private List<String> list;
+    private List<MenuCheckData> list;
     private EditText editName, editCount;
     private boolean isCount;
 
-    public MenuSelectListAdapter(MainActivity activity, List<String> list) {
+    public MenuSelectListAdapter(MainActivity activity, List<MenuCheckData> list) {
         this.activity = activity;
         this.list = list;
     }
@@ -41,9 +42,22 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MenuSelectHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MenuSelectHolder holder, final int position) {
         if (list.size() > position) {
-            holder.onBind(list.get(position));
+            final MenuCheckData data = list.get(position);
+            holder.onBind(data);
+
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (data.getCount().isEmpty()) {
+                        activity.setResearchSelectedText(data.getItem_name(), 0);
+                    } else {
+                        activity.setResearchSelectedText(data.getItem_name(), Integer.parseInt(data.getCount()));
+                    }
+                    activity.requestResearchItemClick(data.getItem_id(), position);
+                }
+            });
         } else {
             holder.onBind(null);
             this.editName = holder.editName;
@@ -55,7 +69,7 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAd
     public int getItemCount() {
         return list.size() + 1;
     }
-    public void setList(List<String> list, boolean isCount) {
+    public void setList(List<MenuCheckData> list, boolean isCount) {
         this.list = list;
         this.isCount = isCount;
         editName = null;
@@ -95,19 +109,17 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAd
             btnReg = view.findViewById(R.id.btn_reg);
         }
 
-        void onBind(@Nullable final String name) {
-            if (name != null) {
-                txtName.setText(name);
+        void onBind(@Nullable final MenuCheckData data) {
+            if (data != null) {
+                if (data.getCount().isEmpty()) {
+                    txtName.setText(data.getItem_name());
+                } else {
+                    txtName.setText("(" + data.getCount() + "개소) " + data.getItem_name());
+                }
                 txtName.setVisibility(View.VISIBLE);
                 layoutSelf.setVisibility(View.GONE);
                 editCount.setVisibility(View.GONE);
 
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        activity.setResearchSelectedText(name);
-                    }
-                });
             } else {
                 txtName.setVisibility(View.GONE);
                 layoutSelf.setVisibility(View.VISIBLE);
@@ -120,5 +132,32 @@ public class MenuSelectListAdapter extends RecyclerView.Adapter<MenuSelectListAd
                 });
             }
         }
+
+//        void onBind(@Nullable final String name, @Nullable final Integer id) {
+//            if (name != null) {
+//                txtName.setText(name);
+//                txtName.setVisibility(View.VISIBLE);
+//                layoutSelf.setVisibility(View.GONE);
+//                editCount.setVisibility(View.GONE);
+//
+//                view.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        activity.setResearchSelectedText(name);
+//                        activity.requestResearchItemClick(id);
+//                    }
+//                });
+//            } else {
+//                txtName.setVisibility(View.GONE);
+//                layoutSelf.setVisibility(View.VISIBLE);
+//                editCount.setVisibility(isCount ? View.VISIBLE : View.GONE);
+//                btnReg.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        activity.researchNextStep();
+//                    }
+//                });
+//            }
+//        }
     }
 }
