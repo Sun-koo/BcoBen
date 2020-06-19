@@ -188,13 +188,13 @@
     <string name="camera_dialog_album">갤러리 선택</string>
 
     <!--통신 에러-->
-    <string name="not_found_user_data">존재하지 않는 계정입니다</string>
-    <string name="no_match_device">계정에 등록된 기기를 확인해주세요</string>
-    <string name="expire_device">계정에 등록된 기기를 확인해주세요</string>
+    <string name="not_found_user_data">아이디, 비밀번호를 확인해주세요</string>
+    <string name="no_match_device">디바이스에 등록된 계정이 아닙니다</string>
+    <string name="expire_device">디바이스 사용기간이 만료 되었습니다</string>
     <string name="no_match_auth_no">인증번호가 일치하지 않습니다</string>
     <string name="not_validate_user_id">통신 중 에러가 발생했습니다.\n잠시 후 다시 시도해주세요.</string>
     <string name="not_validate_project_id">프로젝트 정보를 찾을 수 없습니다</string>
     <string name="not_found_project_data">프로젝트 정보를 찾을 수 없습니다</string>
     <string name="not_validate_order">프로젝트 정보를 찾을 수 없습니다</string>
-    <string name="not_found_user_project">프로젝트의 담당자로 등록되어있지 않습니다</string>
+    <string name="not_found_user_project">프로젝트의 담당자로 등록 되어있지 않습니다</string>
 </resources>

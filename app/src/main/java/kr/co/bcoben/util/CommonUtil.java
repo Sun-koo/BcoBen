@@ -240,10 +240,14 @@ public class CommonUtil {
     // 통신 에러 처리
     public static void showErrorMsg(String error) {
         if (error != null) {
-            Context context = AppApplication.getContext();
-            String errorCode = error.toLowerCase();
-            int errorCodeId = context.getResources().getIdentifier(errorCode, "string", context.getPackageName());
-            showToast(errorCodeId);
+            try {
+                Context context = AppApplication.getContext();
+                String errorCode = error.toLowerCase();
+                int errorCodeId = context.getResources().getIdentifier(errorCode, "string", context.getPackageName());
+                showToast(errorCodeId);
+            } catch (Exception e) {
+                showToast(R.string.toast_error_server);
+            }
         } else {
             showToast(R.string.toast_error_server);
         }
