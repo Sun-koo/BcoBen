@@ -238,10 +238,11 @@ public class CommonUtil {
     }
 
     // 통신 에러 처리
-    public static void showErrorMsg(String error, Activity activity) {
+    public static void showErrorMsg(String error) {
         if (error != null) {
+            Context context = AppApplication.getContext();
             String errorCode = error.toLowerCase();
-            int errorCodeId = activity.getResources().getIdentifier(errorCode, "string", activity.getPackageName());
+            int errorCodeId = context.getResources().getIdentifier(errorCode, "string", context.getPackageName());
             showToast(errorCodeId);
         } else {
             showToast(R.string.toast_error_server);

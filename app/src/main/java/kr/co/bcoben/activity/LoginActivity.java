@@ -17,13 +17,10 @@ import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.databinding.ActivityLoginBinding;
 import kr.co.bcoben.model.LoginData;
-import kr.co.bcoben.model.ResponseData;
 import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.requestPermission;
@@ -99,27 +96,16 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                 String pw = dataBinding.editPw.getText().toString();
 
                 if (checkValidInput(id, pw)) {
-                    RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new Callback<ResponseData<LoginData>>() {
+                    RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new RetrofitCallbackModel<LoginData>() {
                         @Override
-                        public void onResponse(Call<ResponseData<LoginData>> call, Response<ResponseData<LoginData>> response) {
-                            if (response.body().isResult()) {
-                                UserData.getInstance().setUserId(response.body().getData().getUser_id());
-                                String authNo = response.body().getData().getAuth_no();
+                        public void onResponseData(LoginData data) {
+                            UserData.getInstance().setUserId(data.getUser_id());
+                            String authNo = data.getAuth_no();
 
-                                Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
-                                intent_login.putExtra("auth_no", authNo);
-                                startActivity(intent_login);
-                                overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
-                            } else {
-                                String errorCode = response.body().getError().toLowerCase();
-                                int errorCodeId = getResources().getIdentifier(errorCode, "string", getPackageName());
-                                showToast(errorCodeId);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseData<LoginData>> call, Throwable t) {
-                            showToast(R.string.toast_error_server);
+                            Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);
+                            intent_login.putExtra("auth_no", authNo);
+                            startActivity(intent_login);
+                            overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
                         }
                     });
                 }
