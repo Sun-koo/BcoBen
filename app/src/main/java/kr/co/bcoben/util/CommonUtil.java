@@ -33,6 +33,7 @@ import java.security.MessageDigest;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
+import kr.co.bcoben.R;
 import kr.co.bcoben.component.AppFinishDialog;
 
 import static android.app.Activity.RESULT_OK;
@@ -234,5 +235,16 @@ public class CommonUtil {
     // 앱 버전 가져오기
     public static String getAppVersion() {
         return BuildConfig.VERSION_NAME;
+    }
+
+    // 통신 에러 처리
+    public static void showErrorMsg(String error, Activity activity) {
+        if (error != null) {
+            String errorCode = error.toLowerCase();
+            int errorCodeId = activity.getResources().getIdentifier(errorCode, "string", activity.getPackageName());
+            showToast(errorCodeId);
+        } else {
+            showToast(R.string.toast_error_server);
+        }
     }
 }
