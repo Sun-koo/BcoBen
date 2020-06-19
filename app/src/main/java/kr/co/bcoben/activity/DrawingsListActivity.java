@@ -26,6 +26,10 @@ import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
 import kr.co.bcoben.ftp.ConnectFTP;
 import kr.co.bcoben.model.DrawingsListData;
+import kr.co.bcoben.model.PlanListData;
+import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
 
 import static kr.co.bcoben.util.CommonUtil.getFilePath;
 
@@ -37,7 +41,10 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     private DrawingsListAdapter drawingsListAdapter;
     private ArrayList<DrawingsListData> listDrawings;
+    final List<String> thumbList = new ArrayList<>();
     final List<String> imgList = new ArrayList<>();
+    final List<Integer> idList = new ArrayList<>();
+    final List<String> nameList = new ArrayList<>();
 
     @Override
     protected int getLayoutResource() {
@@ -46,28 +53,25 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     @Override
     protected void initView() {
-        listCategory = getIntent().getStringArrayListExtra("category_list");
-        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
-        listResearch = getIntent().getStringArrayListExtra("research_list");
-        listFacility = getIntent().getStringArrayListExtra("facility_list");
-        category = getIntent().getStringExtra("category");
-        architecture = getIntent().getStringExtra("architecture");
-        research = getIntent().getStringExtra("research");
-        facility = getIntent().getStringExtra("facility");
+//        listCategory = getIntent().getStringArrayListExtra("category_list");
+//        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
+//        listResearch = getIntent().getStringArrayListExtra("research_list");
+//        listFacility = getIntent().getStringArrayListExtra("facility_list");
+//        category = getIntent().getStringExtra("category");
+//        architecture = getIntent().getStringExtra("architecture");
+//        research = getIntent().getStringExtra("research");
+//        facility = getIntent().getStringExtra("facility");
 
         dataBinding.spnCategory.setEnabled(false);
         dataBinding.spnArchitecture.setEnabled(false);
-        initSpinner(dataBinding.spnCategory, listCategory, category);
-        initSpinner(dataBinding.spnArchitecture, listArchitecture, architecture);
-        initSpinner(dataBinding.spnResearch, listResearch, research);
-//        initSpinner(dataBinding.spnFacility, listFacility, facility);
+//        initSpinner(dataBinding.spnCategory, listCategory, category);
+//        initSpinner(dataBinding.spnArchitecture, listArchitecture, architecture);
+//        initSpinner(dataBinding.spnResearch, listResearch, research);
 
         dataBinding.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
         listDrawings = new ArrayList<>();
         drawingsListAdapter = new DrawingsListAdapter(DrawingsListActivity.this, listDrawings);
         dataBinding.recyclerDrawings.setAdapter(drawingsListAdapter);
-
-        requestDrawingsList();
     }
 
     @Override
@@ -77,6 +81,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
             finish();
         }
         isHomeReturn = false;
+        requestDrawingsList();
     }
 
     @Override
@@ -114,17 +119,33 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     //TODO request drawings list api
     private void requestDrawingsList() {
         listDrawings.clear();
-        //TODO request api (add img file path to imgList)
-        for (int i = 0;i < 10;i++) {
-            imgList.add("/data/bcoben/1/App Upload/drawings_detail.png");
-        }
+        //TODO get research_id
+        int researchId = 3;
+        RetrofitClient.getRetrofitApi().planList(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PlanListData>() {
+            @Override
+            public void onResponseData(PlanListData data) {
+                List<PlanListData.PlanList> planList = data.getPlan_list();
 
-        for (int i = 0;i < imgList.size();i++) {
-            String[] strArr = imgList.get(i).split("/bcoben/");
+                for (PlanListData.PlanList planData : planList) {
+                    thumbList.add(planData.getPlan_thumb());
+                    imgList.add(planData.getPlan_img());
+                    idList.add(planData.getPlan_id());
+                    nameList.add(planData.getPlan_name());
+//                    "/data/bcoben/1/App Upload/drawings_detail.png"
+                }
+
+                setDrawingsList();
+            }
+        });
+    }
+
+    private void setDrawingsList() {
+        for (int i = 0;i < thumbList.size();i++) {
+            String[] strArr = thumbList.get(i).split("/bcoben/");
             String lastPath = strArr[1].substring(strArr[1].indexOf("/"));
             String desFilePath = getFilePath().getAbsolutePath() + lastPath;
 
-            DrawingsListData data = new DrawingsListData("도면명", null, desFilePath);
+            DrawingsListData data = new DrawingsListData(idList.get(i), nameList.get(i), null, desFilePath);
             listDrawings.add(data);
         }
 
@@ -135,7 +156,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 boolean connect = ftp.ftpConnect();
 
                 if (connect) {
-                    List<Bitmap> bitmapList = ftp.ftpImageFile(imgList);
+                    List<Bitmap> bitmapList = ftp.ftpImageFile(thumbList);
                     for (int i = 0; i < listDrawings.size(); i++) {
                         listDrawings.get(i).setBitmap(bitmapList.get(i));
                     }

@@ -143,12 +143,9 @@ public class ConnectFTP {
 
             for (String path : filePathList) {
                 BufferedInputStream is = new BufferedInputStream(ftpClient.retrieveFileStream(path));
-                is.mark(5);
                 Bitmap bitmap = BitmapFactory.decodeStream(is);
                 if (bitmap != null) {
                     list.add(bitmap);
-                } else {
-                    is.reset();
                 }
             }
         } catch (IOException e) {
