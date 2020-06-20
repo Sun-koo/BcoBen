@@ -7,14 +7,24 @@ import androidx.annotation.Nullable;
 
 
 public class DrawingsListData {
+    private int id;
     private String name;
     private Bitmap bitmap;
     private String filePath;
 
-    public DrawingsListData(String name, Bitmap bitmap, String filePath) {
+    public DrawingsListData(int id, String name, Bitmap bitmap, String filePath) {
+        this.id = id;
         this.name = name;
         this.bitmap = bitmap;
         this.filePath = filePath;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

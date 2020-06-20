@@ -5,6 +5,7 @@ import java.util.Map;
 
 import kr.co.bcoben.model.LoginData;
 import kr.co.bcoben.model.MenuCheckListData;
+import kr.co.bcoben.model.PlanListData;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ResponseData;
@@ -69,4 +70,12 @@ public interface RetrofitApi {
     @FormUrlEncoded
     @POST("/app/project/item_click")
     Call<ResponseData> itemClick(@Field("user_id") int id, @Field("project_id") int projectId, @Field("item_id") int itemId);
+
+    @FormUrlEncoded
+    @POST("/app/research/plan_list")
+    Call<ResponseData<PlanListData>> planList(@Field("user_id") int id, @Field("research_id") int researchId);
+
+//    @FormUrlEncoded
+//    @POST("/app/research/data")
+//    Call<ResponseData<>> researchData (@Field("user_id") int id, @Field("research_id") int researchId);
 }

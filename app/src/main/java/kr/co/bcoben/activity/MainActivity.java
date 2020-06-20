@@ -248,14 +248,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegResearch.txtResearch.getText().toString();
                 String researchName = selectedResearchName;
                 int totCount = selectedResearchCount;
+                //TODO Delete code(For Test)
+                goToDrawingsPage(3);
 
-
-                RetrofitClient.getRetrofitApi().regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, researchName, totCount).enqueue(new RetrofitCallback() {
-                    @Override
-                    public void onResponseData() {
-                        goToDrawingsPage();
-                    }
-                });
+//                RetrofitClient.getRetrofitApi().regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, researchName, totCount).enqueue(new RetrofitCallback() {
+//                    @Override
+//                    public void onResponseData() {
+//                        goToDrawingsPage();
+//                    }
+//                });
                 break;
             case R.id.btn_input_research_home: case R.id.btn_input_project_cancel:
                 closeDrawer();
@@ -905,17 +906,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dialog.show();
     }
 
-    private void goToDrawingsPage() {
+    private void goToDrawingsPage(int researchId) {
         Intent intent = new Intent(MainActivity.this, DrawingsListActivity.class);
-
-//        intent.putStringArrayListExtra("category_list", (ArrayList<String>) regResearchFacCate);
-//        intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) regResearchArchitecture);
-//        intent.putStringArrayListExtra("research_list", (ArrayList<String>) regResearchResearch);
-//        intent.putStringArrayListExtra("facility_list", (ArrayList<String>) regResearchFacility);
-        intent.putExtra("category", dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.getText().toString());
-        intent.putExtra("architecture", dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.getText().toString());
-        intent.putExtra("research", dataBinding.mainDrawer.layoutRegResearch.txtResearch.getText().toString());
-        intent.putExtra("facility", dataBinding.mainDrawer.layoutRegResearch.txtFacility.getText().toString());
+        intent.putExtra("research_id", researchId);
         startActivity(intent);
 
         new Handler().postDelayed(new Runnable() {
