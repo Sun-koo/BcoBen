@@ -67,6 +67,10 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
         void onBind(final ProjectListData.ProjectList item) {
             txtName.setText(item.getProject_name());
             view.setSelected(item.isSelected());
+            if (item.isSelected()) {
+                activity.setTextGrade(item.getGrade_name());
+                activity.setCurrentProjectId(item.getProject_id());
+            }
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

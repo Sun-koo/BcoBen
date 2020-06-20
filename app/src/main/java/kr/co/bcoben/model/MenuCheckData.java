@@ -12,13 +12,16 @@ import java.util.Date;
 public class MenuCheckData {
     private int item_id;
     private String item_name;
-    private String count;
+    private int tot_count;
     private boolean checked;
 
     public MenuCheckData(int item_id, String item_name) {
+        this(item_id, item_name, 0);
+    }
+    public MenuCheckData(int item_id, String item_name, int tot_count) {
         this.item_id = item_id;
         this.item_name = item_name;
-        this.count = "";
+        this.tot_count = tot_count;
         this.checked = false;
     }
 
@@ -34,16 +37,19 @@ public class MenuCheckData {
     public void setItem_name(String item_name) {
         this.item_name = item_name;
     }
-    public String getCount() {
-        return count;
+    public int getTot_count() {
+        return tot_count;
     }
-    public void setCount(String count) {
-        this.count = count;
+    public void setTot_count(int tot_count) {
+        this.tot_count = tot_count;
     }
     public boolean isChecked() {
         return checked;
     }
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+    public MenuCheckData getData() {
+        return this;
     }
 }

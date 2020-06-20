@@ -1,5 +1,7 @@
 package kr.co.bcoben.service.retrofit;
 
+import org.json.JSONObject;
+
 import kr.co.bcoben.R;
 import kr.co.bcoben.model.DataModel;
 import kr.co.bcoben.model.ResponseData;
@@ -16,10 +18,22 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
 
     @Override
     public void onResponse(Call<ResponseData<T>> call, Response<ResponseData<T>> response) {
-        if (response.body().isResult()) {
-            onResponseData(response.body().getData());
+        if (response.body() != null) {
+            if (response.body().isResult()) {
+                onResponseData(response.body().getData());
+            } else {
+                showErrorMsg(response.body().getError());
+            }
         } else {
-            showErrorMsg(response.body().getError());
+            if (response.errorBody() != null) {
+                try {
+                    JSONObject errorObj = new JSONObject(response.errorBody().string());
+                    String error = errorObj.optString("error", "");
+                    if (!error.equals("")) {
+                        showErrorMsg(error);
+                    }
+                } catch (Exception e) {}
+            }
         }
     }
 

@@ -60,7 +60,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         dataBinding.txtFacilityCount.setText(count);
         dataBinding.txtResearchNone.setVisibility(projectData.getResearch_list().isEmpty() ? View.VISIBLE : View.GONE);
 
-        adapter = new ResearchDataListAdapter(getActivity(), projectData.getResearch_list());
+        adapter = new ResearchDataListAdapter(activity, projectData.getResearch_list());
         dataBinding.recyclerResearch.setLayoutManager(new GridLayoutManager(getContext(), 2));
         dataBinding.recyclerResearch.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -83,17 +83,14 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
                 activity.currentOrder = (parent.getSelectedItem().toString()).equals("진척율순") ? "progress" : "recent";
                 activity.requestProjectDataList();
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         dataBinding.layoutRegisterResearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.openDrawerResearch(projectData.getFacility_name());
+                activity.openDrawerResearch(projectData.getFacility_id());
             }
         });
     }

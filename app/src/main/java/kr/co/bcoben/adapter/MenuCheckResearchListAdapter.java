@@ -40,7 +40,7 @@ public class MenuCheckResearchListAdapter extends RecyclerView.Adapter {
         final MenuCheckResearchListAdapter.MenuCheckResearchHolder view = (MenuCheckResearchListAdapter.MenuCheckResearchHolder) holder;
 
         view.txtName.setText(list.get(position).getItem_name());
-        view.txtCount.setText(list.get(position).getCount() + "개소");
+        view.txtCount.setText(list.get(position).getTot_count() + "개소");
     }
 
     @Override

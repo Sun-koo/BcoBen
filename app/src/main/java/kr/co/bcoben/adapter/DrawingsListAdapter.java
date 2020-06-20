@@ -1,9 +1,5 @@
 package kr.co.bcoben.adapter;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,103 +14,121 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import kr.co.bcoben.R;
-import kr.co.bcoben.activity.DrawingsActivity;
 import kr.co.bcoben.activity.DrawingsListActivity;
-import kr.co.bcoben.activity.MainActivity;
-import kr.co.bcoben.ftp.ConnectFTP;
-import kr.co.bcoben.model.DrawingsListData;
+import kr.co.bcoben.model.PlanDataList;
+import kr.co.bcoben.util.SharedPrefUtil;
 
-import static kr.co.bcoben.util.CommonUtil.getFilePath;
+public class DrawingsListAdapter extends RecyclerView.Adapter<DrawingsListAdapter.DrawingHolder> {
 
-public class DrawingsListAdapter extends RecyclerView.Adapter {
+    private DrawingsListActivity activity;
+    private List<PlanDataList.PlanData> list;
 
-    private Activity activity;
-    private ArrayList<DrawingsListData> list;
+    public static final String START_DOWNLOAD = "start_download";
+    public static final String DOWNLOADING = "downloading";
+    public static final String COMPLETE_DOWNLOAD = "complete_download";
 
-    public DrawingsListAdapter(Activity activity, ArrayList<DrawingsListData> list) {
+    public DrawingsListAdapter(DrawingsListActivity activity, List<PlanDataList.PlanData> list) {
         this.activity = activity;
         this.list = list;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public DrawingHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_drawings_list ,viewGroup, false);
-        return new DrawingsListAdapter.DrawingHolder(view);
+        return new DrawingHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        final String name = list.get(position).getName();
+    public void onBindViewHolder(@NonNull final DrawingHolder holder, final int position) {
+        holder.onBind(list.get(position), position);
+    }
 
-        final DrawingsListAdapter.DrawingHolder view = (DrawingsListAdapter.DrawingHolder) holder;
-
-        view.txtName.setText(name);
-        if (list.get(position).getBitmap() != null) {
-            Glide.with(activity).asBitmap().load(list.get(position).getBitmap()).into(view.ivDrawings);
+    @Override
+    public void onBindViewHolder(@NonNull DrawingHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads);
+        } else {
+            for (Object payload : payloads) {
+                String status = (String) payload;
+                if (status.equals(START_DOWNLOAD)) {
+                    holder.txtPercent.setVisibility(View.VISIBLE);
+                    holder.ivDownload.setVisibility(View.GONE);
+                } else if (status.equals(DOWNLOADING)) {
+                    holder.txtPercent.setText(list.get(position).getDownPercent() + "%");
+                } else if (status.equals(COMPLETE_DOWNLOAD)) {
+                    holder.layoutDownload.setVisibility(View.GONE);
+                }
+            }
         }
-
-///data/user/0/kr.co.bcoben/files/drawings_detail.png
-        File file = new File(list.get(position).getFilePath());
-        view.downloadLayout.setVisibility(file.exists() ? View.GONE : View.VISIBLE);
-
-        view.btnDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                view.ivDownload.setVisibility(View.GONE);
-                view.txtPercent.setVisibility(View.VISIBLE);
-                view.txtPercent.setText("100%");
-
-                ((DrawingsListActivity) activity).downloadFile(position);
-            }
-        });
-
-        view.listLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((DrawingsListActivity) activity).sendSpinnerData();
-            }
-        });
     }
 
     @Override
     public int getItemCount() {
         return list.size();
     }
-
-    public void setList(ArrayList<DrawingsListData> mList) {
-        this.list = mList;
+    public void setList(List<PlanDataList.PlanData> list) {
+        this.list = list;
+        notifyDataSetChanged();
+    }
+    public void setData(final int position, final PlanDataList.PlanData data, final String payload) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                list.set(position, data);
+                notifyItemChanged(position, payload);
+            }
+        });
     }
 
-    private class DrawingHolder extends RecyclerView.ViewHolder {
+    public class DrawingHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout listLayout;
-        RelativeLayout downloadLayout, btnDownload;
-        TextView txtName, txtPercent;
-        ImageView ivDrawings, ivDownload;
+        private View view;
+        private RelativeLayout layoutDownload;
+        private RelativeLayout btnDownload;
+        private TextView txtName;
+        private TextView txtPercent;
+        private ImageView ivDrawings;
+        private ImageView ivDownload;
 
-        public DrawingHolder(View view) {
+        DrawingHolder(View view) {
             super(view);
+            this.view = view;
+            this.layoutDownload = view.findViewById(R.id.layout_download);
+            this.btnDownload = view.findViewById(R.id.btn_download);
+            this.txtName = view.findViewById(R.id.txt_name);
+            this.txtPercent = view.findViewById(R.id.txt_percent);
+            this.ivDrawings = view.findViewById(R.id.iv_drawings);
+            this.ivDownload = view.findViewById(R.id.iv_download);
+        }
 
-            listLayout = view.findViewById(R.id.list_layout);
-            downloadLayout = view.findViewById(R.id.layout_download);
-            btnDownload = view.findViewById(R.id.btn_download);
-            txtName = view.findViewById(R.id.txt_name);
-            txtPercent = view.findViewById(R.id.txt_percent);
-            ivDrawings = view.findViewById(R.id.iv_drawings);
-            ivDownload = view.findViewById(R.id.iv_download);
+        void onBind(PlanDataList.PlanData data, final int position) {
+            txtName.setText(data.getPlan_name());
+            if (SharedPrefUtil.getBoolean(data.getPlan_img_file(), false)) {
+                data.setDownPercent(100);
+                layoutDownload.setVisibility(View.GONE);
+            } else {
+                layoutDownload.setVisibility(View.VISIBLE);
+            }
+            Glide.with(activity).asBitmap().load(data.getPlan_bitmap()).into(ivDrawings);
+
+            btnDownload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    activity.downloadFile(position);
+                }
+            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (layoutDownload.getVisibility() == View.GONE) {
+                        activity.sendSpinnerData();
+                    }
+                }
+            });
         }
     }
 }

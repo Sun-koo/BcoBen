@@ -110,7 +110,7 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
             checkBox.setChecked(data.isChecked());
             editCount.setEnabled(data.isChecked());
             editCount.setAlpha(data.isChecked() ? 1f : 0.38f);
-            editCount.setText(data.getCount());
+            editCount.setText(String.valueOf(data.getTot_count()));
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -130,18 +130,16 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            list.get(position).setCount(s.toString());
+            try {
+                list.get(position).setTot_count(Integer.parseInt(s.toString()));
+            } catch (NumberFormatException e) {
+                list.get(position).setTot_count(0);
+            }
         }
-
         @Override
-        public void afterTextChanged(Editable s) {
-
-        }
+        public void afterTextChanged(Editable s) {}
     }
 }

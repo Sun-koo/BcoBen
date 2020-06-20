@@ -1,13 +1,13 @@
 package kr.co.bcoben.service.retrofit;
 
 import java.util.List;
-import java.util.Map;
 
 import kr.co.bcoben.model.LoginData;
 import kr.co.bcoben.model.MenuCheckListData;
-import kr.co.bcoben.model.PlanListData;
+import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
+import kr.co.bcoben.model.ResearchIdData;
 import kr.co.bcoben.model.ResponseData;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -17,7 +17,6 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.PartMap;
 
 public interface RetrofitApi {
     @FormUrlEncoded
@@ -64,8 +63,8 @@ public interface RetrofitApi {
 
     @FormUrlEncoded
     @POST("/app/project/research/register")
-    Call<ResponseData> regResearch(@Field("user_id") int id, @Field("project_id") int projectId, @Field("facility_name") String faciltiyName, @Field("fac_cate_name") String facCateName,
-                                   @Field("structure_name") String structureName, @Field("research_name") String researchName, @Field("tot_count") int totCount);
+    Call<ResponseData<ResearchIdData>> regResearch(@Field("user_id") int id, @Field("project_id") int projectId, @Field("facility_name") String facilityName, @Field("fac_cate_name") String facCateName,
+                                                   @Field("structure_name") String structureName, @Field("research_name") String researchName, @Field("tot_count") int totCount);
 
     @FormUrlEncoded
     @POST("/app/project/item_click")
@@ -73,7 +72,7 @@ public interface RetrofitApi {
 
     @FormUrlEncoded
     @POST("/app/research/plan_list")
-    Call<ResponseData<PlanListData>> planList(@Field("user_id") int id, @Field("research_id") int researchId);
+    Call<ResponseData<PlanDataList>> planList(@Field("user_id") int id, @Field("research_id") int researchId);
 
 //    @FormUrlEncoded
 //    @POST("/app/research/data")

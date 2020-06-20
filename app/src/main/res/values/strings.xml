@@ -25,6 +25,7 @@
     <string name="minus">-</string>
     <string name="plus_button">+ 등록</string>
     <string name="minus_button">- 제거</string>
+    <string name="toast_error_invalidate">비정상적인 접근입니다</string>
     <string name="toast_error_server">통신 중 에러가 발생했습니다.\n잠시 후 다시 시도해주세요.</string>
 
     <!--로그인 화면-->
@@ -126,6 +127,8 @@
 
     <!--도면 리스트 화면-->
     <string name="drawings_list_download_all">전체 다운로드</string>
+    <string name="toast_download_all_empty">다운로드할 도면이 없습니다</string>
+    <string name="toast_download_complete">다운로드가 완료 되었습니다</string>
 
     <!--도면 상세 화면-->
     <string name="drawings_memo">메모</string>

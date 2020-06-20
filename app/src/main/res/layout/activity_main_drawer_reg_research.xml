@@ -220,7 +220,7 @@
                 android:layout_marginTop="22.5dp"
                 android:layout_marginEnd="25dp"
                 android:background="@drawable/btn_round_light_pink"
-                android:onClick="onClick"
+                android:onClick="onDrawerResearchMenuClick"
                 android:text="조사 입력하기"
                 android:textColor="@color/colorTextNavy"
                 android:textSize="18dp"
@@ -234,7 +234,7 @@
                 android:layout_marginTop="22.5dp"
                 android:layout_marginBottom="22.5dp"
                 android:background="@null"
-                android:onClick="onClick"
+                android:onClick="onDrawerResearchMenuClick"
                 android:text="@string/side_menu_research_move_home"
                 android:textColor="@color/colorWhite"
                 android:textSize="18dp"/>

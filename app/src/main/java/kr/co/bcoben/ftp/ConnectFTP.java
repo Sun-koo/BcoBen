@@ -10,199 +10,150 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import kr.co.bcoben.util.CommonUtil;
+import kr.co.bcoben.adapter.DrawingsListAdapter;
+import kr.co.bcoben.model.PlanDataList;
 
 import static kr.co.bcoben.util.CommonUtil.getFilePath;
 
 public class ConnectFTP {
-    private static ConnectFTP connectFTP;
     private final String TAG = "Connect FTP";
-    private FTPClient ftpClient;
-    private String host = "211.218.126.222";
-    private int port = 21;
-    private String userName = "bcobenftp";
-    private String password = "ftp_123!@#";
-    public String filePath = "/data/bcoben/1/App Upload/drawings_detail.png";
+    private final String HOST = "211.218.126.222";
+    private final int PORT = 21;
+    private final String USER_NAME = "bcobenftp";
+    private final String PASSWORD = "ftp_123!@#";
 
+    private FTPClient client;
+
+    private static class LazyHolder {
+        public static final ConnectFTP INSTANCE = new ConnectFTP();
+    }
     public static ConnectFTP getInstance() {
-        if (connectFTP == null) {
-            connectFTP = new ConnectFTP();
-        }
-        return connectFTP;
+        return LazyHolder.INSTANCE;
     }
+    private ConnectFTP() {}
 
-    private ConnectFTP() {
-        ftpClient = new FTPClient();
-    }
+    private boolean ftpConnect() {
+        try {
+            if (client == null) {
+                client = new FTPClient();
+                client.setControlEncoding("UTF-8");
+                client.connect(HOST, PORT);
 
-    public boolean ftpConnect() {
-        boolean result = false;
-        if (!ftpClient.isConnected()) {
-            try {
-                ftpClient.setControlEncoding("UTF-8");
-                ftpClient.connect(host, port);
-
-                if (FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
-                    result = ftpClient.login(userName, password);
-                    ftpClient.enterLocalPassiveMode();
+                if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                    if (client.login(USER_NAME, PASSWORD)) {
+                        client.setFileType(FTP.BINARY_FILE_TYPE);
+                        client.enterLocalPassiveMode();
+                        return true;
+                    }
+                } else {
+                    client.disconnect();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d(TAG, "Couldn't connect to host");
+            } else {
+                return client.isConnected();
             }
-        } else {
-            result = true;
-        }
-        return result;
-    }
-
-    public boolean ftpDisconnect() {
-        boolean result = false;
-        if (ftpClient.isConnected()) {
-            try {
-                ftpClient.logout();
-                ftpClient.disconnect();
-                result = true;
-            } catch (Exception e) {
-                Log.d(TAG, "Failed to disconnect with server");
-            }
-        } else {
-            result = true;
-        }
-        return result;
-    }
-
-    public String ftpGetDirectory() {
-        String directory = null;
-        try {
-            directory = ftpClient.printWorkingDirectory();
         } catch (Exception e) {
-            Log.d(TAG, "Couldn't get current directory");
-        }
-        return directory;
-    }
-
-    public boolean ftpChangeDirectory(String directory) {
-        try {
-            ftpClient.changeWorkingDirectory(directory);
-            return true;
-        } catch (Exception e) {
-            Log.d(TAG, "Couldn't change the directory");
+            e.printStackTrace();
         }
         return false;
     }
 
-    public String[] ftpGetFileList(String directory) {
-        String[] fileList = null;
-        int i = 0;
-        try {
-            FTPFile[] ftpFiles = ftpClient.listFiles(directory);
-            fileList = new String[ftpFiles.length];
+    public void ftpDisconnect() {
+        if (client != null && client.isConnected()) {
+            try {
+                client.logout();
+                client.disconnect();
+                client = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-            for (FTPFile file : ftpFiles) {
-                String fileName = file.getName();
+    public void ftpPlanThumbBitmap(List<PlanDataList.PlanData> planList) {
+        if (ftpConnect()) {
+            try {
+                for (PlanDataList.PlanData data : planList) {
+                    String path = data.getPlan_thumb();
+                    if (path != null && !path.equals("")) {
+                        BufferedInputStream is = new BufferedInputStream(client.retrieveFileStream(data.getPlan_thumb()));
+                        Bitmap bitmap = BitmapFactory.decodeStream(is);
+                        if (bitmap != null) {
+                            data.setPlan_bitmap(bitmap);
+                        }
 
-                if (file.isFile()) {
-                    fileList[i] = "(File)" + fileName;
-                } else {
-                    fileList[i] = "(Directory)" + fileName;
+                        is.close();
+                        client.completePendingCommand();
+                    }
                 }
-                i++;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            ftpDisconnect();
         }
-        return fileList;
     }
 
-    public Bitmap ftpImageFile(String srcFilePath) {
-        Bitmap bitmap = null;
-        try {
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-            BufferedInputStream is = new BufferedInputStream(ftpClient.retrieveFileStream(srcFilePath));
-            bitmap = BitmapFactory.decodeStream(is);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
-
-    public List<Bitmap> ftpImageFile(List<String> filePathList) {
-        List<Bitmap> list = new ArrayList<>();
-        try {
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-            for (String path : filePathList) {
-                BufferedInputStream is = new BufferedInputStream(ftpClient.retrieveFileStream(path));
-                Bitmap bitmap = BitmapFactory.decodeStream(is);
-                if (bitmap != null) {
-                    list.add(bitmap);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public List<String> ftpDownloadFileList(List<String> srcFilePathList) {
-        List<String> list = new ArrayList<>();
-        try {
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
-
-            for (String srcFilePath : srcFilePathList) {
-                String[] strArr = srcFilePath.split("/bcoben/");
-                String lastPath = strArr[1].substring(strArr[1].lastIndexOf("/") + 1);
-                String desFilePath = getFilePath().getAbsolutePath() + lastPath;
-                list.add(desFilePath);
-
-                FileOutputStream fos = new FileOutputStream(desFilePath);
-                ftpClient.retrieveFile(srcFilePath, fos);
-                fos.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public boolean ftpDownloadFile(String srcFilePath, String desFilePath) {
+    public boolean ftpPlanDownload(int position, PlanDataList.PlanData planData, DrawingsListAdapter adapter) {
         boolean result = false;
-        try {
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
+        if (ftpConnect()) {
+            try {
+                long size = ftpFileSize(planData.getPlan_img());
 
-            FileOutputStream fos = new FileOutputStream(desFilePath);
-            result = ftpClient.retrieveFile(srcFilePath, fos);
-            fos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Download failed");
+                int index = planData.getPlan_img_file().lastIndexOf("/") + 1;
+                String pathname = planData.getPlan_img_file().substring(0, index);
+                String filename = planData.getPlan_img_file().substring(index);
+                File folder = new File(pathname);
+                if (!folder.exists()) {
+                    folder.mkdir();
+                }
+
+                FileOutputStream output = new FileOutputStream(new File(pathname, filename));
+                InputStream input = client.retrieveFileStream(planData.getPlan_img());
+                byte[] data = new byte[4096];
+
+                double download = 0;
+                int len;
+                adapter.setData(position, planData, DrawingsListAdapter.START_DOWNLOAD);
+                while ((len = input.read(data)) != -1) {
+                    output.write(data, 0, len);
+                    download += len;
+                    int percent = (int) (download / size * 100);
+                    planData.setDownPercent(percent);
+                    adapter.setData(position, planData, DrawingsListAdapter.DOWNLOADING);
+                }
+                output.close();
+                input.close();
+                result = client.completePendingCommand();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ftpDisconnect();
         }
         return result;
     }
 
-    public boolean ftpUploadFile(String srcFilePath, String desFileName, String desDirectory) {
-        boolean result = false;
+    private long ftpFileSize(String path) {
+        long size = 0;
         try {
-            FileInputStream fis = new FileInputStream(srcFilePath);
-            if (ftpChangeDirectory(desDirectory)) {
-                result = ftpClient.storeFile(desFileName, fis);
+            int index = path.lastIndexOf("/") + 1;
+            String pathname = path.substring(0, index);
+            String filename = path.substring(index);
+
+            for (FTPFile file : client.listFiles(pathname)) {
+                if (file.getName().equals(filename)) {
+                    size = file.getSize();
+                    break;
+                }
             }
-            fis.close();
-        } catch (Exception e) {
-            Log.d(TAG, "Couldn't upload the file");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return result;
+        return size;
     }
 }

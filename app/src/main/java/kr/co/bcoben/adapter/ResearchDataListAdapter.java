@@ -14,14 +14,15 @@ import java.util.List;
 import java.util.Locale;
 
 import kr.co.bcoben.R;
+import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.ProjectResearchData;
 
 public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataListAdapter.ResearchDataListHolder> {
 
-    private Activity activity;
+    private MainActivity activity;
     private List<ProjectResearchData> list;
 
-    public ResearchDataListAdapter(Activity activity, List<ProjectResearchData> list) {
+    public ResearchDataListAdapter(MainActivity activity, List<ProjectResearchData> list) {
         this.activity = activity;
         this.list = list;
     }
@@ -70,7 +71,7 @@ public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataLi
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
             String arch = item.getFac_cate_name() + ", " + item.getStructure_name();
             String title = item.getResearch_name();
-            String date = sdf.format(item.getUpdate_date());
+            String date = "";
             String percent = (item.getReg_count() * 100 / item.getTot_count()) + "%";
             String count = activity.getString(R.string.main_research_count, item.getReg_count(), item.getTot_count());
 
@@ -83,6 +84,7 @@ public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataLi
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    activity.goToDrawingsPage(item.getResearch_id());
                 }
             });
         }
