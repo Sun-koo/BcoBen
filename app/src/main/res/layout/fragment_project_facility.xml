@@ -115,6 +115,7 @@
             android:text="@string/main_research_list_none"
             android:textSize="13dp"
             android:textColor="@color/colorTextPrimary"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

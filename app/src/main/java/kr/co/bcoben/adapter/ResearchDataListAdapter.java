@@ -1,6 +1,5 @@
 package kr.co.bcoben.adapter;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +9,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
-import kr.co.bcoben.model.ProjectResearchData;
+import kr.co.bcoben.model.ProjectResearchList;
 
 public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataListAdapter.ResearchDataListHolder> {
 
     private MainActivity activity;
-    private List<ProjectResearchData> list;
+    private List<ProjectResearchList.ProjectResearchData> list;
 
-    public ResearchDataListAdapter(MainActivity activity, List<ProjectResearchData> list) {
+    public ResearchDataListAdapter(MainActivity activity, List<ProjectResearchList.ProjectResearchData> list) {
         this.activity = activity;
         this.list = list;
     }
@@ -43,7 +43,7 @@ public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataLi
     public int getItemCount() {
         return list.size();
     }
-    public void setList(List<ProjectResearchData> list) {
+    public void setList(List<ProjectResearchList.ProjectResearchData> list) {
         this.list = list;
         notifyDataSetChanged();
     }
@@ -67,11 +67,11 @@ public class ResearchDataListAdapter extends RecyclerView.Adapter<ResearchDataLi
             txtResearchCount = view.findViewById(R.id.txt_research_count);
         }
 
-        void onBind(final ProjectResearchData item) {
+        void onBind(final ProjectResearchList.ProjectResearchData item) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
             String arch = item.getFac_cate_name() + ", " + item.getStructure_name();
             String title = item.getResearch_name();
-            String date = "";
+            String date = sdf.format(new Date(item.getUpdate_date()));
             String percent = (item.getReg_count() * 100 / item.getTot_count()) + "%";
             String count = activity.getString(R.string.main_research_count, item.getReg_count(), item.getTot_count());
 

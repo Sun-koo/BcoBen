@@ -22,6 +22,8 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        TAG = getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1);
+        TAG = TAG.length() > 23 ? TAG.replace("Fragment", "") : TAG;
         dataBinding = DataBindingUtil.inflate(inflater, getLayoutResource(), container, false);
         View view = dataBinding.getRoot();
         initView();

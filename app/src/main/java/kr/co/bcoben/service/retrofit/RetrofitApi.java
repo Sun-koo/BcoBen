@@ -7,6 +7,7 @@ import kr.co.bcoben.model.MenuCheckListData;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
+import kr.co.bcoben.model.ProjectResearchList;
 import kr.co.bcoben.model.ResearchIdData;
 import kr.co.bcoben.model.ResponseData;
 import okhttp3.MultipartBody;
@@ -49,7 +50,11 @@ public interface RetrofitApi {
 
     @FormUrlEncoded
     @POST("/app/project/data")
-    Call<ResponseData<ProjectMainData>> projectData(@Field("user_id") int id, @Field("project_id") int projectId, @Field("order") String order);
+    Call<ResponseData<ProjectMainData>> projectData(@Field("user_id") int id, @Field("project_id") int projectId);
+
+    @FormUrlEncoded
+    @POST("/app/project/research_list")
+    Call<ResponseData<ProjectResearchList>> projectResearchList(@Field("user_id") int id, @Field("project_id") int projectId, @Field("facility_id") int facilityId, @Field("order") String order);
 
     @FormUrlEncoded
     @POST("/app/project/reg_data_list")

@@ -151,9 +151,7 @@
                         android:id="@+id/recycler_check_facility"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_drawer_list"
-                        android:visibility="visible">
-                    </androidx.recyclerview.widget.RecyclerView>
+                        android:visibility="visible"/>
 
                 </LinearLayout>
 
@@ -202,8 +200,7 @@
                     android:id="@+id/recycler_check_research"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone">
-                </androidx.recyclerview.widget.RecyclerView>
+                    android:visibility="gone"/>
 
                 <RelativeLayout
                     android:id="@+id/layout_drawings"
@@ -304,24 +301,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:visibility="gone">
-                </androidx.recyclerview.widget.RecyclerView>
+                    android:visibility="gone"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_menu_tree"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:visibility="gone">
-                </androidx.recyclerview.widget.RecyclerView>
+                    android:visibility="gone"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_check_input"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:visibility="gone">
-                </androidx.recyclerview.widget.RecyclerView>
+                    android:visibility="gone"/>
 
                 <include
                     android:id="@+id/layout_drawings_input"

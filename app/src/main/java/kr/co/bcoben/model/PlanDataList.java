@@ -1,6 +1,10 @@
 package kr.co.bcoben.model;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -29,7 +33,7 @@ public class PlanDataList implements DataModel {
         }
     }
 
-    public static class PlanData {
+    public static class PlanData implements Parcelable {
         private int plan_id;
         private String plan_name;
         private String plan_img;
@@ -44,6 +48,26 @@ public class PlanDataList implements DataModel {
             this.plan_img = plan_img;
             this.plan_thumb = plan_thumb;
         }
+
+        protected PlanData(Parcel in) {
+            plan_id = in.readInt();
+            plan_name = in.readString();
+            plan_img = in.readString();
+            plan_thumb = in.readString();
+            plan_img_file = in.readString();
+        }
+
+        public static final Creator<PlanData> CREATOR = new Creator<PlanData>() {
+            @Override
+            public PlanData createFromParcel(Parcel in) {
+                return new PlanData(in);
+            }
+
+            @Override
+            public PlanData[] newArray(int size) {
+                return new PlanData[size];
+            }
+        };
 
         public int getPlan_id() {
             return plan_id;
@@ -86,6 +110,29 @@ public class PlanDataList implements DataModel {
         }
         public void setDownPercent(int downPercent) {
             this.downPercent = downPercent;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (obj instanceof PlanData) {
+                PlanData data = (PlanData) obj;
+                return plan_id == data.getPlan_id() && plan_name.equals(data.getPlan_name()) && plan_img.equals(data.getPlan_img()) && plan_thumb.equals(data.getPlan_thumb());
+            }
+            return false;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(plan_id);
+            dest.writeString(plan_name);
+            dest.writeString(plan_img);
+            dest.writeString(plan_thumb);
+            dest.writeString(plan_img_file);
         }
     }
 }

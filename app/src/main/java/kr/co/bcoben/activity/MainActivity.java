@@ -88,12 +88,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             return value;
         }
     }
-    public enum CurrentProjectStep { SUMMARY, GRADE, FACILITY, RESEARCH, DRAWINGS }
+    public enum ProjectStep { SUMMARY, GRADE, FACILITY, RESEARCH, DRAWINGS }
     public enum DatePickerType { START, END }
 
     // side menu
-
-    private CurrentProjectStep currentProjectStep = CurrentProjectStep.SUMMARY;
     private MainResearchRegListAdapter mainResearchRegListAdapter;
     private MenuCheckListAdapter menuCheckListAdapter;
     private TreeViewAdapter treeViewAdapter;
@@ -115,6 +113,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private String selectedResearchName;
     private int selectedResearchCount;
 
+    // 프로젝트 등록
+    private ProjectStep currentProjectStep = ProjectStep.SUMMARY;
     private List<MenuCheckData> regProjectGrade = new ArrayList<>();
     private List<MenuSelectFacilityData> regProjectFacility = new ArrayList<>();
     private List<MenuCheckData> regProjectResearch = new ArrayList<>();
@@ -130,7 +130,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<ProjectListData.ProjectList> projectList = new ArrayList<>();
     private List<ProjectData> projectDataList = new ArrayList<>();
     private int currentProjectId;
-    public String currentOrder = "progress";
 
     @Override
     protected int getLayoutResource() {
@@ -150,42 +149,33 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         initDrawerResearch();
-
-        menuCheckFacilityListAdapter = new MenuCheckFacilityListAdapter(this, regProjectFacility);
-        dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.setAdapter(menuCheckFacilityListAdapter);
-        dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.setLayoutManager(new LinearLayoutManager(this));
-
-        menuCheckInputListAdapter = new MenuCheckInputListAdapter(this, regProjectResearch);
-        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setAdapter(menuCheckInputListAdapter);
-        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setLayoutManager(new LinearLayoutManager(this));
-
-        requestRegProjectCheckData();
-
-        menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, regProjectResearch);
-        dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
-        dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setLayoutManager(new LinearLayoutManager(this));
-
-        menuDrawingsListAdapter = new MenuDrawingsListAdapter(this, regDrawingsList);
-        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.setAdapter(menuDrawingsListAdapter);
-        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        initDrawerProject();
 
         // main
         projectListAdapter = new ProjectListAdapter(this, projectList);
         dataBinding.recyclerProject.setAdapter(projectListAdapter);
         dataBinding.recyclerProject.setLayoutManager(new LinearLayoutManager(this));
-        dataBinding.txtVersion.setText(getAppVersion());
 
         projectPageAdapter = new ProjectDataPageAdapter(getSupportFragmentManager(), projectDataList);
         dataBinding.mainDrawer.mainContents.pagerProjectData.setAdapter(projectPageAdapter);
         dataBinding.mainDrawer.mainContents.pagerProjectData.setOffscreenPageLimit(5);
 
+        dataBinding.txtVersion.setText(getAppVersion());
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (UserData.getInstance().getUserId() == 0){
+            Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
+            intent_logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent_logout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent_logout);
+            finish();
+        }
         requestProjectList();
+        requestRegProjectCheckData();
     }
 
     @Override
@@ -362,6 +352,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     public void onResponseData() {
                         UserData.getInstance().removeData();
                         Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
+                        intent_logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent_logout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent_logout);
                         finish();
                     }
@@ -373,6 +365,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 openDrawerResearch(0);
                 break;
         }
+    }
+
+    private void setNavigationViewWidth(boolean isProject) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        LinearLayout.LayoutParams params_home = (LinearLayout.LayoutParams) dataBinding.layoutHome.getLayoutParams();
+        DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) dataBinding.mainDrawer.naviMain.getLayoutParams();
+        params.width = (int) (displayMetrics.widthPixels * (isProject ? 1.0 : 0.6));
+        if (isProject) {
+            params.width -= params_home.width;
+        }
+        dataBinding.mainDrawer.naviMain.setLayoutParams(params);
     }
 
     // 조사등록
@@ -438,32 +442,26 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 String facCateName = dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.getText().toString();
                 String structureName = dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.getText().toString();
 
-                if (facilityName.equals("")) {
-                    showToast(R.string.toast_input_select_facility);
-                    return;
+                if (checkValidateResearchRegister(facilityName, facCateName, structureName, selectedResearchName)) {
+                    RetrofitClient.getRetrofitApi().regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, selectedResearchName, selectedResearchCount)
+                            .enqueue(new RetrofitCallbackModel<ResearchIdData>() {
+                                @Override
+                                public void onResponseData(ResearchIdData data) {
+                                    goToDrawingsPage(data.getResearch_id());
+                                }
+                            });
                 }
-                if (facCateName.equals("")) {
-                    showToast(R.string.toast_input_select_facility_category);
-                    return;
-                }
-                if (structureName.equals("")) {
-                    showToast(R.string.toast_input_select_architecture);
-                    return;
-                }
-                if (selectedResearchName.equals("")) {
-                    showToast(R.string.toast_input_select_research);
-                    return;
-                }
-
-                RetrofitClient.getRetrofitApi().regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, selectedResearchName, selectedResearchCount)
-                        .enqueue(new RetrofitCallbackModel<ResearchIdData>() {
-                            @Override
-                            public void onResponseData(ResearchIdData data) {
-                                goToDrawingsPage(data.getResearch_id());
-                            }
-                        });
                 break;
         }
+    }
+
+    // 조사등록 유효성 검사
+    private boolean checkValidateResearchRegister(String facilityName, String facCateName, String structureName, String researchName) {
+        if (facilityName.equals("")) { showToast(R.string.toast_input_select_facility); return false; }
+        if (facCateName.equals("")) { showToast(R.string.toast_input_select_facility_category); return false; }
+        if (structureName.equals("")) { showToast(R.string.toast_input_select_architecture); return false; }
+        if (researchName.equals("")) { showToast(R.string.toast_input_select_research); return false; }
+        return true;
     }
 
     // 조사등록 UI변경
@@ -549,20 +547,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         String name = mainResearchRegListAdapter.getEditName();
         switch (currentResearchStep) {
             case FACILITY: {
-                if (name.isEmpty()) {
-                    showToast(R.string.toast_input_facility);
-                    return;
-                }
+                if (name.isEmpty()) { showToast(R.string.toast_input_facility); return; }
                 int index = researchRegData.getFacilityList().get(researchRegData.getFacilityList().size() - 1).getItem_id();
                 ResearchRegData.FacilityData data = new ResearchRegData.FacilityData(index > 0 ? -1 : index - 1, name, newResearchFacCateList);
                 researchRegData.addFacility(data);
                 break;
             }
             case FACILITY_CATEGORY: {
-                if (name.isEmpty()) {
-                    showToast(R.string.toast_input_facility_category);
-                    return;
-                }
+                if (name.isEmpty()) { showToast(R.string.toast_input_facility_category); return; }
                 ResearchRegData.FacilityData facilityData = researchRegData.getFacilityDataID(getSelectResearchRegData(ResearchStep.FACILITY.getValue()).getItem_id());
                 int index = facilityData.getFacCateList().get(facilityData.getFacCateList().size() - 1).getItem_id();
                 ResearchRegData.FacilityData.FacCateData data = new ResearchRegData.FacilityData.FacCateData(index > 0 ? -1 : index - 1, name, newResearchArchList);
@@ -570,10 +562,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 break;
             }
             case ARCHITECTURE: {
-                if (name.isEmpty()) {
-                    showToast(R.string.toast_input_architecture);
-                    return;
-                }
+                if (name.isEmpty()) { showToast(R.string.toast_input_architecture); return; }
                 ResearchRegData.FacilityData.FacCateData facCateData = researchRegData .getFacilityDataID(getSelectResearchRegData(ResearchStep.FACILITY.getValue()).getItem_id()) .getFacCateDataID(getSelectResearchRegData(ResearchStep.FACILITY_CATEGORY.getValue()).getItem_id());
                 int index = facCateData.getArchitectureList().get(facCateData.getArchitectureList().size() - 1).getItem_id();
                 ResearchRegData.FacilityData.FacCateData.ArchitectureData data = new ResearchRegData.FacilityData.FacCateData.ArchitectureData(index > 0 ? -1 : index - 1, name);
@@ -582,14 +571,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
             case RESEARCH:
                 String count = mainResearchRegListAdapter.getEditCount();
-                if (count.isEmpty()) {
-                    showToast(R.string.toast_input_research_count);
-                    return;
-                }
-                if (name.isEmpty()) {
-                    showToast(R.string.toast_input_research);
-                    return;
-                }
+                if (count.isEmpty()) { showToast(R.string.toast_input_research_count); return; }
+                if (name.isEmpty()) { showToast(R.string.toast_input_research); return; }
                 researchRegData.addResearch(name, Integer.parseInt(count));
                 break;
         }
@@ -647,44 +630,56 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         return currentResearchStep;
     }
 
+
     // 프로젝트 등록
+    public void initDrawerProject() {
+        // 진단등급 리스트
+        menuCheckListAdapter = new MenuCheckListAdapter(this, regProjectGrade);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setAdapter(menuCheckListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setLayoutManager(new LinearLayoutManager(this));
+
+        // 조사종류 리스트
+        menuCheckInputListAdapter = new MenuCheckInputListAdapter(this, regProjectResearch);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setAdapter(menuCheckInputListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setLayoutManager(new LinearLayoutManager(this));
+
+        // 도면 등록 리스트
+        menuDrawingsListAdapter = new MenuDrawingsListAdapter(this, regDrawingsList);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.setAdapter(menuDrawingsListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+
+        // 시설물 등록 리스트
+        menuCheckFacilityListAdapter = new MenuCheckFacilityListAdapter(this, regProjectFacility);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.setAdapter(menuCheckFacilityListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.setLayoutManager(new LinearLayoutManager(this));
+
+        // 조사종류 등록 리스트
+        menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, regProjectResearch);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
+        dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setLayoutManager(new LinearLayoutManager(this));
+    }
     // side menu(project)
     public void onDrawerProjectMenuClick(View v) {
         switch (v.getId()) {
-            case R.id.layout_summary: updateStepProjectMenuUI(CurrentProjectStep.SUMMARY); break;
-            case R.id.layout_grade: updateStepProjectMenuUI(CurrentProjectStep.GRADE); break;
-            case R.id.layout_facility: updateStepProjectMenuUI(CurrentProjectStep.FACILITY); break;
-            case R.id.layout_research: updateStepProjectMenuUI(CurrentProjectStep.RESEARCH); break;
-            case R.id.layout_drawings: updateStepProjectMenuUI(CurrentProjectStep.DRAWINGS); break;
+            case R.id.layout_summary: updateStepProjectMenuUI(ProjectStep.SUMMARY); break;
+            case R.id.layout_grade: updateStepProjectMenuUI(ProjectStep.GRADE); break;
+            case R.id.layout_facility: updateStepProjectMenuUI(ProjectStep.FACILITY); break;
+            case R.id.layout_research: updateStepProjectMenuUI(ProjectStep.RESEARCH); break;
+            case R.id.layout_drawings: updateStepProjectMenuUI(ProjectStep.DRAWINGS); break;
         }
     }
-
 
     public void openDrawerProject() {
         dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.VISIBLE);
         dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.GONE);
-        initDrawerProject();
+        resetDrawerProject();
 
         setNavigationViewWidth(true);
         dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
     }
 
-    private void setNavigationViewWidth(boolean isProject) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        LinearLayout.LayoutParams params_home = (LinearLayout.LayoutParams) dataBinding.layoutHome.getLayoutParams();
-        DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) dataBinding.mainDrawer.naviMain.getLayoutParams();
-        params.width = (int) (displayMetrics.widthPixels * (isProject ? 1.0 : 0.6));
-        if (isProject) {
-            params.width -= params_home.width;
-        }
-        dataBinding.mainDrawer.naviMain.setLayoutParams(params);
-    }
-
-
-
-    private void initDrawerProject() {
-        updateStepProjectMenuUI(CurrentProjectStep.SUMMARY);
+    private void resetDrawerProject() {
+        updateStepProjectMenuUI(ProjectStep.SUMMARY);
         dataBinding.mainDrawer.layoutRegProject.layoutGrade.setClickable(false);
         dataBinding.mainDrawer.layoutRegProject.layoutFacility.setClickable(false);
         dataBinding.mainDrawer.layoutRegProject.layoutResearch.setClickable(false);
@@ -699,9 +694,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectName.setText("");
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText("");
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText("");
+
+        regProjectFacility.clear();
+        regProjectResearch.clear();
+        menuCheckFacilityListAdapter.setList(regProjectFacility);
+        menuCheckResearchListAdapter.setList(regProjectResearch);
     }
 
-    private void updateStepProjectMenuUI(CurrentProjectStep step) {
+    private void updateStepProjectMenuUI(ProjectStep step) {
         currentProjectStep = step;
 
         dataBinding.mainDrawer.layoutRegProject.layoutSummary.setSelected(false);
@@ -724,26 +724,25 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.layoutRoot.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.btnProjectNext.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_input);
-
+                menuCheckFacilityListAdapter.setSelected(false);
                 break;
             case GRADE:
                 dataBinding.mainDrawer.layoutRegProject.layoutGrade.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheck.setVisibility(View.VISIBLE);
                 menuCheckListAdapter.setList(regProjectGrade);
-
+                menuCheckFacilityListAdapter.setSelected(false);
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setVisibility(View.VISIBLE);
-//                menuCheckListAdapter.setList(regProjectFacility);
-
+                menuCheckFacilityListAdapter.setSelected(true);
                 break;
             case RESEARCH:
                 dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_select_input);
                 menuCheckInputListAdapter.setList(regProjectResearch);
-
+                menuCheckFacilityListAdapter.setSelected(false);
                 break;
             case DRAWINGS:
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.removeAllViews();
@@ -763,7 +762,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.layoutRoot.setVisibility(View.VISIBLE);
-
+                menuCheckFacilityListAdapter.setSelected(false);
                 break;
         }
 //        dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
@@ -859,7 +858,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.txtSummaryName.setText(summary_value.get(0));
                 dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.setText(summary_value.get(1) + " ~ " + summary_value.get(2));
                 dataBinding.mainDrawer.layoutRegProject.layoutGrade.setClickable(true);
-                updateStepProjectMenuUI(CurrentProjectStep.GRADE);
+                updateStepProjectMenuUI(ProjectStep.GRADE);
                 break;
             case GRADE:
                 String grade = "";
@@ -875,11 +874,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 }
                 dataBinding.mainDrawer.layoutRegProject.txtGrade.setText(grade);
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setClickable(true);
-                updateStepProjectMenuUI(CurrentProjectStep.FACILITY);
+                updateStepProjectMenuUI(ProjectStep.FACILITY);
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegProject.layoutResearch.setClickable(true);
-                updateStepProjectMenuUI(CurrentProjectStep.RESEARCH);
+                updateStepProjectMenuUI(ProjectStep.RESEARCH);
                 break;
             case RESEARCH:
                 List<MenuCheckData> selectedList = new ArrayList<>();
@@ -895,7 +894,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.txtResearch.setText("-");
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setClickable(true);
-                updateStepProjectMenuUI(CurrentProjectStep.DRAWINGS);
+                updateStepProjectMenuUI(ProjectStep.DRAWINGS);
                 break;
             case DRAWINGS:
                 //TODO
@@ -1005,17 +1004,61 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //프로젝트 조사 내용 및 조사등록용 데이터 API 호출
     public void requestProjectDataList() {
-        RetrofitClient.getRetrofitApi().projectData(UserData.getInstance().getUserId(), currentProjectId, currentOrder).enqueue(new RetrofitCallbackModel<ProjectMainData>() {
+        RetrofitClient.getRetrofitApi().projectData(UserData.getInstance().getUserId(), currentProjectId).enqueue(new RetrofitCallbackModel<ProjectMainData>() {
             @Override
             public void onResponseData(ProjectMainData data) {
                 projectDataList = data.getFacility_list();
-                for (ProjectData d : projectDataList) {
-                    d.setCount();
-                }
                 researchRegData = data.getResearch_reg_data();
-                projectPageAdapter.setProjectDataList(projectDataList);
+                projectPageAdapter.setProjectDataList(currentProjectId, projectDataList);
             }
         });
+    }
+
+    public void setSelectedFacilityData(String facility, String facCate, String arch, List<Integer> list) {
+        boolean isContain = false;
+        for (MenuSelectFacilityData data : regProjectFacility) {
+            List<Integer> idList = data.getIdList();
+            boolean equal = true;
+            for (int i = 0; i < idList.size(); i++) {
+                if ((int) idList.get(i) != (int) list.get(i)) {
+                    equal = false;
+                    break;
+                }
+            }
+
+            if (equal) {
+                isContain = true;
+                break;
+            }
+        }
+        if (!isContain) {
+            regProjectFacility.add(new MenuSelectFacilityData(facility, facCate, arch, list));
+            menuCheckFacilityListAdapter.setList(regProjectFacility);
+        }
+    }
+
+    //프로젝트 등록용 시설물 리스트 조회 API 호출
+    private void requestRegProjectCheckData() {
+       RetrofitClient.getRetrofitApi().projectRegDataList(UserData.getInstance().getUserId()).enqueue(new RetrofitCallbackModel<MenuCheckListData>() {
+           @Override
+           public void onResponseData(MenuCheckListData data) {
+               regProjectGrade = data.getGrade_list();
+               regProjectResearch = data.getResearch_list();
+
+               newResearchFacCateList.clear();
+               newResearchArchList.clear();
+               for (MenuCheckData d : data.getStructure_list()) {
+                   ResearchRegData.FacilityData.FacCateData.ArchitectureData archData = new ResearchRegData.FacilityData.FacCateData.ArchitectureData(d.getItem_id(), d.getItem_name());
+                   newResearchArchList.add(archData);
+               }
+               for (MenuCheckData d : data.getFac_cate_list()) {
+                   ResearchRegData.FacilityData.FacCateData cateData = new ResearchRegData.FacilityData.FacCateData(d.getItem_id(), d.getItem_name(), newResearchArchList);
+                   newResearchFacCateList.add(cateData);
+               }
+
+               initMenuFacilityTreeData(data.getFacility_list(), data.getFac_cate_list(), data.getStructure_list());
+           }
+       });
     }
 
     private void initMenuFacilityTreeData(List<MenuCheckData> facilityList, List<MenuCheckData> facCateList, List<MenuCheckData> archList) {
@@ -1061,37 +1104,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         });
 
         dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setAdapter(treeViewAdapter);
-    }
-
-    public void setSelectedFacilityData(String facility, String facCate, String arch, List<Integer> list) {
-        regProjectFacility.add(new MenuSelectFacilityData(facility, facCate, arch, list));
-        menuCheckFacilityListAdapter.setList(regProjectFacility);
-
-        dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
-    }
-
-    //프로젝트 등록용 시설물 리스트 조회 API 호출
-    private void requestRegProjectCheckData() {
-       RetrofitClient.getRetrofitApi().projectRegDataList(UserData.getInstance().getUserId()).enqueue(new RetrofitCallbackModel<MenuCheckListData>() {
-           @Override
-           public void onResponseData(MenuCheckListData data) {
-               regProjectGrade = data.getGrade_list();
-               regProjectResearch = data.getResearch_list();
-
-               newResearchFacCateList.clear();
-               newResearchArchList.clear();
-               for (MenuCheckData d : data.getStructure_list()) {
-                   ResearchRegData.FacilityData.FacCateData.ArchitectureData archData = new ResearchRegData.FacilityData.FacCateData.ArchitectureData(d.getItem_id(), d.getItem_name());
-                   newResearchArchList.add(archData);
-               }
-               for (MenuCheckData d : data.getFac_cate_list()) {
-                   ResearchRegData.FacilityData.FacCateData cateData = new ResearchRegData.FacilityData.FacCateData(d.getItem_id(), d.getItem_name(), newResearchArchList);
-                   newResearchFacCateList.add(cateData);
-               }
-
-               initMenuFacilityTreeData(data.getFacility_list(), data.getFac_cate_list(), data.getStructure_list());
-           }
-       });
     }
 
     private void facilityCheckListItemAdd(String item, int id) {

@@ -17,11 +17,13 @@ import static kr.co.bcoben.util.CommonUtil.showErrorMsg;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public abstract class RetrofitCallback implements Callback<ResponseData> {
+    private final String TAG = "RetrofitCallback";
 
     public abstract void onResponseData();
 
     @Override
     public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
+        Log.e(TAG, response.raw().request().url().url().toString());
         if (response.body() != null) {
             if (response.body().isResult()) {
                 onResponseData();

@@ -1,7 +1,8 @@
 package kr.co.bcoben.activity;
 
 import android.content.Intent;
-import android.util.Log;
+import android.graphics.Bitmap;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
@@ -29,6 +30,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     static boolean isHomeReturn = false;
     private List<String> listCategory, listArchitecture, listResearch, listFacility;
     private String category, architecture, research, facility;
+    private int researchId = -1;
 
     private DrawingsListAdapter drawingsListAdapter;
     private List<PlanDataList.PlanData> planList = new ArrayList<>();
@@ -58,6 +60,8 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         drawingsListAdapter = new DrawingsListAdapter(DrawingsListActivity.this, planList);
         dataBinding.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
         dataBinding.recyclerDrawings.setAdapter(drawingsListAdapter);
+
+        requestDrawingsList();
     }
 
     @Override
@@ -68,7 +72,6 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
             finish();
             return;
         }
-        requestDrawingsList();
     }
 
     @Override
@@ -102,18 +105,29 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         }
     }
 
-    //TODO request drawings list api
     private void requestDrawingsList() {
-        //TODO get research_id
-        int researchId = getIntent().getIntExtra("research_id", 0);
-        if (researchId == 0) {
-            showToast(R.string.toast_error_invalidate);
-            finish();
+        if (researchId == -1) {
+            researchId = getIntent().getIntExtra("research_id", 0);
+            if (researchId == 0) {
+                showToast(R.string.toast_error_invalidate);
+                finish();
+            }
         }
         RetrofitClient.getRetrofitApi().planList(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PlanDataList>() {
             @Override
             public void onResponseData(PlanDataList data) {
                 data.setPlanImgFile();
+                if (!planList.isEmpty()) {
+                    for (int i = 0; i < data.getPlan_list().size(); i++) {
+                        PlanDataList.PlanData listData = data.getPlan_list().get(i);
+                        for (PlanDataList.PlanData planData : planList) {
+                            if (listData.equals(planData)) {
+                                data.getPlan_list().set(i, planData);
+                                break;
+                            }
+                        }
+                    }
+                }
                 planList = data.getPlan_list();
                 setDrawingsList();
             }
@@ -124,7 +138,15 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ConnectFTP.getInstance().ftpPlanThumbBitmap(planList);
+                List<String> pathList = new ArrayList<>();
+                for (PlanDataList.PlanData data : planList) {
+                    pathList.add(data.getPlan_thumb());
+                }
+                List<Bitmap> bitmapList = ConnectFTP.getInstance().ftpImageThumbnailBitmap(pathList);
+                for (int i = 0; i < bitmapList.size(); i++) {
+                    planList.get(i).setPlan_bitmap(bitmapList.get(i));
+                }
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -168,6 +190,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
             }
         }).start();
     }
+
     private void planDownload(int position, PlanDataList.PlanData data) {
         boolean isComplete = ConnectFTP.getInstance().ftpPlanDownload(position, data, drawingsListAdapter);
         if (isComplete) {
@@ -181,8 +204,10 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         }
     }
 
-    public void sendSpinnerData() {
-//        Intent intent = new Intent(DrawingsListActivity.this, DrawingsActivity.class);
+    public void sendSpinnerData(int index) {
+        Intent intent = new Intent(DrawingsListActivity.this, DrawingsActivity.class);
+        intent.putParcelableArrayListExtra("plan_list", (ArrayList<? extends Parcelable>) planList);
+        intent.putExtra("plan_index", index);
 //        intent.putStringArrayListExtra("category_list", (ArrayList<String>) listCategory);
 //        intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) listArchitecture);
 //        intent.putStringArrayListExtra("research_list", (ArrayList<String>) listResearch);
@@ -191,6 +216,6 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 //        intent.putExtra("architecture", architecture);
 //        intent.putExtra("research", research);
 //        intent.putExtra("facility", facility);
-//        startActivity(intent);
+        startActivity(intent);
     }
 }

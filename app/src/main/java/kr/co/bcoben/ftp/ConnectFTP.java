@@ -76,17 +76,15 @@ public class ConnectFTP {
         }
     }
 
-    public void ftpPlanThumbBitmap(List<PlanDataList.PlanData> planList) {
+    public List<Bitmap> ftpImageThumbnailBitmap(List<String> pathList) {
+        List<Bitmap> bitmapList = new ArrayList<>();
         if (ftpConnect()) {
             try {
-                for (PlanDataList.PlanData data : planList) {
-                    String path = data.getPlan_thumb();
+                for (String path : pathList) {
                     if (path != null && !path.equals("")) {
-                        BufferedInputStream is = new BufferedInputStream(client.retrieveFileStream(data.getPlan_thumb()));
+                        BufferedInputStream is = new BufferedInputStream(client.retrieveFileStream(path));
                         Bitmap bitmap = BitmapFactory.decodeStream(is);
-                        if (bitmap != null) {
-                            data.setPlan_bitmap(bitmap);
-                        }
+                        bitmapList.add(bitmap);
 
                         is.close();
                         client.completePendingCommand();
@@ -97,6 +95,7 @@ public class ConnectFTP {
             }
             ftpDisconnect();
         }
+        return bitmapList;
     }
 
     public boolean ftpPlanDownload(int position, PlanDataList.PlanData planData, DrawingsListAdapter adapter) {

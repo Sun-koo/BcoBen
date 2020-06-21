@@ -2,11 +2,15 @@ package kr.co.bcoben.fragment;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,20 +23,30 @@ import kr.co.bcoben.adapter.ResearchDataListAdapter;
 import kr.co.bcoben.component.BaseFragment;
 import kr.co.bcoben.databinding.FragmentProjectFacilityBinding;
 import kr.co.bcoben.model.ProjectData;
+import kr.co.bcoben.model.ProjectResearchList;
+import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
 
 public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilityBinding> {
 
-    private static final String ARG_PARAM = "project_data";
+    private static final String ARG_PROJECT_ID = "project_id";
+    private static final String ARG_PROJECT_DATA = "project_data";
+    private final String[] orderArr = {"progress", "recent"};
 
     private MainActivity activity;
+    private int projectId;
     private ProjectData projectData;
+    private List<ProjectResearchList.ProjectResearchData> researchList = new ArrayList<>();
     private ResearchDataListAdapter adapter;
+    private boolean isFirst = true;
 
     // TODO: Rename and change types and number of parameters
-    public static ProjectFacilityFragment newInstance(ProjectData data) {
+    public static ProjectFacilityFragment newInstance(int projectId, ProjectData data) {
         ProjectFacilityFragment fragment = new ProjectFacilityFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM, data);
+        args.putInt(ARG_PROJECT_ID, projectId);
+        args.putParcelable(ARG_PROJECT_DATA, data);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,10 +55,20 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            projectData = getArguments().getParcelable(ARG_PARAM);
+            projectId = getArguments().getInt(ARG_PROJECT_ID);
+            projectData = getArguments().getParcelable(ARG_PROJECT_DATA);
         }
 
         activity = (MainActivity) getActivity();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!isFirst) {
+            requestResearchList();
+        }
+        isFirst = false;
     }
 
     @Override
@@ -53,14 +77,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     }
     @Override
     protected void initView() {
-        String count = getString(R.string.main_research_count, projectData.getReg_count(), projectData.getTot_count());
-        String percent = projectData.getTot_count() == 0 ? "0%" : ((projectData.getReg_count() * 100 / projectData.getTot_count()) + "%");
-
-        dataBinding.txtFacilityPercent.setText(percent);
-        dataBinding.txtFacilityCount.setText(count);
-        dataBinding.txtResearchNone.setVisibility(projectData.getResearch_list().isEmpty() ? View.VISIBLE : View.GONE);
-
-        adapter = new ResearchDataListAdapter(activity, projectData.getResearch_list());
+        adapter = new ResearchDataListAdapter(activity, researchList);
         dataBinding.recyclerResearch.setLayoutManager(new GridLayoutManager(getContext(), 2));
         dataBinding.recyclerResearch.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -76,12 +93,11 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         spinnerList.add("진척율순");
         spinnerList.add("최근작업일순");
 
-        dataBinding.spnResearchOrder.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_research, spinnerList));
+        dataBinding.spnResearchOrder.setAdapter(new ArrayAdapter<>(activity, R.layout.item_spinner_research, spinnerList));
         dataBinding.spnResearchOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                activity.currentOrder = (parent.getSelectedItem().toString()).equals("진척율순") ? "progress" : "recent";
-                activity.requestProjectDataList();
+                requestResearchList();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -91,6 +107,25 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
             @Override
             public void onClick(View v) {
                 activity.openDrawerResearch(projectData.getFacility_id());
+            }
+        });
+    }
+
+    public void requestResearchList() {
+        String order = orderArr[dataBinding.spnResearchOrder.getSelectedItemPosition()];
+        RetrofitClient.getRetrofitApi().projectResearchList(UserData.getInstance().getUserId(), projectId, projectData.getFacility_id(), order).enqueue(new RetrofitCallbackModel<ProjectResearchList>() {
+            @Override
+            public void onResponseData(ProjectResearchList data) {
+                data.setCount();
+                researchList = data.getResearch_list();
+                adapter.setList(researchList);
+
+                String count = getString(R.string.main_research_count, data.getReg_count(), data.getTot_count());
+                String percent = data.getTot_count() == 0 ? "0%" : ((data.getReg_count() * 100 / data.getTot_count()) + "%");
+
+                dataBinding.txtFacilityPercent.setText(percent);
+                dataBinding.txtFacilityCount.setText(count);
+                dataBinding.txtResearchNone.setVisibility(researchList.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
     }

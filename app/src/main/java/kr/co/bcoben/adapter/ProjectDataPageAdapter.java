@@ -15,6 +15,7 @@ import kr.co.bcoben.model.ProjectData;
 
 public class ProjectDataPageAdapter extends FragmentStatePagerAdapter {
 
+    private int projectId;
     private List<ProjectData> projectDataList;
 
     public ProjectDataPageAdapter(@NonNull FragmentManager fm, List<ProjectData> projectDataList) {
@@ -25,7 +26,7 @@ public class ProjectDataPageAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return ProjectFacilityFragment.newInstance(projectDataList.get(position));
+        return ProjectFacilityFragment.newInstance(projectId, projectDataList.get(position));
     }
 
     @Override
@@ -39,7 +40,8 @@ public class ProjectDataPageAdapter extends FragmentStatePagerAdapter {
         return projectDataList.get(position).getFacility_name();
     }
 
-    public void setProjectDataList(List<ProjectData> projectDataList) {
+    public void setProjectDataList(int projectId, List<ProjectData> projectDataList) {
+        this.projectId = projectId;
         this.projectDataList = projectDataList;
         notifyDataSetChanged();
     }

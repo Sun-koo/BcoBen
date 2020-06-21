@@ -55,7 +55,6 @@ public class CommonUtil {
         toast = Toast.makeText(AppApplication.getContext(), msg, Toast.LENGTH_SHORT);
         toast.show();
     }
-
     public static void showToast(int msgId) {
         if (toast != null) {
             toast.cancel();

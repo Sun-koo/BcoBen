@@ -2,6 +2,8 @@ package kr.co.bcoben.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.media.AudioFormat;
@@ -55,6 +57,7 @@ import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
+import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.RecordData;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
 
@@ -79,11 +82,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private final int IMAGE_PERMISSION_CODE = 302;
 
     // drawing
+    private int planId;
+    private String planFile;
     private float initScale;
     private int currentScale = 2;
     private List<DrawingPointData> pinList = new ArrayList<>();
     private DrawingPointData regPointData;
     private DrawingPictureListAdapter drawingPictureListAdapter;
+
+    // spinner
+    private List<PlanDataList.PlanData> planList;
 
     // table
     private TableListAdapter tableListAdapter;
@@ -93,15 +101,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private InputPopupPictureListAdapter inputPopupPictureListAdapter;
     private List<String> pictureDataList = new ArrayList<>();
 
-    private int audioSource = MediaRecorder.AudioSource.MIC;
-    private int sampleRate = 44100;
-    private int channelCount = AudioFormat.CHANNEL_IN_STEREO;
-    private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-    private int bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelCount, audioFormat);
-    public AudioRecord audioRecord = null;
-    public Thread recordThread = null;
-    private boolean isRecoding = false;
-
+    // record
     private String recordName;
     private int recordTime;
     private Timer recordTimer;
@@ -181,20 +181,24 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     private void initTopSpinner() {
-        List<String> categoryList = getIntent().getStringArrayListExtra("category_list");
-        List<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
-        List<String> researchList = getIntent().getStringArrayListExtra("research_list");
-        List<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
-        String category = getIntent().getStringExtra("category");
-        String architecture = getIntent().getStringExtra("architecture");
-        String research = getIntent().getStringExtra("research");
-        String facility = getIntent().getStringExtra("facility");
+        planList = getIntent().getParcelableArrayListExtra("plan_list");
+        int planIndex = getIntent().getIntExtra("plan_index", 0);
+        planFile = planList.get(planIndex).getPlan_img_file();
+//        List<String> categoryList = getIntent().getStringArrayListExtra("category_list");
+//        List<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
+//        List<String> researchList = getIntent().getStringArrayListExtra("research_list");
+//        List<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
+//        String category = getIntent().getStringExtra("category");
+//        String architecture = getIntent().getStringExtra("architecture");
+//        String research = getIntent().getStringExtra("research");
+//        String facility = getIntent().getStringExtra("facility");
 
-        dataBinding.spnCategory.setEnabled(false);
-        dataBinding.spnArchitecture.setEnabled(false);
-        setSpinnerData(dataBinding.spnCategory, categoryList, category);
-        setSpinnerData(dataBinding.spnArchitecture, architectureList, architecture);
-        setSpinnerData(dataBinding.spnResearch, researchList, research);
+
+//        dataBinding.spnCategory.setEnabled(false);
+//        dataBinding.spnArchitecture.setEnabled(false);
+//        setSpinnerData(dataBinding.spnCategory, categoryList, category);
+//        setSpinnerData(dataBinding.spnArchitecture, architectureList, architecture);
+//        setSpinnerData(dataBinding.spnResearch, researchList, research);
 //        setSpinnerData(dataBinding.spnFacility, facilityList, facility);
     }
     private void setSpinnerData(AppCompatSpinner spinner, List<String> list, String selectData) {
@@ -257,7 +261,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         });
 
         // 도면 이미지 처리
-        dataBinding.imgDrawings.setImage(ImageSource.asset("drawings_detail.png"));
+        Bitmap drawingBitmap = BitmapFactory.decodeFile(planFile);
+        dataBinding.imgDrawings.setImage(ImageSource.bitmap(drawingBitmap));
         dataBinding.imgDrawings.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
         dataBinding.imgDrawings.setZoomEnabled(false);
         dataBinding.imgDrawings.setOnTouchListener(new View.OnTouchListener() {

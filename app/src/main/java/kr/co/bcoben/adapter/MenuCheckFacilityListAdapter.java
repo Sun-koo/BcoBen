@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,10 +16,11 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.MenuSelectFacilityData;
 
-public class MenuCheckFacilityListAdapter extends RecyclerView.Adapter {
+public class MenuCheckFacilityListAdapter extends RecyclerView.Adapter<MenuCheckFacilityListAdapter.MenuCheckFacilityHolder> {
 
     private Activity activity;
     private List<MenuSelectFacilityData> list;
+    private boolean isSelected = false;
 
     public MenuCheckFacilityListAdapter(Activity activity, List<MenuSelectFacilityData> list) {
         this.activity = activity;
@@ -27,23 +29,14 @@ public class MenuCheckFacilityListAdapter extends RecyclerView.Adapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public MenuCheckFacilityHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_menu_select_facility ,viewGroup, false);
         return new MenuCheckFacilityHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        final MenuCheckFacilityHolder view = (MenuCheckFacilityHolder) holder;
-
-        view.txtName.setText(list.get(position).getFacility() + " > " + list.get(position).getFacCate() + " > " + list.get(position).getArch());
-        view.btnRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                list.remove(position);
-                notifyDataSetChanged();
-            }
-        });
+    public void onBindViewHolder(@NonNull MenuCheckFacilityHolder holder, final int position) {
+        holder.onBind(list.get(position));
     }
 
     @Override
@@ -53,22 +46,40 @@ public class MenuCheckFacilityListAdapter extends RecyclerView.Adapter {
 
     public void setList(List<MenuSelectFacilityData> list) {
         this.list = list;
+        this.isSelected = true;
         notifyDataSetChanged();
     }
-
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+        notifyDataSetChanged();
+    }
     public List<MenuSelectFacilityData> getSelectedValue() {
         return list;
     }
 
-    private class MenuCheckFacilityHolder extends RecyclerView.ViewHolder {
+    class MenuCheckFacilityHolder extends RecyclerView.ViewHolder {
 
-        TextView txtName, btnRemove;
+        private RelativeLayout layoutRoot;
+        private TextView txtName, btnRemove;
 
-        public MenuCheckFacilityHolder(View view) {
+        MenuCheckFacilityHolder(View view) {
             super(view);
 
+            layoutRoot = view.findViewById(R.id.layout_root);
             txtName = view.findViewById(R.id.txt_name);
             btnRemove = view.findViewById(R.id.btn_remove);
+        }
+
+        void onBind(final MenuSelectFacilityData data) {
+            layoutRoot.setSelected(isSelected);
+            txtName.setText(data.getFacility() + " > " + data.getFacCate() + " > " + data.getArch());
+            btnRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    list.remove(data);
+                    notifyDataSetChanged();
+                }
+            });
         }
     }
 }

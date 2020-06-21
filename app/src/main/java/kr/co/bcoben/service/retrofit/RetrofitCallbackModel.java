@@ -1,5 +1,7 @@
 package kr.co.bcoben.service.retrofit;
 
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import kr.co.bcoben.R;
@@ -13,11 +15,13 @@ import static kr.co.bcoben.util.CommonUtil.showErrorMsg;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public abstract class RetrofitCallbackModel<T extends DataModel> implements Callback<ResponseData<T>> {
+    private final String TAG = "RetrofitCallback";
 
     public abstract void onResponseData(T data);
 
     @Override
     public void onResponse(Call<ResponseData<T>> call, Response<ResponseData<T>> response) {
+        Log.e(TAG, response.raw().request().url().url().toString());
         if (response.body() != null) {
             if (response.body().isResult()) {
                 onResponseData(response.body().getData());
