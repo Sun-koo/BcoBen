@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -42,9 +43,10 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
 
     @Override
     protected void initView() {
-        if (requestPermission(this, PERMISSION)) {
-            getDeviceId();
-        }
+        getDeviceId();
+        // Debug
+//        dataBinding.editId.setText("bcoben2");
+//        dataBinding.editPw.setText("Bcoben01!@#");
     }
 
     @Override
@@ -96,6 +98,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                 String pw = dataBinding.editPw.getText().toString();
 
                 if (checkValidInput(id, pw)) {
+                    setIsLoading(true);
                     RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new RetrofitCallbackModel<LoginData>() {
                         @Override
                         public void onResponseData(LoginData data) {
@@ -107,6 +110,8 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                             startActivity(intent_login);
                             overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
                         }
+                        @Override
+                        public void onCallbackFinish() { setIsLoading(false); }
                     });
                 }
                 break;
@@ -132,15 +137,24 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
             return false;
         }
         if (deviceId == null) {
-            return requestPermission(this, PERMISSION);
+            return getDeviceId();
         }
         return true;
     }
 
     @SuppressLint("MissingPermission")
-    private void getDeviceId() {
-        TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        deviceId = tm != null ? tm.getDeviceId() : null;
-        UserData.getInstance().setDeviceId(deviceId);
+    private boolean getDeviceId() {
+        if (requestPermission(this, PERMISSION)) {
+            TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+            deviceId = tm != null ? tm.getDeviceId() : null;
+            if (deviceId == null) {
+                showToast(R.string.toast_not_check_device_id);
+                return false;
+            } else {
+                UserData.getInstance().setDeviceId(deviceId);
+                return true;
+            }
+        }
+        return false;
     }
 }

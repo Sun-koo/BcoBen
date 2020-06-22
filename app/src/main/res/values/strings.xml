@@ -35,8 +35,9 @@
     <string name="login_pw_reset_text">비밀번호 재설정</string>
     <string name="toast_input_id">아이디를 입력해주세요</string>
     <string name="toast_input_pw">비밀번호를 입력해주세요</string>
-    <string name="toast_invalid_id">아이디 양식이 맞지 않습니다. 확인해 주세요</string>
-    <string name="toast_invalid_pw">비밀번호 양식이 맞지 않습니다. 확인해 주세요</string>
+    <string name="toast_invalid_id">아이디 양식이 맞지 않습니다</string>
+    <string name="toast_invalid_pw">비밀번호 양식이 맞지 않습니다</string>
+    <string name="toast_not_check_device_id">디바이스 정보가 확인되지 않습니다\n관리자에 문의해 주십시오</string>
     <string name="dialog_permission_content_phone">로그인 하시려면 디바이스 정보를 가져오기 위해\n[전화] 권한을 허용해 주십시오</string>
 
     <!--인증 번호 입력 화면-->

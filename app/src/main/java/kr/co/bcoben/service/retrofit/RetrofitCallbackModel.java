@@ -18,10 +18,12 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
     private final String TAG = "RetrofitCallback";
 
     public abstract void onResponseData(T data);
+    public abstract void onCallbackFinish();
 
     @Override
     public void onResponse(Call<ResponseData<T>> call, Response<ResponseData<T>> response) {
         Log.e(TAG, response.raw().request().url().url().toString());
+        onCallbackFinish();
         if (response.body() != null) {
             if (response.body().isResult()) {
                 onResponseData(response.body().getData());
@@ -43,6 +45,7 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
 
     @Override
     public void onFailure(Call<ResponseData<T>> call, Throwable t) {
+        onCallbackFinish();
         showToast(R.string.toast_error_server);
     }
 }

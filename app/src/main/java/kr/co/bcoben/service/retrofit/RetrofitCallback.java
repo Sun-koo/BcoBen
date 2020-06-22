@@ -20,6 +20,7 @@ public abstract class RetrofitCallback implements Callback<ResponseData> {
     private final String TAG = "RetrofitCallback";
 
     public abstract void onResponseData();
+    public abstract void onCallbackFinish();
 
     @Override
     public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {

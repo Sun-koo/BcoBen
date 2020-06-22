@@ -68,7 +68,6 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         if (!isFirst) {
             requestResearchList();
         }
-        isFirst = false;
     }
 
     @Override
@@ -97,7 +96,10 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         dataBinding.spnResearchOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                requestResearchList();
+                if (isFirst || !researchList.isEmpty()) {
+                    requestResearchList();
+                    isFirst = false;
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -113,6 +115,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
 
     public void requestResearchList() {
         String order = orderArr[dataBinding.spnResearchOrder.getSelectedItemPosition()];
+        activity.setIsLoading(true);
         RetrofitClient.getRetrofitApi().projectResearchList(UserData.getInstance().getUserId(), projectId, projectData.getFacility_id(), order).enqueue(new RetrofitCallbackModel<ProjectResearchList>() {
             @Override
             public void onResponseData(ProjectResearchList data) {
@@ -127,6 +130,8 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
                 dataBinding.txtFacilityCount.setText(count);
                 dataBinding.txtResearchNone.setVisibility(researchList.isEmpty() ? View.VISIBLE : View.GONE);
             }
+            @Override
+            public void onCallbackFinish() { activity.setIsLoading(false); }
         });
     }
 }

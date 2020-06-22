@@ -23,9 +23,7 @@ public class ResetPwActivity extends BaseActivity<ActivityResetPwBinding> implem
     }
 
     @Override
-    protected void initView() {
-
-    }
+    protected void initView() {}
 
     @Override
     public void onClick(View v) {
@@ -33,12 +31,12 @@ public class ResetPwActivity extends BaseActivity<ActivityResetPwBinding> implem
             case R.id.btn_exit:
                 finishApp(this);
                 break;
-
             case R.id.btn_login:
                 String pw = dataBinding.editPw.getText().toString();
                 String pwConfirm = dataBinding.editPwConfirm.getText().toString();
 
                 if (checkValidInput(pw, pwConfirm)) {
+                    setIsLoading(true);
                     RetrofitClient.getRetrofitApi().updatePassword(UserData.getInstance().getUserId(), pw).enqueue(new RetrofitCallback() {
                         @Override
                         public void onResponseData() {
@@ -46,6 +44,8 @@ public class ResetPwActivity extends BaseActivity<ActivityResetPwBinding> implem
                             startActivity(intent);
                             finishAffinity();
                         }
+                        @Override
+                        public void onCallbackFinish() { setIsLoading(false); }
                     });
                 }
                 break;

@@ -3,610 +3,634 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+        <import type="android.view.View"/>
+        <variable name="isLoading" type="androidx.databinding.ObservableBoolean" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         tools:context=".activity.DrawingsActivity">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:background="@color/colorPrimary">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:layout_alignParentStart="true">
-
-                <ImageButton
-                    android:id="@+id/btn_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:background="@null"
-                    android:src="@drawable/ic_project_home"
-                    android:onClick="onClick"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="20dp"
-                    android:background="@drawable/spinner_box">
-                    <androidx.appcompat.widget.AppCompatSpinner
-                        android:id="@+id/spn_category"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:spinnerMode="dropdown"
-                        android:dropDownVerticalOffset="28dp"
-                        android:popupBackground="@drawable/spinner_box"
-                        android:theme="@style/ResearchSpinnerTheme"/>
-                    <View
-                        android:id="@+id/view_spn_category_divider"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="23dp"
-                        android:layout_alignParentEnd="true"
-                        android:background="@color/colorBorderPink"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_spinner_off"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/view_spn_category_divider"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="14dp"
-                    android:background="@drawable/spinner_box">
-                    <androidx.appcompat.widget.AppCompatSpinner
-                        android:id="@+id/spn_architecture"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:spinnerMode="dropdown"
-                        android:dropDownVerticalOffset="28dp"
-                        android:popupBackground="@drawable/spinner_box"
-                        android:theme="@style/ResearchSpinnerTheme"/>
-                    <View
-                        android:id="@+id/view_spn_architecture_divider"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="23dp"
-                        android:layout_alignParentEnd="true"
-                        android:background="@color/colorBorderPink"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_spinner_off"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/view_spn_architecture_divider"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="14dp"
-                    android:background="@drawable/spinner_box">
-                    <androidx.appcompat.widget.AppCompatSpinner
-                        android:id="@+id/spn_research"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:spinnerMode="dropdown"
-                        android:dropDownVerticalOffset="28dp"
-                        android:popupBackground="@drawable/spinner_box"
-                        android:theme="@style/ResearchSpinnerTheme"/>
-                    <View
-                        android:id="@+id/view_spn_research_divider"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="23dp"
-                        android:layout_alignParentEnd="true"
-                        android:background="@color/colorBorderPink"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_spinner_off"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/view_spn_research_divider"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="24dp"-->
-<!--                    android:layout_marginStart="14dp"-->
-<!--                    android:background="@drawable/spinner_box">-->
-<!--                    <androidx.appcompat.widget.AppCompatSpinner-->
-<!--                        android:id="@+id/spn_facility"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:background="@null"-->
-<!--                        android:spinnerMode="dropdown"-->
-<!--                        android:dropDownVerticalOffset="28dp"-->
-<!--                        android:popupBackground="@drawable/spinner_box"-->
-<!--                        android:theme="@style/ResearchSpinnerTheme"/>-->
-<!--                    <View-->
-<!--                        android:id="@+id/view_spn_facility_divider"-->
-<!--                        android:layout_width="1dp"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:layout_marginEnd="23dp"-->
-<!--                        android:layout_alignParentEnd="true"-->
-<!--                        android:background="@color/colorBorderPink"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"/>-->
-<!--                    <ImageView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_alignParentEnd="true"-->
-<!--                        android:layout_centerVertical="true"-->
-<!--                        android:src="@drawable/ic_spinner_off"-->
-<!--                        app:layout_constraintTop_toTopOf="parent"-->
-<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                        app:layout_constraintStart_toStartOf="@id/view_spn_facility_divider"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"/>-->
-<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_alignParentEnd="true">
-
-                <TextView
-                    android:id="@+id/btn_save"
-                    android:layout_width="100dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="@string/save"
-                    android:textColor="@color/colorBackgroundNavy"
-                    android:textSize="14dp"
-                    android:onClick="onClick"/>
-
-                <TextView
-                    android:id="@+id/btn_close"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="@string/close"
-                    android:textColor="@color/colorBackgroundNavy"
-                    android:textSize="14dp"
-                    android:onClick="onClick"/>
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_height="41dp"
                 android:background="@color/colorPrimary">
 
-                <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@color/colorWhite">
-
-                    <kr.co.bcoben.component.DrawingImageView
-                        android:id="@+id/img_drawings"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="68dp"
-                        android:layout_marginEnd="20dp"
-                        android:onClick="onClick"
-                        android:orientation="vertical"
-                        android:background="@drawable/border_round_gray_box">
-
-                        <Button
-                            android:id="@+id/btn_zoom_in"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_margin="4dp"
-                            android:onClick="onClick"
-                            android:background="@drawable/btn_zoom_in"/>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/colorBorderLightGray"/>
-
-                        <Button
-                            android:id="@+id/btn_zoom_out"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_margin="4dp"
-                            android:onClick="onClick"
-                            android:background="@drawable/btn_zoom_out"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginEnd="20dp"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp"
-                        android:paddingStart="18dp"
-                        android:paddingEnd="18dp"
-                        android:onClick="onClick"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:background="@drawable/border_round_gray_box">
-
-                        <RelativeLayout
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:background="@drawable/circle_gray"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="7dp"
-                            android:layout_marginEnd="16dp"
-                            android:text="@string/drawings_memo"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="14dp"/>
-
-                        <RelativeLayout
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:background="@drawable/circle_red"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="7dp"
-                            android:layout_marginEnd="16dp"
-                            android:text="@string/drawings_record"
-                            android:textColor="@color/colorCircleRed"
-                            android:textSize="14dp"/>
-
-                        <RelativeLayout
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:background="@drawable/circle_blue"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="7dp"
-                            android:layout_marginEnd="16dp"
-                            android:text="@string/drawings_picture"
-                            android:textColor="@color/colorCircleBlue"
-                            android:textSize="14dp"/>
-
-                        <RelativeLayout
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:background="@drawable/circle_black"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="7dp"
-                            android:text="@string/drawings_input"
-                            android:textColor="@color/colorCircleBlack"
-                            android:textSize="14dp"/>
-
-                    </LinearLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/layout_scale"
-                        android:layout_width="182dp"
-                        android:layout_height="182dp"
-                        android:layout_centerInParent="true"
-                        android:background="@drawable/bg_zoom_scale"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:id="@+id/txt_scale"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:text="x2배"
-                            android:textColor="@color/colorWhite"
-                            android:textSize="40dp"/>
-
-                    </RelativeLayout>
-
-                </RelativeLayout>
-
-                <ImageButton
-                    android:id="@+id/btn_table_handle"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:padding="3dp"
-                    android:background="@null"
-                    android:onClick="onClick"
-                    android:src="@drawable/btn_table_handle"/>
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_alignParentStart="true">
 
-                <LinearLayout
-                    android:id="@+id/layout_table"
-                    android:layout_width="275dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <ImageButton
+                        android:id="@+id/btn_home"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/colorWhite">
+                        android:layout_marginStart="10dp"
+                        android:background="@null"
+                        android:src="@drawable/ic_project_home"
+                        android:onClick="onClick"/>
 
-                        <TextView
-                            android:id="@+id/btn_select"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="12dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:text="@string/select"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="14dp"
-                            android:onClick="onClick"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:paddingTop="12dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:text="@string/table_title"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="14dp"/>
-
-                        <TextView
-                            android:id="@+id/btn_delete"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="20dp"
+                        android:background="@drawable/spinner_box">
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spn_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:spinnerMode="dropdown"
+                            android:dropDownVerticalOffset="28dp"
+                            android:popupBackground="@drawable/spinner_box"
+                            android:theme="@style/ResearchSpinnerTheme"/>
+                        <View
+                            android:id="@+id/view_spn_category_divider"
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="23dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@color/colorBorderPink"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                        <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_spinner_off"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/view_spn_category_divider"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="14dp"
+                        android:background="@drawable/spinner_box">
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spn_architecture"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:spinnerMode="dropdown"
+                            android:dropDownVerticalOffset="28dp"
+                            android:popupBackground="@drawable/spinner_box"
+                            android:theme="@style/ResearchSpinnerTheme"/>
+                        <View
+                            android:id="@+id/view_spn_architecture_divider"
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="23dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@color/colorBorderPink"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_spinner_off"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/view_spn_architecture_divider"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="14dp"
+                        android:background="@drawable/spinner_box">
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spn_research"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:spinnerMode="dropdown"
+                            android:dropDownVerticalOffset="28dp"
+                            android:popupBackground="@drawable/spinner_box"
+                            android:theme="@style/ResearchSpinnerTheme"/>
+                        <View
+                            android:id="@+id/view_spn_research_divider"
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="23dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@color/colorBorderPink"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_spinner_off"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/view_spn_research_divider"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+                    <!--                    android:layout_width="wrap_content"-->
+                    <!--                    android:layout_height="24dp"-->
+                    <!--                    android:layout_marginStart="14dp"-->
+                    <!--                    android:background="@drawable/spinner_box">-->
+                    <!--                    <androidx.appcompat.widget.AppCompatSpinner-->
+                    <!--                        android:id="@+id/spn_facility"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="match_parent"-->
+                    <!--                        android:background="@null"-->
+                    <!--                        android:spinnerMode="dropdown"-->
+                    <!--                        android:dropDownVerticalOffset="28dp"-->
+                    <!--                        android:popupBackground="@drawable/spinner_box"-->
+                    <!--                        android:theme="@style/ResearchSpinnerTheme"/>-->
+                    <!--                    <View-->
+                    <!--                        android:id="@+id/view_spn_facility_divider"-->
+                    <!--                        android:layout_width="1dp"-->
+                    <!--                        android:layout_height="match_parent"-->
+                    <!--                        android:layout_marginEnd="23dp"-->
+                    <!--                        android:layout_alignParentEnd="true"-->
+                    <!--                        android:background="@color/colorBorderPink"-->
+                    <!--                        app:layout_constraintEnd_toEndOf="parent"/>-->
+                    <!--                    <ImageView-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_alignParentEnd="true"-->
+                    <!--                        android:layout_centerVertical="true"-->
+                    <!--                        android:src="@drawable/ic_spinner_off"-->
+                    <!--                        app:layout_constraintTop_toTopOf="parent"-->
+                    <!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--                        app:layout_constraintStart_toStartOf="@id/view_spn_facility_divider"-->
+                    <!--                        app:layout_constraintEnd_toEndOf="parent"/>-->
+                    <!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_alignParentEnd="true">
+
+                    <TextView
+                        android:id="@+id/btn_save"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/save"
+                        android:textColor="@color/colorBackgroundNavy"
+                        android:textSize="14dp"
+                        android:onClick="onClick"/>
+
+                    <TextView
+                        android:id="@+id/btn_close"
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/close"
+                        android:textColor="@color/colorBackgroundNavy"
+                        android:textSize="14dp"
+                        android:onClick="onClick"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:background="@color/colorPrimary">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/colorWhite">
+
+                        <kr.co.bcoben.component.DrawingImageView
+                            android:id="@+id/img_drawings"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="68dp"
+                            android:layout_marginEnd="20dp"
+                            android:onClick="onClick"
+                            android:orientation="vertical"
+                            android:background="@drawable/border_round_gray_box">
+
+                            <Button
+                                android:id="@+id/btn_zoom_in"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_margin="4dp"
+                                android:onClick="onClick"
+                                android:background="@drawable/btn_zoom_in"/>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/colorBorderLightGray"/>
+
+                            <Button
+                                android:id="@+id/btn_zoom_out"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_margin="4dp"
+                                android:onClick="onClick"
+                                android:background="@drawable/btn_zoom_out"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="15dp"
+                            android:layout_marginEnd="20dp"
                             android:paddingTop="12dp"
                             android:paddingBottom="12dp"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:text="@string/delete"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="14dp"
+                            android:paddingStart="18dp"
+                            android:paddingEnd="18dp"
                             android:onClick="onClick"
-                            android:visibility="gone"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:background="@drawable/border_round_gray_box">
+
+                            <RelativeLayout
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/circle_gray"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="@string/drawings_memo"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="14dp"/>
+
+                            <RelativeLayout
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/circle_red"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="@string/drawings_record"
+                                android:textColor="@color/colorCircleRed"
+                                android:textSize="14dp"/>
+
+                            <RelativeLayout
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/circle_blue"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="@string/drawings_picture"
+                                android:textColor="@color/colorCircleBlue"
+                                android:textSize="14dp"/>
+
+                            <RelativeLayout
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/circle_black"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:text="@string/drawings_input"
+                                android:textColor="@color/colorCircleBlack"
+                                android:textSize="14dp"/>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/layout_scale"
+                            android:layout_width="182dp"
+                            android:layout_height="182dp"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/bg_zoom_scale"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/txt_scale"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:text="x2배"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="40dp"/>
+
+                        </RelativeLayout>
 
                     </RelativeLayout>
 
+                    <ImageButton
+                        android:id="@+id/btn_table_handle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:padding="3dp"
+                        android:background="@null"
+                        android:onClick="onClick"
+                        android:src="@drawable/btn_table_handle"/>
+
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/border_square_pink_box">
+                        android:id="@+id/layout_table"
+                        android:layout_width="275dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
                         <RelativeLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginBottom="15dp">
+                            android:background="@color/colorWhite">
 
                             <TextView
-                                android:id="@+id/txt_number"
+                                android:id="@+id/btn_select"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:text="@string/table_column1"
-                                android:textColor="@color/colorTextPrimary"
-                                android:textSize="11dp"/>
+                                android:paddingTop="12dp"
+                                android:paddingBottom="12dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@string/select"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="14dp"
+                                android:onClick="onClick"/>
 
-                            <CheckBox
-                                android:id="@+id/checkbox_number"
+                            <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
-                                android:button="@drawable/custom_checkbox"
+                                android:paddingTop="12dp"
+                                android:paddingBottom="12dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@string/table_title"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="14dp"/>
+
+                            <TextView
+                                android:id="@+id/btn_delete"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:paddingTop="12dp"
+                                android:paddingBottom="12dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@string/delete"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="14dp"
+                                android:onClick="onClick"
                                 android:visibility="gone"/>
 
                         </RelativeLayout>
 
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/colorTableLineGray"/>
-
-                        <RelativeLayout
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1.3"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginBottom="15dp">
+                            android:orientation="horizontal"
+                            android:background="@drawable/border_square_pink_box">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <RelativeLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:text="@string/table_column2"
-                                android:textColor="@color/colorTextPrimary"
-                                android:textSize="11dp"/>
+                                android:layout_weight="1"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp">
 
-                        </RelativeLayout>
+                                <TextView
+                                    android:id="@+id/txt_number"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:text="@string/table_column1"
+                                    android:textColor="@color/colorTextPrimary"
+                                    android:textSize="11dp"/>
 
-                        <View
-                            android:layout_width="1dp"
+                                <CheckBox
+                                    android:id="@+id/checkbox_number"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:button="@drawable/custom_checkbox"
+                                    android:visibility="gone"/>
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/colorTableLineGray"/>
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.3"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:text="@string/table_column2"
+                                    android:textColor="@color/colorTextPrimary"
+                                    android:textSize="11dp"/>
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/colorTableLineGray"/>
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:text="@string/table_column3"
+                                    android:textColor="@color/colorTextPrimary"
+                                    android:textSize="11dp"/>
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/colorTableLineGray"/>
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:text="@string/table_column4"
+                                    android:textColor="@color/colorTextPrimary"
+                                    android:textSize="11dp"/>
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/colorTableLineGray"/>
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:text="@string/table_column5"
+                                    android:textColor="@color/colorTextPrimary"
+                                    android:textSize="11dp"/>
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_table"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@color/colorTableLineGray"/>
-
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="4"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginBottom="15dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:text="@string/table_column3"
-                                android:textColor="@color/colorTextPrimary"
-                                android:textSize="11dp"/>
-
-                        </RelativeLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/colorTableLineGray"/>
-
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginBottom="15dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:text="@string/table_column4"
-                                android:textColor="@color/colorTextPrimary"
-                                android:textSize="11dp"/>
-
-                        </RelativeLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/colorTableLineGray"/>
-
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginBottom="15dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:text="@string/table_column5"
-                                android:textColor="@color/colorTextPrimary"
-                                android:textSize="11dp"/>
-
-                        </RelativeLayout>
+                            android:background="@color/colorWhite">
+                        </androidx.recyclerview.widget.RecyclerView>
 
                     </LinearLayout>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_table"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/colorWhite">
-                    </androidx.recyclerview.widget.RecyclerView>
-
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <RelativeLayout
-                android:id="@+id/layout_research_popup"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#99000000"
-                android:onClick="onClick"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:id="@+id/iv_new_pin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_tap_new"/>
-
-                <TextView
-                    android:id="@+id/txt_new_pin"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/iv_new_pin"
-                    android:layout_alignStart="@id/iv_new_pin"
-                    android:layout_alignEnd="@id/iv_new_pin"
-                    android:layout_marginTop="2dp"
-                    android:gravity="center"
-                    android:textSize="14dp"
-                    android:textColor="@color/colorWhite"/>
-
-                <include
-                    android:id="@+id/research_popup"
-                    layout="@layout/popup_reg_research"
+                <RelativeLayout
+                    android:id="@+id/layout_research_popup"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    android:background="#99000000"
+                    android:onClick="onClick"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:id="@+id/iv_new_pin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_tap_new"/>
+
+                    <TextView
+                        android:id="@+id/txt_new_pin"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/iv_new_pin"
+                        android:layout_alignStart="@id/iv_new_pin"
+                        android:layout_alignEnd="@id/iv_new_pin"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center"
+                        android:textSize="14dp"
+                        android:textColor="@color/colorWhite"/>
+
+                    <include
+                        android:id="@+id/research_popup"
+                        layout="@layout/popup_reg_research"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </RelativeLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_picture_popup"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:onClick="onClick"
+                    android:visibility="invisible">
+
+                    <RelativeLayout
+                        android:id="@+id/layout_picture_list_popup"
+                        android:layout_width="330dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_drawing_image_list_popup"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="6dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHeight_max="250dp"
+                        app:layout_constrainedHeight="true">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_picture_popup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </RelativeLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </RelativeLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_picture_popup"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:onClick="onClick"
-                android:visibility="invisible">
+        </LinearLayout>
 
-                <RelativeLayout
-                    android:id="@+id/layout_picture_list_popup"
-                    android:layout_width="330dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_drawing_image_list_popup"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:paddingStart="6dp"
-                    android:paddingEnd="6dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintHeight_max="250dp"
-                    app:layout_constrainedHeight="true">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_picture_popup"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                </RelativeLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <RelativeLayout
+            android:id="@+id/layout_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{isLoading ? View.VISIBLE : View.GONE}"
+            android:background="@color/colorBackgroundDim"
+            android:onClick="onClick">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
         </RelativeLayout>
+    </RelativeLayout>
 
-    </LinearLayout>
 
 </layout>

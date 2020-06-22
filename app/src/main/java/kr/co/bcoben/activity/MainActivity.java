@@ -277,6 +277,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 RequestBody facilityListBody = RequestBody.create(MediaType.parse("multipart/form-data"), facilityList.toString());
                 RequestBody researchListBody = RequestBody.create(MediaType.parse("multipart/form-data"), researchList.toString());
 
+                setIsLoading(true);
                 RetrofitClient.getRetrofitApi().regProject(UserData.getInstance().getUserId(), projectNameBody, startDateBody, endDateBody, gradeId, facilityListBody, researchListBody, requestBodyList).enqueue(new RetrofitCallbackModel<ProjectListData>() {
                     @Override
                     public void onResponseData(ProjectListData data) {
@@ -307,6 +308,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         projectList = list;
                         projectListAdapter.setList(projectList);
                     }
+                    @Override
+                    public void onCallbackFinish() { setIsLoading(false); }
                 });
                 break;
             case R.id.btn_project_next:
@@ -357,6 +360,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         startActivity(intent_logout);
                         finish();
                     }
+                    @Override
+                    public void onCallbackFinish() {}
                 });
                 break;
             case R.id.btn_update:
@@ -443,12 +448,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 String structureName = dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.getText().toString();
 
                 if (checkValidateResearchRegister(facilityName, facCateName, structureName, selectedResearchName)) {
-                    RetrofitClient.getRetrofitApi().regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, selectedResearchName, selectedResearchCount)
+                    setIsLoading(true);
+                    RetrofitClient.getRetrofitApi()
+                            .regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, selectedResearchName, selectedResearchCount)
                             .enqueue(new RetrofitCallbackModel<ResearchIdData>() {
                                 @Override
                                 public void onResponseData(ResearchIdData data) {
                                     goToDrawingsPage(data.getResearch_id());
                                 }
+                                @Override
+                                public void onCallbackFinish() { setIsLoading(false); }
                             });
                 }
                 break;
@@ -622,6 +631,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         RetrofitClient.getRetrofitApi().itemClick(UserData.getInstance().getUserId(), currentProjectId, itemId).enqueue(new RetrofitCallback() {
             @Override
             public void onResponseData() {}
+            @Override
+            public void onCallbackFinish() {}
         });
     }
 
@@ -965,6 +976,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //프로젝트 리스트 조회 API 호출
     private void requestProjectList() {
+        setIsLoading(true);
         RetrofitClient.getRetrofitApi().projectList(UserData.getInstance().getUserId()).enqueue(new RetrofitCallbackModel<ProjectListData>() {
             @Override
             public void onResponseData(ProjectListData data) {
@@ -988,6 +1000,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     requestProjectDataList();
                 }
             }
+            @Override
+            public void onCallbackFinish() { setIsLoading(false); }
         });
     }
 
@@ -1004,6 +1018,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //프로젝트 조사 내용 및 조사등록용 데이터 API 호출
     public void requestProjectDataList() {
+        setIsLoading(true);
         RetrofitClient.getRetrofitApi().projectData(UserData.getInstance().getUserId(), currentProjectId).enqueue(new RetrofitCallbackModel<ProjectMainData>() {
             @Override
             public void onResponseData(ProjectMainData data) {
@@ -1011,6 +1026,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 researchRegData = data.getResearch_reg_data();
                 projectPageAdapter.setProjectDataList(currentProjectId, projectDataList);
             }
+            @Override
+            public void onCallbackFinish() { setIsLoading(false); }
         });
     }
 
@@ -1058,6 +1075,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
                initMenuFacilityTreeData(data.getFacility_list(), data.getFac_cate_list(), data.getStructure_list());
            }
+           @Override
+           public void onCallbackFinish() {}
        });
     }
 

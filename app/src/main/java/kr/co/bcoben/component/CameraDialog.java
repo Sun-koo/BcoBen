@@ -19,7 +19,7 @@ public class CameraDialog extends Dialog {
     public CameraDialog(Context context) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_camera_dialog);
+        setContentView(R.layout.dialog_camera);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setCancelable(false);
 

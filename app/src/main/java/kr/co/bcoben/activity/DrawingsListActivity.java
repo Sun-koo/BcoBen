@@ -113,6 +113,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 finish();
             }
         }
+        setIsLoading(true);
         RetrofitClient.getRetrofitApi().planList(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PlanDataList>() {
             @Override
             public void onResponseData(PlanDataList data) {
@@ -131,6 +132,8 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 planList = data.getPlan_list();
                 setDrawingsList();
             }
+            @Override
+            public void onCallbackFinish() { setIsLoading(false); }
         });
     }
 

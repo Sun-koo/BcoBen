@@ -9,6 +9,7 @@
     <color name="colorBackgroundNavy">#F5F6FA</color>
     <color name="colorBackgroundPink">#F7ECEB</color>
     <color name="colorBackgroundDrawer">#636780</color>
+    <color name="colorBackgroundDim">#66000000</color>
     <color name="colorBorderPink">#E6DBDA</color>
     <color name="colorDividerMainItem">#F0F1F7</color>
     <color name="colorDividerRegisterList">#9597A6</color>

@@ -1,12 +1,9 @@
 package kr.co.bcoben.component;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -22,7 +19,7 @@ public class DrawingsSelectDialog extends Dialog {
     public DrawingsSelectDialog(Context context) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_drawings_select_dialog);
+        setContentView(R.layout.dialog_drawings_select);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setCancelable(false);
 

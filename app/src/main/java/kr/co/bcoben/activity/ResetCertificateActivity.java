@@ -63,6 +63,7 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                 String phone = dataBinding.editPhone.getText().toString();
 
                 if (checkValidInputInfo(id, phone)) {
+                    setIsLoading(true);
                     RetrofitClient.getRetrofitApi().resetPassword(id, phone, UserData.getInstance().getDeviceId()).enqueue(new RetrofitCallbackModel<LoginData>() {
                         @Override
                         public void onResponseData(LoginData data) {
@@ -74,6 +75,8 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                             authHandler.removeCallbacks(runnable);
                             startAuth();
                         }
+                        @Override
+                        public void onCallbackFinish() { setIsLoading(false); }
                     });
                 }
                 break;
@@ -86,6 +89,7 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                 String number = dataBinding.editCertificateNumber.getText().toString();
 
                 if (checkValidInputCertificate(number)) {
+                    setIsLoading(true);
                     RetrofitClient.getRetrofitApi().checkAuth(UserData.getInstance().getUserId(), "reset", number).enqueue(new RetrofitCallback() {
                         @Override
                         public void onResponseData() {
@@ -94,6 +98,8 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                             finishAffinity();
                             overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
                         }
+                        @Override
+                        public void onCallbackFinish() { setIsLoading(false); }
                     });
                 }
                 break;

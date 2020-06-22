@@ -3,123 +3,147 @@
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+        <import type="android.view.View"/>
+        <variable name="isLoading" type="androidx.databinding.ObservableBoolean" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         tools:context=".activity.MainActivity">
 
         <LinearLayout
-            android:id="@+id/layout_home"
-            android:layout_width="232dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="@color/colorPrimary">
-
-            <ImageButton
-                android:id="@+id/btn_home"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp"
-                android:onClick="onClick"
-                android:padding="6dp"
-                android:src="@drawable/ic_main_home"
-                android:background="@null" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
-                android:layout_marginBottom="14dp"
-                android:layout_marginStart="27dp"
-                android:layout_marginEnd="24dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/main_project_text"
-                    android:textSize="12dp"
-                    android:textColor="@color/colorTextLabel"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:id="@+id/btn_add_project"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:onClick="onClick"
-                    android:padding="3dp"
-                    android:src="@drawable/ic_project_add"
-                    android:background="@null" />
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_project"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/txt_logout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginBottom="14dp"
-                android:onClick="onClick"
-                android:padding="3dp"
-                android:text="@string/main_logout"
-                android:textSize="20dp"
-                android:textColor="@color/colorWhite" />
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="27dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="44dp">
+                android:id="@+id/layout_home"
+                android:layout_width="232dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/colorPrimary">
 
-                <TextView
+                <ImageButton
+                    android:id="@+id/btn_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/main_version"
-                    android:textSize="20dp"
-                    android:textColor="@color/colorTextGray" />
-
-                <TextView
-                    android:id="@+id/txt_version"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="20dp"
                     android:onClick="onClick"
-                    android:text="1.0.0"
-                    android:textSize="20dp"
-                    android:textColor="@color/colorTextGray" />
+                    android:padding="6dp"
+                    android:src="@drawable/ic_main_home"
+                    android:background="@null" />
 
-                <Button
-                    android:id="@+id/btn_update"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="31dp"
-                    android:layout_marginStart="13dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginBottom="14dp"
+                    android:layout_marginStart="27dp"
+                    android:layout_marginEnd="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/main_project_text"
+                        android:textSize="12dp"
+                        android:textColor="@color/colorTextLabel"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/btn_add_project"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:onClick="onClick"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_project_add"
+                        android:background="@null" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_project"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/txt_logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="14dp"
                     android:onClick="onClick"
-                    android:text="@string/main_update"
-                    android:textSize="16dp"
-                    android:textColor="@color/colorTextPrimary"
-                    android:background="@drawable/btn_round_white" />
+                    android:padding="3dp"
+                    android:text="@string/main_logout"
+                    android:textSize="20dp"
+                    android:textColor="@color/colorWhite" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="27dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="44dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/main_version"
+                        android:textSize="20dp"
+                        android:textColor="@color/colorTextGray" />
+
+                    <TextView
+                        android:id="@+id/txt_version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:onClick="onClick"
+                        android:text="1.0.0"
+                        android:textSize="20dp"
+                        android:textColor="@color/colorTextGray" />
+
+                    <Button
+                        android:id="@+id/btn_update"
+                        android:layout_width="match_parent"
+                        android:layout_height="31dp"
+                        android:layout_marginStart="13dp"
+                        android:onClick="onClick"
+                        android:text="@string/main_update"
+                        android:textSize="16dp"
+                        android:textColor="@color/colorTextPrimary"
+                        android:background="@drawable/btn_round_white" />
+                </LinearLayout>
+
             </LinearLayout>
 
+            <include
+                android:id="@+id/main_drawer"
+                layout="@layout/activity_main_drawer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
 
-        <include
-            android:id="@+id/main_drawer"
-            layout="@layout/activity_main_drawer"
+        <RelativeLayout
+            android:id="@+id/layout_loading"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:visibility="@{isLoading ? View.VISIBLE : View.GONE}"
+            android:background="@color/colorBackgroundDim"
+            android:onClick="onClick">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
 </layout>

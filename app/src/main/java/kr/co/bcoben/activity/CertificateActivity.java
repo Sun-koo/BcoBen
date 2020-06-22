@@ -61,6 +61,7 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send:
+                setIsLoading(true);
                 RetrofitClient.getRetrofitApi().sendAuth(UserData.getInstance().getUserId(), "login").enqueue(new RetrofitCallbackModel<LoginData>() {
                     @Override
                     public void onResponseData(LoginData data) {
@@ -70,6 +71,8 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                         authHandler.removeCallbacks(runnable);
                         startAuth();
                     }
+                    @Override
+                    public void onCallbackFinish() { setIsLoading(false); }
                 });
                 break;
             case R.id.btn_back:
@@ -79,6 +82,7 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                 String number = dataBinding.editCertificateNumber.getText().toString();
 
                 if (checkValidInput(number)) {
+                    setIsLoading(true);
                     RetrofitClient.getRetrofitApi().checkAuth(UserData.getInstance().getUserId(), "login", number).enqueue(new RetrofitCallback() {
                         @Override
                         public void onResponseData() {
@@ -86,6 +90,8 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                             startActivity(intent);
                             finishAffinity();
                         }
+                        @Override
+                        public void onCallbackFinish() { setIsLoading(false); }
                     });
                 }
                 break;
