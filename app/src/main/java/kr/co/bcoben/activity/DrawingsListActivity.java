@@ -16,7 +16,7 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
-import kr.co.bcoben.ftp.ConnectFTP;
+import kr.co.bcoben.util.FTPConnectUtil;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.UserData;
 import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
@@ -77,7 +77,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ConnectFTP.getInstance().ftpDisconnect();
+        FTPConnectUtil.getInstance().ftpDisconnect();
     }
 
     @Override
@@ -145,7 +145,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 for (PlanDataList.PlanData data : planList) {
                     pathList.add(data.getPlan_thumb());
                 }
-                List<Bitmap> bitmapList = ConnectFTP.getInstance().ftpImageThumbnailBitmap(pathList);
+                List<Bitmap> bitmapList = FTPConnectUtil.getInstance().ftpImageBitmap(pathList);
                 for (int i = 0; i < bitmapList.size(); i++) {
                     planList.get(i).setPlan_bitmap(bitmapList.get(i));
                 }
@@ -195,7 +195,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     }
 
     private void planDownload(int position, PlanDataList.PlanData data) {
-        boolean isComplete = ConnectFTP.getInstance().ftpPlanDownload(position, data, drawingsListAdapter);
+        boolean isComplete = FTPConnectUtil.getInstance().ftpPlanDownload(position, data, drawingsListAdapter);
         if (isComplete) {
             SharedPrefUtil.putBoolean(data.getPlan_img_file(), true);
             try {

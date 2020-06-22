@@ -1,8 +1,7 @@
-package kr.co.bcoben.ftp;
+package kr.co.bcoben.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -20,9 +19,7 @@ import java.util.List;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.model.PlanDataList;
 
-import static kr.co.bcoben.util.CommonUtil.getFilePath;
-
-public class ConnectFTP {
+public class FTPConnectUtil {
     private final String TAG = "Connect FTP";
     private final String HOST = "211.218.126.222";
     private final int PORT = 21;
@@ -32,12 +29,12 @@ public class ConnectFTP {
     private FTPClient client;
 
     private static class LazyHolder {
-        public static final ConnectFTP INSTANCE = new ConnectFTP();
+        public static final FTPConnectUtil INSTANCE = new FTPConnectUtil();
     }
-    public static ConnectFTP getInstance() {
+    public static FTPConnectUtil getInstance() {
         return LazyHolder.INSTANCE;
     }
-    private ConnectFTP() {}
+    private FTPConnectUtil() {}
 
     private boolean ftpConnect() {
         try {
@@ -76,7 +73,7 @@ public class ConnectFTP {
         }
     }
 
-    public List<Bitmap> ftpImageThumbnailBitmap(List<String> pathList) {
+    public List<Bitmap> ftpImageBitmap(List<String> pathList) {
         List<Bitmap> bitmapList = new ArrayList<>();
         if (ftpConnect()) {
             try {
