@@ -49,7 +49,7 @@
                 android:id="@+id/btn_drawings_upload"
                 android:layout_width="match_parent"
                 android:layout_height="47dp"
-                android:onClick="onClick"
+                android:onClick="onDrawerProjectMenuClick"
                 android:background="@drawable/background_keycolor_popup_menu">
 
                 <TextView

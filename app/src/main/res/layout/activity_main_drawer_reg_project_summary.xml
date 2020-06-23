@@ -66,7 +66,7 @@
                         android:id="@+id/layout_project_start_date"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:onClick="onClick"/>
+                        android:onClick="onDrawerProjectMenuClick"/>
 
                 </RelativeLayout>
 
@@ -112,7 +112,7 @@
                         android:id="@+id/layout_project_end_date"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:onClick="onClick"/>
+                        android:onClick="onDrawerProjectMenuClick"/>
 
                 </RelativeLayout>
 

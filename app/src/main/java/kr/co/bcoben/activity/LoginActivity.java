@@ -101,6 +101,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                         @Override
                         public void onResponseData(LoginData data) {
                             UserData.getInstance().setUserId(data.getUser_id());
+                            UserData.getInstance().setDeviceId(deviceId);
                             String authNo = data.getAuth_no();
 
                             Intent intent_login = new Intent(LoginActivity.this, CertificateActivity.class);

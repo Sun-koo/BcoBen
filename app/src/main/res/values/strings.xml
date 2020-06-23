@@ -66,6 +66,7 @@
     <string name="toast_input_phone">휴대전화번호를 입력해주세요</string>
     <string name="toast_invalid_phone">휴대전화번호 양식이 맞지 않습니다. 확인해 주세요</string>
     <string name="toast_send_number">인증번호가 발송되었습니다</string>
+    <string name="dialog_permission_content_reset_phone">인증번호를 발송 하시려면 디바이스 정보를 가져오기 위해\n[전화] 권한을 허용해 주십시오</string>
 
     <!--비밀번호 재설정 화면-->
     <string name="reset_pw_title">사용할\n비밀번호를 재설정 하세요.</string>
@@ -84,6 +85,7 @@
     <string name="main_research_registration">조사 등록</string>
     <string name="main_research_count">%d/%d개소</string>
     <string name="main_research_list_none">등록된 조사가 없습니다.\n조사 등록을 선택하여 조사를 진행하세요!</string>
+    <string name="dialog_permission_content_image">도면 이미지를 가져오기 위해\n[저장공간, 카메라] 권한을 허용해 주십시오</string>
 
     <!--사이드 메뉴-->
     <string name="side_menu_grade">진단등급</string>
@@ -193,7 +195,8 @@
     <string name="camera_dialog_album">갤러리 선택</string>
 
     <!--통신 에러-->
-    <string name="not_found_user_data">아이디, 비밀번호를 확인해주세요</string>
+    <string name="login_not_found_user_data">아이디, 비밀번호를 확인해주세요</string>
+    <string name="not_found_user_data">계정정보가 확인되지 않습니다</string>
     <string name="no_match_device">디바이스에 등록된 계정이 아닙니다</string>
     <string name="expire_device">디바이스 사용기간이 만료 되었습니다</string>
     <string name="no_match_auth_no">인증번호가 일치하지 않습니다</string>

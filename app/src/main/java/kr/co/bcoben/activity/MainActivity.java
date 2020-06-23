@@ -1,18 +1,23 @@
 package kr.co.bcoben.activity;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -22,7 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.Dir;
 import kr.co.bcoben.adapter.MenuCheckFacilityListAdapter;
@@ -46,6 +55,7 @@ import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CameraDialog;
+import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.databinding.ActivityMainBinding;
 import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.MenuCheckListData;
@@ -61,6 +71,7 @@ import kr.co.bcoben.service.app.UnCatchTaskService;
 import kr.co.bcoben.service.retrofit.RetrofitCallback;
 import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
+import kr.co.bcoben.util.CommonUtil;
 import kr.co.bcoben.util.FileUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -74,9 +85,13 @@ import static kr.co.bcoben.util.CommonUtil.getCameraImage;
 import static kr.co.bcoben.util.CommonUtil.getGalleryImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
+import static kr.co.bcoben.util.CommonUtil.requestPermission;
+import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
+
+    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
 
     public enum ResearchStep {
         GRADE("grade"), FACILITY("facility"), FACILITY_CATEGORY("fac_cate"), ARCHITECTURE("structure"), RESEARCH("research_type");
@@ -173,10 +188,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     protected void onResume() {
         super.onResume();
         if (UserData.getInstance().getUserId() == 0){
-            Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
-            intent_logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent_logout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent_logout);
             finish();
         }
         requestProjectList();
@@ -185,14 +196,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        RetrofitClient.getRetrofitApi().logout(UserData.getInstance().getUserId()).enqueue(new RetrofitCallback() {
-            @Override
-            public void onResponseData() {
-                UserData.getInstance().removeData();
-            }
-            @Override
-            public void onCallbackFinish() {}
-        });
+        if (UserData.getInstance().getUserId() != 0) {
+            RetrofitClient.getRetrofitApi().logout(UserData.getInstance().getUserId()).enqueue(new RetrofitCallback() {
+                @Override
+                public void onResponseData() {
+                    UserData.getInstance().removeData();
+                }
+                @Override
+                public void onCallbackFinish() {
+                }
+            });
+        }
     }
 
     @Override
@@ -217,6 +231,33 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        final CommonUtil.PermissionState state = resultRequestPermission(this, permissions, grantResults);
+
+        if (state == CommonUtil.PermissionState.GRANT) {
+            showCameraDialog();
+        } else {
+            PermissionDialog.builder(this)
+                    .setTxtPermissionContent(R.string.dialog_permission_content_image)
+                    .setBtnConfirmListener(new PermissionDialog.BtnClickListener() {
+                        @Override
+                        public void onClick(PermissionDialog dialog) {
+                            if (state == CommonUtil.PermissionState.ALWAYS_DENY) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                startActivityForResult(intent, requestCode);
+                            } else if (state == CommonUtil.PermissionState.DENY) {
+                                requestPermission(activity, PERMISSION);
+                            }
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+    }
+
     public boolean isDrawingOpen() {
         return dataBinding.mainDrawer.layoutDrawer.isDrawerOpen(GravityCompat.START);
     }
@@ -227,13 +268,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            // side menu(research)
-
-            // side menu(project)
-            case R.id.btn_input_project_cancel:
-                closeDrawer();
-                break;
-            case R.id.btn_input_project:
+            case R.id.btn_input_project: {
                 String projectName = dataBinding.mainDrawer.layoutRegProject.txtSummaryName.getText().toString();
                 String projectDate = dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.getText().toString();
 
@@ -301,7 +336,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                                 File file = FileUtil.from(this, data.getUri());
 
                                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("plan"+ id +"", file.getName(), requestBody);
+                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("plan" + id + "", file.getName(), requestBody);
                                 requestBodyList.add(multipartBody);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -340,41 +375,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                             }
                         }
                         projectListAdapter.setList(projectList);
+                        setIsLoading(false);
                     }
                     @Override
                     public void onCallbackFinish() { setIsLoading(false); }
                 });
                 break;
-            case R.id.btn_project_next:
-                projectNextStep();
-                break;
-            case R.id.layout_project_start_date:
-                // 현재 날짜 Get
-                Date currentTime = Calendar.getInstance().getTime();
-                SimpleDateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
-                SimpleDateFormat monthFormat = new SimpleDateFormat("M", Locale.getDefault());
-                SimpleDateFormat yearFormat = new SimpleDateFormat("y", Locale.getDefault());
-
-                String curYear = yearFormat.format(currentTime);
-                String curMonth = monthFormat.format(currentTime);
-                String curDay = dayFormat.format(currentTime);
-
-                datePickerType = DatePickerType.START;
-                DatePickerDialog dialog_start = new DatePickerDialog(this, onDateSetListener, Integer.parseInt(curYear), Integer.parseInt(curMonth) - 1, Integer.parseInt(curDay));
-                dialog_start.show();
-                break;
-            case R.id.layout_project_end_date:
-                datePickerType = DatePickerType.END;
-                DatePickerDialog dialog_end = new DatePickerDialog(this, onDateSetListener, startYear, startMonth, startDay);
-                dialog_end.show();
-                break;
-            case R.id.btn_drawings_upload:
-                if (checkedFacility.equals("")) {
-                    showToast(R.string.toast_input_select_facility);
-                    return;
-                }
-                showCameraDialog();
-                break;
+            }
 
             // main
             case R.id.btn_home:
@@ -430,6 +437,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.setText("");
         dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.setText("");
         dataBinding.mainDrawer.layoutRegResearch.txtResearch.setText("");
+        selectedResearchName = "";
+        selectedResearchCount = 0;
 
         if (grade != null && !grade.isEmpty()) {
             currentResearchStep = ResearchStep.GRADE;
@@ -578,7 +587,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // 조사등록 직접입력
     public void researchNextStep() {
-        String name = mainResearchRegListAdapter.getEditName();
+        String name = mainResearchRegListAdapter.getEditName().trim();
         switch (currentResearchStep) {
             case FACILITY: {
                 if (name.isEmpty()) { showToast(R.string.toast_input_facility); return; }
@@ -604,8 +613,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 break;
             }
             case RESEARCH:
-                String count = mainResearchRegListAdapter.getEditCount();
-                if (count.isEmpty()) { showToast(R.string.toast_input_research_count); return; }
+                String count = mainResearchRegListAdapter.getEditCount().trim();
+                if (count.isEmpty() || count.equals("0")) { showToast(R.string.toast_input_research_count); return; }
                 if (name.isEmpty()) { showToast(R.string.toast_input_research); return; }
                 researchRegData.addResearch(name, Integer.parseInt(count));
                 break;
@@ -666,7 +675,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         return currentResearchStep;
     }
 
-
+    /**
+     * 프로젝트 Drawer
+     */
     // 프로젝트 등록
     public void initDrawerProject() {
         // 진단등급 리스트
@@ -693,27 +704,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, regProjectResearch);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setLayoutManager(new LinearLayoutManager(this));
-    }
-    // side menu(project)
-    public void onDrawerProjectMenuClick(View v) {
-        switch (v.getId()) {
-            case R.id.layout_summary: updateStepProjectMenuUI(ProjectStep.SUMMARY); break;
-            case R.id.layout_grade: updateStepProjectMenuUI(ProjectStep.GRADE); break;
-            case R.id.layout_facility: updateStepProjectMenuUI(ProjectStep.FACILITY); break;
-            case R.id.layout_research: updateStepProjectMenuUI(ProjectStep.RESEARCH); break;
-            case R.id.layout_drawings: updateStepProjectMenuUI(ProjectStep.DRAWINGS); break;
-        }
+
+        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectName.setImeOptions(EditorInfo.IME_ACTION_DONE);
     }
 
-    public void openDrawerProject() {
-        dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.VISIBLE);
-        dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.GONE);
-        resetDrawerProject();
-
-        setNavigationViewWidth(true);
-        dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
-    }
-
+    // 프로젝트 등록 초기화
     private void resetDrawerProject() {
         updateStepProjectMenuUI(ProjectStep.SUMMARY);
         dataBinding.mainDrawer.layoutRegProject.layoutGrade.setClickable(false);
@@ -737,13 +732,132 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         menuCheckFacilityListAdapter.setList(regProjectFacility);
         menuCheckResearchListAdapter.setList(regProjectResearch);
     }
-
     private void resetCheckedMenu(List<MenuCheckData> list) {
         for (MenuCheckData data : list) {
             data.setChecked(false);
         }
     }
 
+    // 프로젝트 등록 클릭 리스너
+    public void onDrawerProjectMenuClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_input_project_cancel: closeDrawer(); break;
+            case R.id.layout_summary: updateStepProjectMenuUI(ProjectStep.SUMMARY); break;
+            case R.id.layout_grade: updateStepProjectMenuUI(ProjectStep.GRADE); break;
+            case R.id.layout_facility: updateStepProjectMenuUI(ProjectStep.FACILITY); break;
+            case R.id.layout_research: updateStepProjectMenuUI(ProjectStep.RESEARCH); break;
+            case R.id.layout_drawings: updateStepProjectMenuUI(ProjectStep.DRAWINGS); break;
+            case R.id.btn_project_next: projectNextStep(); break;
+            case R.id.layout_project_start_date: {
+                hideKeyboard(this);
+
+                int year, month, day;
+                String startDate = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.getText().toString();
+                if (startDate.equals("")) {
+                    Calendar c = Calendar.getInstance();
+                    year = c.get(Calendar.YEAR);
+                    month = c.get(Calendar.MONTH);
+                    day = c.get(Calendar.DAY_OF_MONTH);
+                } else {
+                    String[] startDateArr = startDate.split("/");
+                    year = Integer.parseInt(startDateArr[0]);
+                    month = Integer.parseInt(startDateArr[1]) - 1;
+                    day = Integer.parseInt(startDateArr[2]);
+                }
+
+                new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        DecimalFormat df = new DecimalFormat("00");
+                        String startDate = year + "/" + df.format(month + 1) + "/" + df.format(dayOfMonth);
+                        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText(startDate);
+
+                        String endDate = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.getText().toString();
+                        if (!endDate.equals("")) {
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+                                Date start = sdf.parse(startDate);
+                                Date end = sdf.parse(endDate);
+
+                                int compare = start.compareTo(end);
+                                if (compare > 0) {
+                                    dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText(startDate);
+                                }
+                            } catch (ParseException ignored) {}
+                        }
+                    }
+                }, year, month, day).show();
+                break;
+            }
+            case R.id.layout_project_end_date: {
+                hideKeyboard(this);
+
+                int year, month, day;
+                String endDate = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.getText().toString();
+                String startDate = dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.getText().toString();
+                if (endDate.equals("")) {
+                    if (startDate.equals("")) {
+                        Calendar c = Calendar.getInstance();
+                        year = c.get(Calendar.YEAR);
+                        month = c.get(Calendar.MONTH);
+                        day = c.get(Calendar.DAY_OF_MONTH);
+                    } else {
+                        String[] startDateArr = startDate.split("/");
+                        year = Integer.parseInt(startDateArr[0]);
+                        month = Integer.parseInt(startDateArr[1]) - 1;
+                        day = Integer.parseInt(startDateArr[2]);
+                    }
+                } else {
+                    String[] endDateArr = endDate.split("/");
+                    year = Integer.parseInt(endDateArr[0]);
+                    month = Integer.parseInt(endDateArr[1]) - 1;
+                    day = Integer.parseInt(endDateArr[2]);
+                }
+
+                DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        DecimalFormat df = new DecimalFormat("00");
+                        String date = year + "/" + df.format(month + 1) + "/" + df.format(dayOfMonth);
+                        dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText(date);
+                    }
+                }, year, month, day);
+                if (!startDate.equals("")) {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+                        Date start = sdf.parse(startDate);
+                        dialog.getDatePicker().setMinDate(start.getTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                dialog.show();
+                break;
+            }
+            case R.id.btn_drawings_upload: {
+                if (checkedFacility.equals("")) {
+                    showToast(R.string.toast_input_select_facility);
+                    return;
+                }
+                if (requestPermission(this, PERMISSION)) {
+                    showCameraDialog();
+                }
+                break;
+            }
+        }
+    }
+
+    // 프로젝트 등록 사이드메뉴 열기
+    public void openDrawerProject() {
+        dataBinding.mainDrawer.layoutRegProject.layoutRoot.setVisibility(View.VISIBLE);
+        dataBinding.mainDrawer.layoutRegResearch.layoutRoot.setVisibility(View.GONE);
+        resetDrawerProject();
+
+        setNavigationViewWidth(true);
+        dataBinding.mainDrawer.layoutDrawer.openDrawer(GravityCompat.START);
+    }
+
+    // 프로젝트 등록 UI변경
     private void updateStepProjectMenuUI(ProjectStep step) {
         currentProjectStep = step;
 
@@ -808,12 +922,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 menuCheckFacilityListAdapter.setSelected(false);
                 break;
         }
-//        dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
+        dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
     }
 
-
-
+    // 프로젝트 등록 다음 버튼 처리
     public void projectNextStep() {
+        hideKeyboard(this);
+
         List<String> projectSummaryValue = new ArrayList<>();
         List<MenuCheckData> selectedValue = new ArrayList<>();
         switch (currentProjectStep) {
@@ -850,6 +965,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     showToast(R.string.toast_input_select_facility);
                     return;
                 }
+                dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
                 break;
             case RESEARCH:
                 regProjectResearch = menuCheckInputListAdapter.getSelectedValue();
@@ -869,29 +985,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 }
 
                 selectedValue = regProjectResearch;
-                break;
-            case DRAWINGS:
-                //TODO
-//                for (MenuCheckData data : regProjectFacility) {
-//                    facilityCheckListItemAdd(data);
-//                }
-
+                dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
                 break;
         }
 
-        hideKeyboard(this);
         setProjectSelectedText(selectedValue, projectSummaryValue);
     }
 
     private boolean checkIsSelectMenu(List<MenuCheckData> list) {
         boolean isChecked = false;
-
         for (MenuCheckData data : list) {
-            if (data.isChecked()) {
-                isChecked = true;
-            }
+            if (data.isChecked()) { isChecked = true; }
         }
-
         return isChecked;
     }
 
@@ -939,38 +1044,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setClickable(true);
                 updateStepProjectMenuUI(ProjectStep.DRAWINGS);
                 break;
-            case DRAWINGS:
-                //TODO
-                break;
         }
     }
-
-    // 날짜 선택 다이얼로그
-    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            startYear = year;
-            startMonth = month;
-            startDay = dayOfMonth;
-            String monthStr = String.valueOf(month + 1);
-            String dayStr = String.valueOf(dayOfMonth);
-
-            if (monthStr.length() == 1) {
-                monthStr = "0" + monthStr;
-            }
-            if (dayStr.length() == 1) {
-                dayStr = "0" + dayStr;
-            }
-
-            String date = year + "-" + monthStr + "-" + dayStr;
-
-            if (datePickerType == DatePickerType.START) {
-                dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText(date);
-            } else {
-                dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText(date);
-            }
-        }
-    };
 
     // 카메라 촬영 / 앨범 선택 다이얼로그 출력
     private void showCameraDialog() {
@@ -1083,6 +1158,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         if (!isContain) {
             regProjectFacility.add(new MenuSelectFacilityData(facility, facCate, arch, list));
             menuCheckFacilityListAdapter.setList(regProjectFacility);
+            dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.scrollToPosition(regProjectFacility.size() - 1);
         }
     }
 

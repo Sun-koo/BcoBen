@@ -67,10 +67,12 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                     public void onResponseData(LoginData data) {
                         setIsLoading(false);
                         dataBinding.editCertificateNumber.setText(data.getAuth_no());
-
                         showToast(R.string.toast_send_number);
-                        authHandler.removeCallbacks(runnable);
-                        startAuth();
+
+                        if (authTimerCount == 0) {
+                            authHandler.removeCallbacks(runnable);
+                            startAuth();
+                        }
                     }
                     @Override
                     public void onCallbackFinish() { setIsLoading(false); }
