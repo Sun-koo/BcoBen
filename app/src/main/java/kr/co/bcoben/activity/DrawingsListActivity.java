@@ -16,6 +16,8 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
+import kr.co.bcoben.model.ResearchRegData;
+import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.util.FTPConnectUtil;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.UserData;
@@ -134,6 +136,27 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
             }
             @Override
             public void onCallbackFinish() { setIsLoading(false); }
+        });
+    }
+
+    private void requestSpinnerData() {
+        setIsLoading(true);
+        RetrofitClient.getRetrofitApi().researchData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<ResearchSpinnerData>() {
+            @Override
+            public void onResponseData(ResearchSpinnerData data) {
+                data.getResearch_data().getFacility_id();
+                data.getResearch_data().getFac_cate_id();
+                data.getResearch_data().getStructure_id();
+                data.getResearch_data().getResearch_type_id();
+//                for (ResearchRegData.FacilityData.FacCateData facData : data.getProject_fac_data().getFac_cate_list()) {
+//                    facData
+//                }
+            }
+
+            @Override
+            public void onCallbackFinish() {
+                setIsLoading(false);
+            }
         });
     }
 

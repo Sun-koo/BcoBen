@@ -9,6 +9,7 @@ import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ProjectResearchList;
 import kr.co.bcoben.model.ResearchIdData;
+import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.model.ResponseData;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -79,7 +80,7 @@ public interface RetrofitApi {
     @POST("/app/research/plan_list")
     Call<ResponseData<PlanDataList>> planList(@Field("user_id") int id, @Field("research_id") int researchId);
 
-//    @FormUrlEncoded
-//    @POST("/app/research/data")
-//    Call<ResponseData<>> researchData (@Field("user_id") int id, @Field("research_id") int researchId);
+    @FormUrlEncoded
+    @POST("/app/research/data")
+    Call<ResponseData<ResearchSpinnerData>> researchData (@Field("user_id") int id, @Field("research_id") int researchId);
 }

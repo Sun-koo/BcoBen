@@ -321,9 +321,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     @Override
                     public void onResponseData(ProjectListData data) {
                         closeDrawer();
-                        List<ProjectListData.ProjectList> list = data.getProject_list();
+                        projectList = data.getProject_list();
 
-                        if (list.isEmpty()) {
+                        if (projectList.isEmpty()) {
                             dataBinding.mainDrawer.mainContents.txtSubTitle.setVisibility(View.GONE);
                             dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.GONE);
                             dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.GONE);
@@ -333,22 +333,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.VISIBLE);
                         dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.VISIBLE);
 
-                        boolean existSelected = false;
-                        for (ProjectListData.ProjectList projectListData : list) {
-                            if (projectListData.isSelected()) {
-                                existSelected = true;
-                                dataBinding.mainDrawer.mainContents.txtSubTitle.setText("(" + projectListData.getGrade_name() + ")");
-                                setCurrentProjectId(projectListData.getProject_id());
+                        for (ProjectListData.ProjectList projectListData : projectList) {
+                            if (projectListData.getProject_id() == currentProjectId) {
+                                projectListData.setSelected(true);
+                                setTextGrade(projectListData.getGrade_name());
                             }
                         }
-                        if (!existSelected) {
-                            list.get(0).setSelected(true);
-                            dataBinding.mainDrawer.mainContents.txtSubTitle.setText("(" + list.get(0).getGrade_name() + ")");
-                            setCurrentProjectId(projectList.get(0).getProject_id());
-                        }
-                        projectList = list;
                         projectListAdapter.setList(projectList);
-                        requestProjectDataList();
                     }
                     @Override
                     public void onCallbackFinish() { setIsLoading(false); }
