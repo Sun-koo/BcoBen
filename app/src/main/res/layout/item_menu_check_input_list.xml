@@ -53,6 +53,7 @@
                 android:paddingEnd="18dp"
                 android:background="@drawable/border_square_gray_box"
                 android:maxLines="1"
+                android:maxLength="3"
                 android:inputType="number"
                 android:hint="@string/side_menu_hint_count"
                 android:enabled="false"

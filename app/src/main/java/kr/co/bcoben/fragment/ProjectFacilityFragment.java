@@ -65,7 +65,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     @Override
     public void onStart() {
         super.onStart();
-        if (!isFirst) {
+        if (!isFirst && !activity.isImageIntent) {
             requestResearchList();
         }
     }

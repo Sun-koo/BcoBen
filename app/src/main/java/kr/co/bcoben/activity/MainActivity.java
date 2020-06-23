@@ -108,19 +108,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     public enum DatePickerType { START, END }
 
     // side menu
-    private MainResearchRegListAdapter mainResearchRegListAdapter;
-    private MenuCheckListAdapter menuCheckListAdapter;
-    private TreeViewAdapter treeViewAdapter;
-    private MenuCheckFacilityListAdapter menuCheckFacilityListAdapter;
-    private MenuCheckInputListAdapter menuCheckInputListAdapter;
-    private MenuCheckResearchListAdapter menuCheckResearchListAdapter;
-    private MenuDrawingsListAdapter menuDrawingsListAdapter;
-
-    private DatePickerType datePickerType = DatePickerType.START;
-    private int startYear, startMonth, startDay;
 
     // 조사등록
     private ResearchStep currentResearchStep = ResearchStep.GRADE;
+    private MainResearchRegListAdapter mainResearchRegListAdapter;
     private ResearchRegData researchRegData;
     private List<MenuCheckData> regResearchDataList = new ArrayList<>();
     private List<ResearchRegData.FacilityData.FacCateData> newResearchFacCateList = new ArrayList<>();
@@ -131,14 +122,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // 프로젝트 등록
     private ProjectStep currentProjectStep = ProjectStep.SUMMARY;
+    private MenuCheckListAdapter menuCheckListAdapter;
+    private TreeViewAdapter treeViewAdapter;
+    private MenuCheckFacilityListAdapter menuCheckFacilityListAdapter;
+    private MenuCheckInputListAdapter menuCheckInputListAdapter;
+    private MenuCheckResearchListAdapter menuCheckResearchListAdapter;
+    private MenuDrawingsListAdapter menuDrawingsListAdapter;
     private List<MenuCheckData> regProjectGrade = new ArrayList<>();
     private List<MenuSelectFacilityData> regProjectFacility = new ArrayList<>();
     private List<MenuCheckData> regProjectResearch = new ArrayList<>();
     private List<MenuDrawingsData> regDrawingsList = new ArrayList<>();
+    private List<CheckBox> cbList = new ArrayList<>();
     private String checkedFacility = "";
     private int checkedFacilityId = 0;
-
-    private List<CheckBox> cbList = new ArrayList<>();
+    public boolean isImageIntent = false;
 
     // main
     private ProjectListAdapter projectListAdapter;
@@ -190,7 +187,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         if (UserData.getInstance().getUserId() == 0){
             finish();
         }
-        requestProjectList();
+        if (!isImageIntent) {
+            requestProjectList();
+        }
+        isImageIntent = false;
     }
 
     @Override
@@ -203,8 +203,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     UserData.getInstance().removeData();
                 }
                 @Override
-                public void onCallbackFinish() {
-                }
+                public void onCallbackFinish() {}
             });
         }
     }
@@ -214,7 +213,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = getImageResult(this, requestCode, resultCode, data);
         if (uri != null) {
-            regDrawingsList.add(new MenuDrawingsData(uri.getLastPathSegment(), checkedFacility, uri, checkedFacilityId));
+            String filename = "";
+            try {
+                filename = FileUtil.from(this, uri).getName();
+            } catch (IOException e) {
+                filename = uri.getLastPathSegment();
+            }
+            regDrawingsList.add(new MenuDrawingsData(filename, checkedFacility, uri, checkedFacilityId));
             menuDrawingsListAdapter.setList(regDrawingsList);
             dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("(" + menuDrawingsListAdapter.getItemCount() + "건)");
         } else {
@@ -654,6 +659,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
         selectResearchRegData.put(currentResearchStep.getValue(), data);
     }
+
     // 조사등록 - 선택된 시설물 데이터 가져오기
     public MenuCheckData getSelectResearchRegData(String key) {
         return selectResearchRegData.get(key);
@@ -701,7 +707,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckFacility.setLayoutManager(new LinearLayoutManager(this));
 
         // 조사종류 등록 리스트
-        menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, regProjectResearch);
+        menuCheckResearchListAdapter = new MenuCheckResearchListAdapter(this, new ArrayList<MenuCheckData>());
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setAdapter(menuCheckResearchListAdapter);
         dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setLayoutManager(new LinearLayoutManager(this));
 
@@ -726,16 +732,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText("");
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText("");
 
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("");
+
         resetCheckedMenu(regProjectGrade);
         resetCheckedMenu(regProjectResearch);
         regProjectFacility.clear();
+        regDrawingsList.clear();
+        checkedFacility = "";
+
         menuCheckFacilityListAdapter.setList(regProjectFacility);
-        menuCheckResearchListAdapter.setList(regProjectResearch);
+        menuCheckResearchListAdapter.setList(new ArrayList<MenuCheckData>());
+        menuDrawingsListAdapter.setList(regDrawingsList);
         treeViewAdapter.collapseAll();
     }
     private void resetCheckedMenu(List<MenuCheckData> list) {
         for (MenuCheckData data : list) {
             data.setChecked(false);
+            data.setTot_count(0);
         }
     }
 
@@ -969,14 +982,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
                 break;
             case RESEARCH:
-                regProjectResearch = menuCheckInputListAdapter.getSelectedValue();
+                selectedValue = menuCheckInputListAdapter.getSelectedValue();
 
-                if (!checkIsSelectMenu(regProjectResearch)) {
+                if (!checkIsSelectMenu(selectedValue)) {
                     showToast(R.string.toast_input_select_research);
                     return;
                 }
 
-                for (MenuCheckData data : regProjectResearch) {
+                for (MenuCheckData data : selectedValue) {
                     if (data.isChecked()) {
                         if (data.getTot_count() == 0) {
                             showToast(R.string.toast_input_select_research_count);
@@ -985,7 +998,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     }
                 }
 
-                selectedValue = regProjectResearch;
                 dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
                 break;
         }
@@ -1050,22 +1062,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // 카메라 촬영 / 앨범 선택 다이얼로그 출력
     private void showCameraDialog() {
-        final CameraDialog dialog = new CameraDialog(this);
-        dialog.selectCameraListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                getCameraImage(MainActivity.this);
-            }
-        });
-        dialog.selectAlbumInputListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                getGalleryImage(MainActivity.this);
-            }
-        });
-        dialog.show();
+        CameraDialog.builder(this)
+                .setBtnCameraListener(new CameraDialog.BtnClickListener() {
+                    @Override
+                    public void onClick(CameraDialog dialog) {
+                        dialog.dismiss();
+                        isImageIntent = true;
+                        getCameraImage(MainActivity.this);
+                    }
+                })
+                .setBtnGalleyListener(new CameraDialog.BtnClickListener() {
+                    @Override
+                    public void onClick(CameraDialog dialog) {
+                        dialog.dismiss();
+                        isImageIntent = true;
+                        getGalleryImage(MainActivity.this);
+                    }
+                }).show();
     }
 
     // 도면 리스트 화면 이동

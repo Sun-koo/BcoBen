@@ -508,9 +508,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         switch (v.getId()) {
             case R.id.btn_home: DrawingsListActivity.isHomeReturn = true;
             case R.id.btn_close: finish(); break;
-            case R.id.btn_save:
-                showDrawingsSelectDialog();
-                break;
             case R.id.layout_picture_popup:
                 dataBinding.layoutPicturePopup.setVisibility(View.INVISIBLE);
                 break;

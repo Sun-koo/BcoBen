@@ -103,6 +103,7 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
 
         void onBind(final MenuCheckData data, int position) {
             textChangeListener.setPosition(position);
+            textChangeListener.setEditText(editCount);
             layoutMenuInput.setVisibility(View.VISIBLE);
             btnNext.setVisibility(View.GONE);
 
@@ -124,15 +125,29 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
 
     private class EditCountTextChangeListener implements TextWatcher {
         private int position;
+        private EditText editText;
+        private String beforeTxt = "";
 
         public void setPosition(int position) {
             this.position = position;
+        }
+        public void setEditText(EditText editText) {
+            this.editText = editText;
         }
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (!s.toString().equals(beforeTxt)) {
+                beforeTxt = s.toString();
+                if (beforeTxt.equals("")) {
+                    editText.setText("0");
+                } else {
+                    editText.setText(String.valueOf(Integer.parseInt(beforeTxt)));
+                }
+                editText.setSelection(editText.getText().toString().length());
+            }
             try {
                 list.get(position).setTot_count(Integer.parseInt(s.toString()));
             } catch (NumberFormatException e) {

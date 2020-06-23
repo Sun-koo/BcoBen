@@ -108,10 +108,10 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send:
-                String id = dataBinding.editId.getText().toString();
-                String phone = dataBinding.editPhone.getText().toString();
+                String id = dataBinding.editId.getText().toString().trim();
+                String phone = dataBinding.editPhone.getText().toString().trim();
 
-                if (!id.equals(this.id) || !phone.equals(this.phone)) {
+                if ((this.id.equals("") && this.phone.equals("")) || !id.equals(this.id) || !phone.equals(this.phone)) {
                     this.id = id;
                     this.phone = phone;
 
@@ -133,7 +133,6 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                                 authHandler.removeCallbacks(runnable);
                                 startAuth();
                             }
-
                             @Override
                             public void onCallbackFinish() { setIsLoading(false); }
                         });
@@ -155,7 +154,6 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
                                 startAuth();
                             }
                         }
-
                         @Override
                         public void onCallbackFinish() { setIsLoading(false); }
                     });
@@ -215,11 +213,11 @@ public class ResetCertificateActivity extends BaseActivity<ActivityResetCertific
 
     // 아이디, 휴대전화번호 유효성 검사
     private boolean checkValidInputInfo(String id, String phone) {
-        if (id.isEmpty()) {
+        if (id.equals("")) {
             showToast(R.string.toast_input_id);
             return false;
         }
-        if (phone.isEmpty()) {
+        if (phone.equals("")) {
             showToast(R.string.toast_input_phone);
             return false;
         }
