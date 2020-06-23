@@ -119,6 +119,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         RetrofitClient.getRetrofitApi().projectResearchList(UserData.getInstance().getUserId(), projectId, projectData.getFacility_id(), order).enqueue(new RetrofitCallbackModel<ProjectResearchList>() {
             @Override
             public void onResponseData(ProjectResearchList data) {
+                activity.setIsLoading(false);
                 data.setCount();
                 researchList = data.getResearch_list();
                 adapter.setList(researchList);
@@ -129,6 +130,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
                 dataBinding.txtFacilityPercent.setText(percent);
                 dataBinding.txtFacilityCount.setText(count);
                 dataBinding.txtResearchNone.setVisibility(researchList.isEmpty() ? View.VISIBLE : View.GONE);
+                dataBinding.layoutResearchInfo.setVisibility(View.VISIBLE);
             }
             @Override
             public void onCallbackFinish() { activity.setIsLoading(false); }

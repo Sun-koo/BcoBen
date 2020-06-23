@@ -62,12 +62,10 @@ public class ResetPwActivity extends BaseActivity<ActivityResetPwBinding> implem
             showToast(R.string.toast_input_pw);
             return false;
         }
-
         if (!stringPatternCheck(pw, CASE_ALPHA_NUM, 10, -1)) {
             showToast(R.string.toast_invalid_pw);
             return false;
         }
-
         if (!pw.equals(pw_confirm)) {
             showToast(R.string.toast_not_equal_pw);
             return false;

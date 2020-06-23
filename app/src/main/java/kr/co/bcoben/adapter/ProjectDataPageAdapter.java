@@ -1,5 +1,7 @@
 package kr.co.bcoben.adapter;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -32,6 +34,11 @@ public class ProjectDataPageAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return projectDataList.size();
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
     }
 
     @Nullable

@@ -38,11 +38,13 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_research_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:orientation="horizontal"
-                android:gravity="bottom">
+                android:gravity="bottom"
+                android:visibility="invisible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
@@ -82,7 +84,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="33dp"
-                    android:text="53%"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="32dp"
                     android:textStyle="bold" />
@@ -92,7 +93,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="(102/220 개소)"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="16dp"/>
             </LinearLayout>

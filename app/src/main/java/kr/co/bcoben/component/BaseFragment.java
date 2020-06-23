@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 
-    protected String TAG = "BaseActivity";
+    protected String TAG = "BaseFragment";
     protected T dataBinding;
 
     abstract protected int getLayoutResource();     // 레이아웃 파일 정의

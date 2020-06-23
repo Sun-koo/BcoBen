@@ -65,6 +65,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <service
+            android:name=".service.app.UnCatchTaskService"
+            android:stopWithTask="false"/>
     </application>
 
 </manifest>

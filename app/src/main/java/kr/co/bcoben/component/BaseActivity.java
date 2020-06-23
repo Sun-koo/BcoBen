@@ -2,6 +2,7 @@ package kr.co.bcoben.component;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,14 @@ abstract public class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     private final ObservableBoolean isLoading = new ObservableBoolean(false);
     public ObservableBoolean getIsLoading() { return isLoading; }
     public void setIsLoading(boolean isLoading) { this.isLoading.set(isLoading); }
+    public void offLoadingDelay() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                isLoading.set(false);
+            }
+        }, 1000);
+    }
 
     abstract protected int getLayoutResource();     // 레이아웃 파일 정의
     abstract protected void initView();             // onCreate 내부 처리

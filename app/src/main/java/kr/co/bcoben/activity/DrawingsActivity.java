@@ -83,6 +83,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // drawing
     private int planId;
+    private int researchId;
     private String planFile;
     private float initScale;
     private int currentScale = 2;
@@ -126,6 +127,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void initView() {
+        planList = getIntent().getParcelableArrayListExtra("plan_list");
+        researchId = getIntent().getIntExtra("research_id", 0);
+        int planIndex = getIntent().getIntExtra("plan_index", 0);
+        planFile = planList.get(planIndex).getPlan_img_file();
+
         initTopSpinner();
         initDrawing();
         initInputPopup();
@@ -181,9 +187,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     private void initTopSpinner() {
-        planList = getIntent().getParcelableArrayListExtra("plan_list");
-        int planIndex = getIntent().getIntExtra("plan_index", 0);
-        planFile = planList.get(planIndex).getPlan_img_file();
 //        List<String> categoryList = getIntent().getStringArrayListExtra("category_list");
 //        List<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
 //        List<String> researchList = getIntent().getStringArrayListExtra("research_list");

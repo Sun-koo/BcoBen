@@ -23,11 +23,11 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
     @Override
     public void onResponse(Call<ResponseData<T>> call, Response<ResponseData<T>> response) {
         Log.e(TAG, response.raw().request().url().url().toString());
-        onCallbackFinish();
         if (response.body() != null) {
             if (response.body().isResult()) {
                 onResponseData(response.body().getData());
             } else {
+                onCallbackFinish();
                 showErrorMsg(response.body().getError());
             }
         } else {
@@ -40,6 +40,7 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
                     }
                 } catch (Exception e) {}
             }
+            onCallbackFinish();
         }
     }
 

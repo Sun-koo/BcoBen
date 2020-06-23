@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -44,9 +45,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
     @Override
     protected void initView() {
         getDeviceId();
-        // Debug
-//        dataBinding.editId.setText("bcoben2");
-//        dataBinding.editPw.setText("Bcoben01!@#");
     }
 
     @Override
@@ -109,6 +107,8 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                             intent_login.putExtra("auth_no", authNo);
                             startActivity(intent_login);
                             overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
+
+                            offLoadingDelay();
                         }
                         @Override
                         public void onCallbackFinish() { setIsLoading(false); }

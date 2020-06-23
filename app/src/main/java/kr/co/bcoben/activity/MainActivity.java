@@ -57,6 +57,7 @@ import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ResearchIdData;
 import kr.co.bcoben.model.ResearchRegData;
 import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.app.UnCatchTaskService;
 import kr.co.bcoben.service.retrofit.RetrofitCallback;
 import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
@@ -138,6 +139,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     @Override
     protected void initView() {
+        startService(new Intent(this, UnCatchTaskService.class));
+
         // side menu
         dataBinding.mainDrawer.layoutDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
@@ -177,7 +180,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             finish();
         }
         requestProjectList();
-//        requestRegProjectCheckData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RetrofitClient.getRetrofitApi().logout(UserData.getInstance().getUserId()).enqueue(new RetrofitCallback() {
+            @Override
+            public void onResponseData() {
+                UserData.getInstance().removeData();
+            }
+            @Override
+            public void onCallbackFinish() {}
+        });
     }
 
     @Override
@@ -377,19 +392,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 openDrawerProject();
                 break;
             case R.id.txt_logout:
-                RetrofitClient.getRetrofitApi().logout(UserData.getInstance().getUserId()).enqueue(new RetrofitCallback() {
-                    @Override
-                    public void onResponseData() {
-                        UserData.getInstance().removeData();
-                        Intent intent_logout = new Intent(MainActivity.this, LoginActivity.class);
-                        intent_logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent_logout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent_logout);
-                        finish();
-                    }
-                    @Override
-                    public void onCallbackFinish() {}
-                });
+                Intent intentLogout = new Intent(MainActivity.this, LoginActivity.class);
+                intentLogout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intentLogout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intentLogout);
+                finish();
                 break;
             case R.id.btn_update:
                 break;
@@ -736,7 +743,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         resetCheckedMenu(regProjectGrade);
         resetCheckedMenu(regProjectResearch);
         regProjectFacility.clear();
-//        regProjectResearch.clear();
         menuCheckFacilityListAdapter.setList(regProjectFacility);
         menuCheckResearchListAdapter.setList(regProjectResearch);
     }

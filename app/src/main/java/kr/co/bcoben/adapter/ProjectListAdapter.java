@@ -69,7 +69,6 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             view.setSelected(item.isSelected());
             if (item.isSelected()) {
                 activity.setTextGrade(item.getGrade_name());
-                activity.setCurrentProjectId(item.getProject_id());
             }
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -80,13 +79,16 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                         return;
                     }
 
-                    for (ProjectListData.ProjectList data : list) {
-                        data.setSelected(false);
-                    }
-                    item.setSelected(true);
-                    notifyDataSetChanged();
+                    if (!item.isSelected()) {
+                        for (ProjectListData.ProjectList data : list) {
+                            data.setSelected(false);
+                        }
+                        item.setSelected(true);
 
-                    activity.requestProjectDataList();
+                        activity.setCurrentProjectId(item.getProject_id());
+                        activity.requestProjectDataList();
+                        notifyDataSetChanged();
+                    }
                 }
             });
         }

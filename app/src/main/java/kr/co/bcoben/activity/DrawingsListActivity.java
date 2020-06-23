@@ -154,6 +154,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                     @Override
                     public void run() {
                         drawingsListAdapter.setList(planList);
+                        setIsLoading(false);
                     }
                 });
             }
@@ -211,6 +212,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         Intent intent = new Intent(DrawingsListActivity.this, DrawingsActivity.class);
         intent.putParcelableArrayListExtra("plan_list", (ArrayList<? extends Parcelable>) planList);
         intent.putExtra("plan_index", index);
+        intent.putExtra("research_id", researchId);
 //        intent.putStringArrayListExtra("category_list", (ArrayList<String>) listCategory);
 //        intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) listArchitecture);
 //        intent.putStringArrayListExtra("research_list", (ArrayList<String>) listResearch);

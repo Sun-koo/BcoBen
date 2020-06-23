@@ -2,10 +2,7 @@ package kr.co.bcoben.service.retrofit;
 
 import android.util.Log;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.model.ResponseData;
@@ -29,6 +26,7 @@ public abstract class RetrofitCallback implements Callback<ResponseData> {
             if (response.body().isResult()) {
                 onResponseData();
             } else {
+                onCallbackFinish();
                 showErrorMsg(response.body().getError());
             }
         } else {
@@ -41,11 +39,13 @@ public abstract class RetrofitCallback implements Callback<ResponseData> {
                     }
                 } catch (Exception e) {}
             }
+            onCallbackFinish();
         }
     }
 
     @Override
     public void onFailure(Call<ResponseData> call, Throwable t) {
         showToast(R.string.toast_error_server);
+        onCallbackFinish();
     }
 }

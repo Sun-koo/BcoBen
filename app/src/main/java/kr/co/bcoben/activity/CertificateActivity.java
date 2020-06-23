@@ -65,6 +65,7 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                 RetrofitClient.getRetrofitApi().sendAuth(UserData.getInstance().getUserId(), "login").enqueue(new RetrofitCallbackModel<LoginData>() {
                     @Override
                     public void onResponseData(LoginData data) {
+                        setIsLoading(false);
                         dataBinding.editCertificateNumber.setText(data.getAuth_no());
 
                         showToast(R.string.toast_send_number);
