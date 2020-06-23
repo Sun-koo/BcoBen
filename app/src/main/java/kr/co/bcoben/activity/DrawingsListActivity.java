@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -16,6 +17,7 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
+import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.ResearchRegData;
 import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.util.FTPConnectUtil;
@@ -30,8 +32,15 @@ import static kr.co.bcoben.util.CommonUtil.showToast;
 public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBinding> implements View.OnClickListener {
 
     static boolean isHomeReturn = false;
-    private List<String> listCategory, listArchitecture, listResearch, listFacility;
-    private String category, architecture, research, facility;
+    private ResearchSpinnerData.ResearchSelectData researchSelectData;
+    private List<MenuCheckData> newFacCateList = new ArrayList<>();
+    private List<MenuCheckData> newArchList = new ArrayList<>();
+    private List<MenuCheckData> newResearchList = new ArrayList<>();
+    private List<ResearchRegData.FacilityData.FacCateData> facCateDataList = new ArrayList<>();
+    private List<ResearchRegData.FacilityData.FacCateData.ArchitectureData> archDataList = new ArrayList<>();
+    private List<ResearchRegData.ResearchData> researchDataList = new ArrayList<>();
+    private List<String> listFacCate, listArchitecture, listResearch, listFacility;
+    private String facCate, architecture, research, facility;
     private int researchId = -1;
 
     private DrawingsListAdapter drawingsListAdapter;
@@ -53,16 +62,14 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 //        research = getIntent().getStringExtra("research");
 //        facility = getIntent().getStringExtra("facility");
 
-        dataBinding.spnCategory.setEnabled(false);
-        dataBinding.spnArchitecture.setEnabled(false);
-//        initSpinner(dataBinding.spnCategory, listCategory, category);
-//        initSpinner(dataBinding.spnArchitecture, listArchitecture, architecture);
-//        initSpinner(dataBinding.spnResearch, listResearch, research);
+//        dataBinding.spnCategory.setEnabled(false);
+//        dataBinding.spnArchitecture.setEnabled(false);
 
         drawingsListAdapter = new DrawingsListAdapter(DrawingsListActivity.this, planList);
         dataBinding.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
         dataBinding.recyclerDrawings.setAdapter(drawingsListAdapter);
 
+        requestSpinnerData();
         requestDrawingsList();
     }
 
@@ -95,16 +102,109 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         }
     }
 
-    private void initSpinner(AppCompatSpinner spinner, List<String> list, String selectData) {
-        spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, list));
+    private void initResearchSpinner() {
+        List<String> titleList = new ArrayList<>();
+        for (MenuCheckData data : newResearchList) {
+            titleList.add(data.getItem_name());
+        }
 
-        for (int i = 0; i < list.size(); i++) {
-            String cate = list.get(i);
-            if (cate.equals(selectData)) {
-                spinner.setSelection(i);
-                break;
+        dataBinding.spnResearch.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
+
+        for (int i = 0; i < newResearchList.size(); i++) {
+            if (newResearchList.get(i).isChecked()) {
+                dataBinding.spnResearch.setSelection(i);
             }
         }
+        dataBinding.spnResearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for (MenuCheckData data : newResearchList) {
+                    data.setChecked(false);
+                }
+                newResearchList.get(position).setChecked(true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void initFacCateSpinner() {
+        List<String> titleList = new ArrayList<>();
+        for (MenuCheckData data : newFacCateList) {
+            titleList.add(data.getItem_name());
+        }
+
+        dataBinding.spnCategory.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
+        for (int i = 0; i < newFacCateList.size(); i++) {
+            if (newFacCateList.get(i).isChecked()) {
+                dataBinding.spnCategory.setSelection(i);
+            }
+        }
+        dataBinding.spnCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for (MenuCheckData data : newFacCateList) {
+                    data.setChecked(false);
+                }
+                newFacCateList.get(position).setChecked(true);
+                setArchData();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+    private void initArchitectureSpinner() {
+        List<String> titleList = new ArrayList<>();
+        for (MenuCheckData data : newArchList) {
+            titleList.add(data.getItem_name());
+        }
+
+        dataBinding.spnArchitecture.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
+        for (int i = 0; i < newArchList.size(); i++) {
+            if (newArchList.get(i).isChecked()) {
+                dataBinding.spnArchitecture.setSelection(i);
+            }
+        }
+        dataBinding.spnArchitecture.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for (MenuCheckData data : newArchList) {
+                    data.setChecked(false);
+                }
+                newArchList.get(position).setChecked(true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setArchData() {
+        newArchList.clear();
+        int position = 0;
+        for (int i = 0; i < newFacCateList.size(); i++) {
+            if (newFacCateList.get(i).isChecked()) {
+                position = i;
+            }
+        }
+        for (MenuCheckData architectureData : facCateDataList.get(position).getArchitectureList()) {
+            if (architectureData.getItem_id() == researchSelectData.getStructure_id()) {
+                MenuCheckData menuCheckData = new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name());
+                menuCheckData.setChecked(true);
+                newArchList.add(menuCheckData);
+            } else {
+                newArchList.add(new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name()));
+            }
+        }
+        initArchitectureSpinner();
     }
 
     private void requestDrawingsList() {
@@ -140,17 +240,45 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     }
 
     private void requestSpinnerData() {
+        if (researchId == -1) {
+            researchId = getIntent().getIntExtra("research_id", 0);
+            if (researchId == 0) {
+                showToast(R.string.toast_error_invalidate);
+                finish();
+            }
+        }
         setIsLoading(true);
         RetrofitClient.getRetrofitApi().researchData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<ResearchSpinnerData>() {
             @Override
             public void onResponseData(ResearchSpinnerData data) {
-                data.getResearch_data().getFacility_id();
-                data.getResearch_data().getFac_cate_id();
-                data.getResearch_data().getStructure_id();
-                data.getResearch_data().getResearch_type_id();
-//                for (ResearchRegData.FacilityData.FacCateData facData : data.getProject_fac_data().getFac_cate_list()) {
-//                    facData
-//                }
+                researchSelectData = data.getResearch_data();
+                researchDataList = data.getProject_fac_data().getResearch_list();
+                facCateDataList = data.getProject_fac_data().getFac_cate_list();
+
+                for (ResearchRegData.ResearchData researchData : researchDataList) {
+                    if (researchData.getItem_id() == researchSelectData.getResearch_type_id()) {
+                        MenuCheckData menuCheckData = new MenuCheckData(researchData.getItem_id(), researchData.getItem_name());
+                        menuCheckData.setChecked(true);
+                        newResearchList.add(menuCheckData);
+                    } else {
+                        newResearchList.add(new MenuCheckData(researchData.getItem_id(), researchData.getItem_name()));
+                    }
+                }
+                initResearchSpinner();
+
+                newFacCateList.clear();
+                for (ResearchRegData.FacilityData.FacCateData facData : facCateDataList) {
+                    if (facData.getItem_id() == researchSelectData.getFac_cate_id()) {
+                        MenuCheckData menuCheckData = new MenuCheckData(facData.getItem_id(), facData.getItem_name());
+                        menuCheckData.setChecked(true);
+                        newFacCateList.add(menuCheckData);
+                    } else {
+                        newFacCateList.add(new MenuCheckData(facData.getItem_id(), facData.getItem_name()));
+                    }
+                }
+                initFacCateSpinner();
+
+                setArchData();
             }
 
             @Override

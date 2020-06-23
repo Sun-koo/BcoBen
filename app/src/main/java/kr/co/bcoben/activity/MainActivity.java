@@ -731,6 +731,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         regProjectFacility.clear();
         menuCheckFacilityListAdapter.setList(regProjectFacility);
         menuCheckResearchListAdapter.setList(regProjectResearch);
+        treeViewAdapter.collapseAll();
     }
     private void resetCheckedMenu(List<MenuCheckData> list) {
         for (MenuCheckData data : list) {
