@@ -85,6 +85,8 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                     }
                     item.setSelected(true);
                     notifyDataSetChanged();
+
+                    activity.requestProjectDataList();
                 }
             });
         }

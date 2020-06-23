@@ -56,6 +56,7 @@
                 android:inputType="number"
                 android:hint="@string/side_menu_hint_count"
                 android:enabled="false"
+                android:imeOptions="actionDone"
                 android:alpha="0.38"
                 android:textColorHint="@color/colorHintGray"
                 android:textSize="16dp"

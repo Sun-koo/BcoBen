@@ -124,6 +124,7 @@
     <string name="toast_input_select_facility_category">시설물 분류를 선택해주세요</string>
     <string name="toast_input_select_architecture">구조형식을 선택해주세요</string>
     <string name="toast_input_select_research">조사종류를 선택해주세요</string>
+    <string name="toast_input_select_drawings">도면을 등록해주세요</string>
     <string name="toast_input_select_research_count">목표 개소를 선택해주세요</string>
 
     <!--도면 리스트 화면-->

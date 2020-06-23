@@ -162,6 +162,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         dataBinding.txtVersion.setText(getAppVersion());
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
+
+        requestRegProjectCheckData();
     }
 
     @Override
@@ -175,7 +177,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             finish();
         }
         requestProjectList();
-        requestRegProjectCheckData();
+//        requestRegProjectCheckData();
     }
 
     @Override
@@ -215,9 +217,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             // side menu(project)
             case R.id.btn_input_project_cancel:
                 closeDrawer();
+                break;
             case R.id.btn_input_project:
                 String projectName = dataBinding.mainDrawer.layoutRegProject.txtSummaryName.getText().toString();
-                String[] projectDateArr = (dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.getText().toString()).split(" ~ ");
+                String projectDate = dataBinding.mainDrawer.layoutRegProject.txtSummaryDate.getText().toString();
+
+                if (projectName.isEmpty()) {
+                    showToast(R.string.toast_input_project_name);
+                    return;
+                }
+                String[] projectDateArr = projectDate.split(" ~ ");
                 String startDate = projectDateArr[0];
                 String endDate = projectDateArr[1];
                 // 진단등급 등록번호
@@ -227,10 +236,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         gradeId = data.getItem_id();
                     }
                 }
+                if (gradeId == 0) {
+                    showToast(R.string.toast_input_select_grade);
+                    return;
+                }
                 // 시설물 등록번호 리스트
                 List<List<Integer>> facilityList = new ArrayList<>();
                 for (MenuSelectFacilityData data : regProjectFacility) {
                     facilityList.add(data.getIdList());
+                }
+                if (facilityList.isEmpty()) {
+                    showToast(R.string.toast_input_select_facility);
+                    return;
                 }
                 // 조사종류 리스트
                 final List<List<Integer>> researchList = new ArrayList<>();
@@ -243,6 +260,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         researchList.add(list);
                     }
                 }
+                if (researchList.isEmpty()) {
+                    showToast(R.string.toast_input_select_research);
+                    return;
+                }
                 // 도면 이미지 리스트
                 List<Integer> idList = new ArrayList<>();
                 for (MenuDrawingsData data1 : regDrawingsList) {
@@ -250,7 +271,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         idList.add(data1.getFacilityId());
                     }
                 }
-
+                if (idList.isEmpty()) {
+                    showToast(R.string.toast_input_select_drawings);
+                    return;
+                }
                 List<MultipartBody.Part> requestBodyList = new ArrayList<>();
                 for (int id : idList) {
 
@@ -299,14 +323,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                             if (projectListData.isSelected()) {
                                 existSelected = true;
                                 dataBinding.mainDrawer.mainContents.txtSubTitle.setText("(" + projectListData.getGrade_name() + ")");
+                                setCurrentProjectId(projectListData.getProject_id());
                             }
                         }
                         if (!existSelected) {
                             list.get(0).setSelected(true);
                             dataBinding.mainDrawer.mainContents.txtSubTitle.setText("(" + list.get(0).getGrade_name() + ")");
+                            setCurrentProjectId(projectList.get(0).getProject_id());
                         }
                         projectList = list;
                         projectListAdapter.setList(projectList);
+                        requestProjectDataList();
                     }
                     @Override
                     public void onCallbackFinish() { setIsLoading(false); }
@@ -706,10 +733,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectStartDate.setText("");
         dataBinding.mainDrawer.layoutRegProject.layoutSummaryInput.editProjectEndDate.setText("");
 
+        resetCheckedMenu(regProjectGrade);
+        resetCheckedMenu(regProjectResearch);
         regProjectFacility.clear();
-        regProjectResearch.clear();
+//        regProjectResearch.clear();
         menuCheckFacilityListAdapter.setList(regProjectFacility);
         menuCheckResearchListAdapter.setList(regProjectResearch);
+    }
+
+    private void resetCheckedMenu(List<MenuCheckData> list) {
+        for (MenuCheckData data : list) {
+            data.setChecked(false);
+        }
     }
 
     private void updateStepProjectMenuUI(ProjectStep step) {
