@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +38,11 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
     private List<MenuCheckData> newArchList = new ArrayList<>();
     private List<MenuCheckData> newResearchList = new ArrayList<>();
     private List<ResearchRegData.FacilityData.FacCateData> facCateDataList = new ArrayList<>();
-    private List<ResearchRegData.FacilityData.FacCateData.ArchitectureData> archDataList = new ArrayList<>();
     private List<ResearchRegData.ResearchData> researchDataList = new ArrayList<>();
-    private List<String> listFacCate, listArchitecture, listResearch, listFacility;
-    private String facCate, architecture, research, facility;
     private int researchId = -1;
+    private int selectedResearchId = 0;
+    private int selectedFacCateId = 0;
+    private int selectedArchitectureId = 0;
 
     private DrawingsListAdapter drawingsListAdapter;
     private List<PlanDataList.PlanData> planList = new ArrayList<>();
@@ -113,6 +114,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         for (int i = 0; i < newResearchList.size(); i++) {
             if (newResearchList.get(i).isChecked()) {
                 dataBinding.spnResearch.setSelection(i);
+                selectedResearchId = newResearchList.get(i).getItem_id();
             }
         }
         dataBinding.spnResearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -122,6 +124,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                     data.setChecked(false);
                 }
                 newResearchList.get(position).setChecked(true);
+                selectedResearchId = newResearchList.get(position).getItem_id();
             }
 
             @Override
@@ -141,6 +144,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         for (int i = 0; i < newFacCateList.size(); i++) {
             if (newFacCateList.get(i).isChecked()) {
                 dataBinding.spnCategory.setSelection(i);
+                selectedFacCateId = newFacCateList.get(i).getItem_id();
             }
         }
         dataBinding.spnCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -150,7 +154,8 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                     data.setChecked(false);
                 }
                 newFacCateList.get(position).setChecked(true);
-                setArchData();
+                selectedFacCateId = newFacCateList.get(position).getItem_id();
+                setArchitectureData();
             }
 
             @Override
@@ -169,6 +174,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         for (int i = 0; i < newArchList.size(); i++) {
             if (newArchList.get(i).isChecked()) {
                 dataBinding.spnArchitecture.setSelection(i);
+                selectedArchitectureId = newArchList.get(i).getItem_id();
             }
         }
         dataBinding.spnArchitecture.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -178,6 +184,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                     data.setChecked(false);
                 }
                 newArchList.get(position).setChecked(true);
+                selectedArchitectureId = newArchList.get(position).getItem_id();
             }
 
             @Override
@@ -187,7 +194,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         });
     }
 
-    private void setArchData() {
+    private void setArchitectureData() {
         newArchList.clear();
         int position = 0;
         for (int i = 0; i < newFacCateList.size(); i++) {
@@ -277,8 +284,6 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                     }
                 }
                 initFacCateSpinner();
-
-                setArchData();
             }
 
             @Override
@@ -364,14 +369,13 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         intent.putParcelableArrayListExtra("plan_list", (ArrayList<? extends Parcelable>) planList);
         intent.putExtra("plan_index", index);
         intent.putExtra("research_id", researchId);
-//        intent.putStringArrayListExtra("category_list", (ArrayList<String>) listCategory);
-//        intent.putStringArrayListExtra("architecture_list", (ArrayList<String>) listArchitecture);
-//        intent.putStringArrayListExtra("research_list", (ArrayList<String>) listResearch);
-//        intent.putStringArrayListExtra("facility_list", (ArrayList<String>) listFacility);
-//        intent.putExtra("category", category);
-//        intent.putExtra("architecture", architecture);
-//        intent.putExtra("research", research);
-//        intent.putExtra("facility", facility);
+        intent.putExtra("project_id", researchSelectData.getProject_id());
+        intent.putExtra("facility_id", researchSelectData.getFacility_id());
+        intent.putExtra("fac_cate_id", selectedFacCateId);
+        intent.putExtra("architecture_id", selectedArchitectureId);
+        intent.putExtra("research_type_id", selectedResearchId);
+        intent.putExtra("fac_cate_list", (Serializable) facCateDataList);
+        intent.putExtra("research_list", (Serializable) researchDataList);
         startActivity(intent);
     }
 }

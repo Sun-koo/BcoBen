@@ -40,17 +40,26 @@
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/btn_input"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="5dp"
-            android:text="@string/drawings_select_dialog_input"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="16dp"
-            android:background="@drawable/btn_round_pink"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/drawings_select_dialog_content"
+            android:textColor="@color/colorTextDialogContent"
+            android:textSize="12dp"/>
+
+<!--        <Button-->
+<!--            android:id="@+id/btn_input"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="36dp"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:layout_marginEnd="32dp"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/drawings_select_dialog_input"-->
+<!--            android:textColor="@color/colorTextPrimary"-->
+<!--            android:textSize="16dp"-->
+<!--            android:background="@drawable/btn_round_pink"/>-->
 
         <Button
             android:id="@+id/btn_reset_input"

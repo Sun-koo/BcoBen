@@ -40,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +58,17 @@ import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
+import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.RecordData;
+import kr.co.bcoben.model.ResearchCheckData;
+import kr.co.bcoben.model.ResearchRegData;
+import kr.co.bcoben.model.ResearchSpinnerData;
+import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
+import kr.co.bcoben.util.SharedPrefUtil;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
@@ -93,6 +102,19 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // spinner
     private List<PlanDataList.PlanData> planList;
+    private List<String> planNameList = new ArrayList<>();
+    private List<ResearchRegData.FacilityData.FacCateData> facCateDataList = new ArrayList<>();
+    private List<ResearchRegData.ResearchData> researchDataList = new ArrayList<>();
+    private ResearchSpinnerData.ResearchSelectData researchSelectData;
+    private List<MenuCheckData> newFacCateList = new ArrayList<>();
+    private List<MenuCheckData> newArchList = new ArrayList<>();
+    private List<MenuCheckData> newResearchList = new ArrayList<>();
+    private int projectId;
+    private int facilityId;
+    private int selectedFacCateId;
+    private int selectedArchitectureId;
+    private int selectedResearchId;
+    private boolean isFirst = true;
 
     // table
     private TableListAdapter tableListAdapter;
@@ -112,6 +134,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // Dummy Data
     private String[] inputDataArray = {"부풀음", "점부식", "박리", "백악화", "직접입력", ""};
+    private String[] inputSizeDataArray = {"폭", "단차", "두께", "길이", "기타", ""};
     private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1700}, {500, 1200}, {2300, 1400}};
     private DrawingType[] pinTypeArray = {DrawingType.NORMAL, DrawingType.NORMAL, DrawingType.IMAGE, DrawingType.VOICE, DrawingType.VOICE, DrawingType.MEMO};
     private String[] urlArray = {
@@ -131,8 +154,22 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         researchId = getIntent().getIntExtra("research_id", 0);
         int planIndex = getIntent().getIntExtra("plan_index", 0);
         planFile = planList.get(planIndex).getPlan_img_file();
+        planId = planList.get(planIndex).getPlan_id();
 
-        initTopSpinner();
+        initPlanNameSpinner();
+
+        projectId = getIntent().getIntExtra("project_id", 0);
+        facilityId = getIntent().getIntExtra("facility_id", 0);
+        selectedFacCateId = getIntent().getIntExtra("fac_cate_id", 0);
+        selectedArchitectureId = getIntent().getIntExtra("architecture_id", 0);
+        selectedResearchId = getIntent().getIntExtra("research_type_id", 0);
+        Serializable serialFacCate = getIntent().getSerializableExtra("fac_cate_list");
+        Serializable serialResearch = getIntent().getSerializableExtra("research_list");
+        facCateDataList = (List<ResearchRegData.FacilityData.FacCateData>) serialFacCate;
+        researchDataList = (List<ResearchRegData.ResearchData>) serialResearch;
+
+        requestResearchCheckData();
+
         initDrawing();
         initInputPopup();
 
@@ -186,30 +223,161 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         stopAudio();
     }
 
-    private void initTopSpinner() {
-//        List<String> categoryList = getIntent().getStringArrayListExtra("category_list");
-//        List<String> architectureList = getIntent().getStringArrayListExtra("architecture_list");
-//        List<String> researchList = getIntent().getStringArrayListExtra("research_list");
-//        List<String> facilityList = getIntent().getStringArrayListExtra("facility_list");
-//        String category = getIntent().getStringExtra("category");
-//        String architecture = getIntent().getStringExtra("architecture");
-//        String research = getIntent().getStringExtra("research");
-//        String facility = getIntent().getStringExtra("facility");
-
-
-//        dataBinding.spnCategory.setEnabled(false);
-//        dataBinding.spnArchitecture.setEnabled(false);
-//        setSpinnerData(dataBinding.spnCategory, categoryList, category);
-//        setSpinnerData(dataBinding.spnArchitecture, architectureList, architecture);
-//        setSpinnerData(dataBinding.spnResearch, researchList, research);
-//        setSpinnerData(dataBinding.spnFacility, facilityList, facility);
-    }
-    private void setSpinnerData(AppCompatSpinner spinner, List<String> list, String selectData) {
-        spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, list));
-        int selectIndex = list.indexOf(selectData);
-        if (selectIndex > -1) {
-            spinner.setSelection(selectIndex);
+    private void initPlanNameSpinner() {
+        List<String> nameList = new ArrayList<>();
+        for (PlanDataList.PlanData data : planList) {
+            if (SharedPrefUtil.getBoolean(data.getPlan_img_file(), false)) {
+                nameList.add(data.getPlan_name());
+            }
         }
+
+        dataBinding.spnPlan.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, nameList));
+
+        for (int i = 0; i < planList.size(); i++) {
+            if (planList.get(i).getPlan_id() == planId) {
+                dataBinding.spnPlan.setSelection(i);
+            }
+        }
+        dataBinding.spnPlan.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                planId = planList.get(position).getPlan_id();
+                if (!isFirst) {
+                    changeDrawingsImage(position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void changeDrawingsImage(int index) {
+        planFile = planList.get(index).getPlan_img_file();
+        initDrawing();
+    }
+
+    private void initResearchSpinner() {
+        List<String> titleList = new ArrayList<>();
+        for (MenuCheckData data : newResearchList) {
+            titleList.add(data.getItem_name());
+        }
+
+        dataBinding.spnResearch.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
+
+        for (int i = 0; i < newResearchList.size(); i++) {
+            if (newResearchList.get(i).isChecked()) {
+                dataBinding.spnResearch.setSelection(i);
+                selectedResearchId = newResearchList.get(i).getItem_id();
+            }
+        }
+        dataBinding.spnResearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for (MenuCheckData data : newResearchList) {
+                    data.setChecked(false);
+                }
+                newResearchList.get(position).setChecked(true);
+                selectedResearchId = newResearchList.get(position).getItem_id();
+                if (!isFirst) {
+                    showDrawingsSelectDialog();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void initFacCateSpinner() {
+        List<String> titleList = new ArrayList<>();
+        for (MenuCheckData data : newFacCateList) {
+            titleList.add(data.getItem_name());
+        }
+
+        dataBinding.spnCategory.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
+        for (int i = 0; i < newFacCateList.size(); i++) {
+            if (newFacCateList.get(i).isChecked()) {
+                dataBinding.spnCategory.setSelection(i);
+                selectedFacCateId = newFacCateList.get(i).getItem_id();
+            }
+        }
+        dataBinding.spnCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for (MenuCheckData data : newFacCateList) {
+                    data.setChecked(false);
+                }
+                newFacCateList.get(position).setChecked(true);
+                selectedFacCateId = newFacCateList.get(position).getItem_id();
+                setArchitectureData();
+                if (!isFirst) {
+                    showDrawingsSelectDialog();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+    private void initArchitectureSpinner() {
+        List<String> titleList = new ArrayList<>();
+        for (MenuCheckData data : newArchList) {
+            titleList.add(data.getItem_name());
+        }
+
+        dataBinding.spnArchitecture.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
+        for (int i = 0; i < newArchList.size(); i++) {
+            if (newArchList.get(i).isChecked()) {
+                dataBinding.spnArchitecture.setSelection(i);
+                selectedArchitectureId = newArchList.get(i).getItem_id();
+            }
+        }
+        dataBinding.spnArchitecture.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for (MenuCheckData data : newArchList) {
+                    data.setChecked(false);
+                }
+                newArchList.get(position).setChecked(true);
+                selectedArchitectureId = newArchList.get(position).getItem_id();
+                if (!isFirst) {
+                    showDrawingsSelectDialog();
+                }
+                isFirst = false;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setArchitectureData() {
+        newArchList.clear();
+        int position = 0;
+        for (int i = 0; i < newFacCateList.size(); i++) {
+            if (newFacCateList.get(i).isChecked()) {
+                position = i;
+            }
+        }
+        for (MenuCheckData architectureData : facCateDataList.get(position).getArchitectureList()) {
+            if (architectureData.getItem_id() == researchSelectData.getStructure_id()) {
+                MenuCheckData menuCheckData = new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name());
+                menuCheckData.setChecked(true);
+                newArchList.add(menuCheckData);
+            } else {
+                newArchList.add(new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name()));
+            }
+        }
+        initArchitectureSpinner();
     }
 
     // 도면 이미지 Initialize
@@ -308,11 +476,17 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
         dataBinding.researchPopup.inputView.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
         dataBinding.researchPopup.inputView.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.inputView.spnLength.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputSizeDataArray));
+        dataBinding.researchPopup.inputView.spnWidth.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputSizeDataArray));
+        dataBinding.researchPopup.inputView.spnHeight.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputSizeDataArray));
 
         setSpinnerListener(dataBinding.researchPopup.inputView.spnMaterial, dataBinding.researchPopup.inputView.editMaterial, dataBinding.researchPopup.inputView.txtMaterial);
         setSpinnerListener(dataBinding.researchPopup.inputView.spnDirection, dataBinding.researchPopup.inputView.editDirection, dataBinding.researchPopup.inputView.txtDirection);
         setSpinnerListener(dataBinding.researchPopup.inputView.spnDefect, dataBinding.researchPopup.inputView.editDefect, dataBinding.researchPopup.inputView.txtDefect);
         setSpinnerListener(dataBinding.researchPopup.inputView.spnArchitecture, dataBinding.researchPopup.inputView.editArchitecture, dataBinding.researchPopup.inputView.txtArchitecture);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnLength, dataBinding.researchPopup.inputView.editLength, dataBinding.researchPopup.inputView.txtLength);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnWidth, dataBinding.researchPopup.inputView.editWidth, dataBinding.researchPopup.inputView.txtWidth);
+        setSpinnerListener(dataBinding.researchPopup.inputView.spnHeight, dataBinding.researchPopup.inputView.editHeight, dataBinding.researchPopup.inputView.txtHeight);
 
         View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
             @Override
@@ -599,10 +773,50 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.layout_direction: dataBinding.researchPopup.inputView.spnDirection.performClick(); break;
             case R.id.layout_defect: dataBinding.researchPopup.inputView.spnDefect.performClick(); break;
             case R.id.layout_architecture: dataBinding.researchPopup.inputView.spnArchitecture.performClick(); break;
-            case R.id.layout_length: showKeyboard(this, dataBinding.researchPopup.inputView.editLength); break;
-            case R.id.layout_width: showKeyboard(this, dataBinding.researchPopup.inputView.editWidth); break;
-            case R.id.layout_height: showKeyboard(this, dataBinding.researchPopup.inputView.editHeight); break;
             case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.inputView.editCount); break;
+
+            case R.id.layout_length_select:
+                dataBinding.researchPopup.inputView.spnLength.performClick();
+                dataBinding.researchPopup.inputView.layoutLength.setSelected(true);
+                break;
+            case R.id.layout_length_input:
+                dataBinding.researchPopup.inputView.layoutLength.setSelected(true);
+                String length = dataBinding.researchPopup.inputView.txtLength.getText().toString();
+                if (length.isEmpty()) {
+                    dataBinding.researchPopup.inputView.spnLength.performClick();
+                } else {
+                    showKeyboard(this, dataBinding.researchPopup.inputView.editLengthInput);
+                }
+                break;
+
+            case R.id.layout_width_select:
+                dataBinding.researchPopup.inputView.spnWidth.performClick();
+                dataBinding.researchPopup.inputView.layoutWidth.setSelected(true);
+                break;
+            case R.id.layout_width_input:
+                dataBinding.researchPopup.inputView.layoutWidth.setSelected(true);
+                String width = dataBinding.researchPopup.inputView.txtWidth.getText().toString();
+                if (width.isEmpty()) {
+                    dataBinding.researchPopup.inputView.spnWidth.performClick();
+                } else {
+                    showKeyboard(this, dataBinding.researchPopup.inputView.editWidthInput);
+                }
+                break;
+
+            case R.id.layout_height_select:
+                dataBinding.researchPopup.inputView.spnHeight.performClick();
+                dataBinding.researchPopup.inputView.layoutHeight.setSelected(true);
+                break;
+            case R.id.layout_height_input:
+                dataBinding.researchPopup.inputView.layoutHeight.setSelected(true);
+                String height = dataBinding.researchPopup.inputView.txtHeight.getText().toString();
+                if (height.isEmpty()) {
+                    dataBinding.researchPopup.inputView.spnHeight.performClick();
+                } else {
+                    showKeyboard(this, dataBinding.researchPopup.inputView.editHeightInput);
+                }
+                break;
+
             case R.id.layout_picture_register:
                 if (requestPermission(this, IMAGE_PERMISSION, IMAGE_PERMISSION_CODE)) {
                     getFileChooserImage(this);
@@ -687,12 +901,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     // 도면 선택 다이얼로그 출력
     private void showDrawingsSelectDialog() {
         final DrawingsSelectDialog dialog = new DrawingsSelectDialog(this);
-        dialog.selectInputListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+//        dialog.selectInputListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dialog.dismiss();
+//            }
+//        });
         dialog.selectResetInputListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -706,6 +920,46 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             }
         });
         dialog.show();
+    }
+
+    // 조사내용 데이터 확인 API 호출
+    private void requestResearchCheckData() {
+        setIsLoading(true);
+        RetrofitClient.getRetrofitApi().researchCheckData(UserData.getInstance().getUserId(), researchId, projectId, facilityId, selectedFacCateId, selectedArchitectureId, selectedResearchId).enqueue(new RetrofitCallbackModel<ResearchCheckData>() {
+            @Override
+            public void onResponseData(ResearchCheckData data) {
+                researchSelectData = data.getResearch_data();
+
+                for (ResearchRegData.ResearchData researchData : researchDataList) {
+                    if (researchData.getItem_id() == researchSelectData.getResearch_type_id()) {
+                        MenuCheckData menuCheckData = new MenuCheckData(researchData.getItem_id(), researchData.getItem_name());
+                        menuCheckData.setChecked(true);
+                        newResearchList.add(menuCheckData);
+                    } else {
+                        newResearchList.add(new MenuCheckData(researchData.getItem_id(), researchData.getItem_name()));
+                    }
+                }
+                initResearchSpinner();
+
+                newFacCateList.clear();
+                for (ResearchRegData.FacilityData.FacCateData facData : facCateDataList) {
+                    if (facData.getItem_id() == researchSelectData.getFac_cate_id()) {
+                        MenuCheckData menuCheckData = new MenuCheckData(facData.getItem_id(), facData.getItem_name());
+                        menuCheckData.setChecked(true);
+                        newFacCateList.add(menuCheckData);
+                    } else {
+                        newFacCateList.add(new MenuCheckData(facData.getItem_id(), facData.getItem_name()));
+                    }
+                }
+                initFacCateSpinner();
+                setIsLoading(false);
+            }
+
+            @Override
+            public void onCallbackFinish() {
+                setIsLoading(false);
+            }
+        });
     }
 
     //TODO request table data list api

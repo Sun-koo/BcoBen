@@ -8,6 +8,7 @@ import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ProjectResearchList;
+import kr.co.bcoben.model.ResearchCheckData;
 import kr.co.bcoben.model.ResearchIdData;
 import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.model.ResponseData;
@@ -83,4 +84,8 @@ public interface RetrofitApi {
     @FormUrlEncoded
     @POST("/app/research/data")
     Call<ResponseData<ResearchSpinnerData>> researchData (@Field("user_id") int id, @Field("research_id") int researchId);
+
+    @FormUrlEncoded
+    @POST("/app/research/check_data")
+    Call<ResponseData<ResearchCheckData>> researchCheckData(@Field("user_id") int id, @Field("research_id") int researchId, @Field("project_id") int projectId, @Field("facility_id") int facilityId, @Field("fac_cate_id") int facCateId, @Field("structure_id") int structureId, @Field("research_type_id") int researchTypeId);
 }

@@ -4,12 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.EditText;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 메인화면 조사항목 리스트 데이터
  */
-public class MenuCheckData {
+public class MenuCheckData implements Serializable {
     private int item_id;
     private String item_name;
     private int tot_count;
