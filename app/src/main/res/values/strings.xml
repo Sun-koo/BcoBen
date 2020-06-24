@@ -143,6 +143,7 @@
     <!--도면 선택 다이얼로그-->
     <string name="drawings_select_dialog_title">도면을 선택하세요</string>
     <string name="drawings_select_dialog_input">현재 도면 내 입력</string>
+    <string name="drawings_select_dialog_content">조사종류를 변경할 경우 도면의 내용을 초기화 후\n입력해야합니다.</string>
     <string name="drawings_select_dialog_reset_input">현재 도면 초기화 후 입력</string>
     <string name="drawings_select_dialog_other_select">다른 도면 선택</string>
 
@@ -167,6 +168,7 @@
     <string name="popup_reg_research_input_defect_content">결함내용</string>
     <string name="popup_reg_research_input_architecture">구조&amp;비구조&amp;마감재</string>
     <string name="popup_reg_research_input_length">길이</string>
+    <string name="popup_reg_research_input_size">- 측정값(mm)</string>
     <string name="popup_reg_research_input_width">가로</string>
     <string name="popup_reg_research_input_height">세로</string>
     <string name="popup_reg_research_input_count">개소</string>
@@ -207,4 +209,7 @@
     <string name="not_found_project_data">프로젝트 정보를 찾을 수 없습니다</string>
     <string name="not_validate_order">프로젝트 정보를 찾을 수 없습니다</string>
     <string name="not_found_user_project">프로젝트의 담당자로 등록 되어있지 않습니다</string>
+    <string name="duplicate_project_name">입력하신 프로젝트명이 중복됩니다</string>
+    <string name="order_error_date">시작일이 종료일보다 앞선 날짜로 선택해주세요</string>
+    <string name="out_of_volume_size">업로드 용량이 부족합니다</string>
 </resources>

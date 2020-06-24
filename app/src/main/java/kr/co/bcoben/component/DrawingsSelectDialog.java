@@ -24,7 +24,7 @@ public class DrawingsSelectDialog extends Dialog {
         setCancelable(false);
 
         btnClose = findViewById(R.id.btn_close);
-        btnInput = findViewById(R.id.btn_input);
+//        btnInput = findViewById(R.id.btn_input);
         btnResetInput = findViewById(R.id.btn_reset_input);
         btnOtherSelect = findViewById(R.id.btn_other_select);
 
@@ -36,9 +36,9 @@ public class DrawingsSelectDialog extends Dialog {
         });
     }
 
-    public void selectInputListener(View.OnClickListener listener) {
-        btnInput.setOnClickListener(listener);
-    }
+//    public void selectInputListener(View.OnClickListener listener) {
+//        btnInput.setOnClickListener(listener);
+//    }
 
     public void selectResetInputListener(View.OnClickListener listener) {
         btnResetInput.setOnClickListener(listener);
