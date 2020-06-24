@@ -36,7 +36,7 @@ public class ResetPwActivity extends BaseActivity<ActivityResetPwBinding> implem
                 String pwConfirm = dataBinding.editPwConfirm.getText().toString();
 
                 if (checkValidInput(pw, pwConfirm)) {
-                    setIsLoading(true);
+                    startLoading();
                     RetrofitClient.getRetrofitApi().updatePassword(UserData.getInstance().getUserId(), pw).enqueue(new RetrofitCallback() {
                         @Override
                         public void onResponseData() {
@@ -45,7 +45,7 @@ public class ResetPwActivity extends BaseActivity<ActivityResetPwBinding> implem
                             finishAffinity();
                         }
                         @Override
-                        public void onCallbackFinish() { setIsLoading(false); }
+                        public void onCallbackFinish() { endLoading(); }
                     });
                 }
                 break;

@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,13 +43,13 @@ import java.util.Map;
 import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.Dir;
+import kr.co.bcoben.adapter.MainResearchRegListAdapter;
 import kr.co.bcoben.adapter.MenuCheckFacilityListAdapter;
 import kr.co.bcoben.adapter.MenuCheckInputListAdapter;
 import kr.co.bcoben.adapter.MenuCheckListAdapter;
 import kr.co.bcoben.adapter.MenuCheckResearchListAdapter;
 import kr.co.bcoben.adapter.MenuDrawingsListAdapter;
 import kr.co.bcoben.adapter.MenuNodeBinder;
-import kr.co.bcoben.adapter.MainResearchRegListAdapter;
 import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
 import kr.co.bcoben.component.BaseActivity;
@@ -105,9 +104,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
     public enum ProjectStep { SUMMARY, GRADE, FACILITY, RESEARCH, DRAWINGS }
-    public enum DatePickerType { START, END }
-
-    // side menu
 
     // 조사등록
     private ResearchStep currentResearchStep = ResearchStep.GRADE;
@@ -356,7 +352,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 RequestBody facilityListBody = RequestBody.create(MediaType.parse("multipart/form-data"), facilityList.toString());
                 RequestBody researchListBody = RequestBody.create(MediaType.parse("multipart/form-data"), researchList.toString());
 
-                setIsLoading(true);
+                startLoading();
                 RetrofitClient.getRetrofitApi().regProject(UserData.getInstance().getUserId(), projectNameBody, startDateBody, endDateBody, gradeId, facilityListBody, researchListBody, requestBodyList).enqueue(new RetrofitCallbackModel<ProjectListData>() {
                     @Override
                     public void onResponseData(ProjectListData data) {
@@ -380,10 +376,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                             }
                         }
                         projectListAdapter.setList(projectList);
-                        setIsLoading(false);
+                        endLoading();
                     }
                     @Override
-                    public void onCallbackFinish() { setIsLoading(false); }
+                    public void onCallbackFinish() { endLoading(); }
                 });
                 break;
             }
@@ -487,7 +483,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 String structureName = dataBinding.mainDrawer.layoutRegResearch.txtArchitecture.getText().toString();
 
                 if (checkValidateResearchRegister(facilityName, facCateName, structureName, selectedResearchName)) {
-                    setIsLoading(true);
+                    startLoading();
                     RetrofitClient.getRetrofitApi()
                             .regResearch(UserData.getInstance().getUserId(), currentProjectId, facilityName, facCateName, structureName, selectedResearchName, selectedResearchCount)
                             .enqueue(new RetrofitCallbackModel<ResearchIdData>() {
@@ -496,7 +492,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                                     goToDrawingsPage(data.getResearch_id());
                                 }
                                 @Override
-                                public void onCallbackFinish() { setIsLoading(false); }
+                                public void onCallbackFinish() { endLoading(); }
                             });
                 }
                 break;
@@ -743,7 +739,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         menuCheckFacilityListAdapter.setList(regProjectFacility);
         menuCheckResearchListAdapter.setList(new ArrayList<MenuCheckData>());
         menuDrawingsListAdapter.setList(regDrawingsList);
-        treeViewAdapter.collapseAll();
     }
     private void resetCheckedMenu(List<MenuCheckData> list) {
         for (MenuCheckData data : list) {
@@ -907,6 +902,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.layoutFacility.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setVisibility(View.VISIBLE);
                 menuCheckFacilityListAdapter.setSelected(true);
+                treeViewAdapter.collapseAll();
+                dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.scrollToPosition(0);
                 break;
             case RESEARCH:
                 dataBinding.mainDrawer.layoutRegProject.layoutResearch.setSelected(true);
@@ -914,6 +911,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.txtInputGuide.setText(R.string.side_menu_please_select_input);
                 menuCheckInputListAdapter.setList(regProjectResearch);
                 menuCheckFacilityListAdapter.setSelected(false);
+                dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
+                dataBinding.mainDrawer.layoutRegProject.recyclerCheckInput.scrollToPosition(0);
                 break;
             case DRAWINGS:
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.removeAllViews();
@@ -934,9 +933,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(true);
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.layoutRoot.setVisibility(View.VISIBLE);
                 menuCheckFacilityListAdapter.setSelected(false);
+                dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
+                dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.recyclerDrawings.scrollToPosition(0);
                 break;
         }
-        dataBinding.mainDrawer.layoutRegResearch.recyclerContent.scrollToPosition(0);
     }
 
     // 프로젝트 등록 다음 버튼 처리
@@ -979,7 +979,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     showToast(R.string.toast_input_select_facility);
                     return;
                 }
-                dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
                 break;
             case RESEARCH:
                 selectedValue = menuCheckInputListAdapter.getSelectedValue();
@@ -997,8 +996,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         }
                     }
                 }
-
-                dataBinding.mainDrawer.layoutRegProject.scrollRegProject.fullScroll(ScrollView.FOCUS_DOWN);
                 break;
         }
 
@@ -1052,7 +1049,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
                 menuCheckResearchListAdapter.setList(selectedList);
 
-                dataBinding.mainDrawer.layoutRegProject.recyclerCheckResearch.setVisibility(View.VISIBLE);
                 dataBinding.mainDrawer.layoutRegProject.txtResearch.setText("-");
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setClickable(true);
                 updateStepProjectMenuUI(ProjectStep.DRAWINGS);
@@ -1068,7 +1064,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     public void onClick(CameraDialog dialog) {
                         dialog.dismiss();
                         isImageIntent = true;
-                        getCameraImage(MainActivity.this);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
+                        String filename = "plan_" + sdf.format(Calendar.getInstance().getTime()) + ".jpg";
+                        getCameraImage(MainActivity.this, filename);
                     }
                 })
                 .setBtnGalleyListener(new CameraDialog.BtnClickListener() {
@@ -1097,7 +1095,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //프로젝트 리스트 조회 API 호출
     private void requestProjectList() {
-        setIsLoading(true);
+        startLoading();
         RetrofitClient.getRetrofitApi().projectList(UserData.getInstance().getUserId()).enqueue(new RetrofitCallbackModel<ProjectListData>() {
             @Override
             public void onResponseData(ProjectListData data) {
@@ -1108,6 +1106,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     dataBinding.mainDrawer.mainContents.layoutTabProjectFacility.setVisibility(View.GONE);
                     dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.GONE);
                     setTextGrade("");
+                    endLoading();
                 } else {
                     dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.VISIBLE);
                     dataBinding.mainDrawer.mainContents.layoutTabProjectFacility.setVisibility(View.VISIBLE);
@@ -1122,7 +1121,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 }
             }
             @Override
-            public void onCallbackFinish() { setIsLoading(false); }
+            public void onCallbackFinish() { endLoading(); }
         });
     }
 
@@ -1139,7 +1138,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //프로젝트 조사 내용 및 조사등록용 데이터 API 호출
     public void requestProjectDataList() {
-        setIsLoading(true);
+        startLoading();
         RetrofitClient.getRetrofitApi().projectData(UserData.getInstance().getUserId(), currentProjectId).enqueue(new RetrofitCallbackModel<ProjectMainData>() {
             @Override
             public void onResponseData(ProjectMainData data) {
@@ -1148,7 +1147,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 projectPageAdapter.setProjectDataList(currentProjectId, projectDataList);
             }
             @Override
-            public void onCallbackFinish() { setIsLoading(false); }
+            public void onCallbackFinish() { endLoading(); }
         });
     }
 

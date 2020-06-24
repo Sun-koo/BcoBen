@@ -115,11 +115,11 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
 
     public void requestResearchList() {
         String order = orderArr[dataBinding.spnResearchOrder.getSelectedItemPosition()];
-        activity.setIsLoading(true);
+        activity.startLoading();
         RetrofitClient.getRetrofitApi().projectResearchList(UserData.getInstance().getUserId(), projectId, projectData.getFacility_id(), order).enqueue(new RetrofitCallbackModel<ProjectResearchList>() {
             @Override
             public void onResponseData(ProjectResearchList data) {
-                activity.setIsLoading(false);
+                activity.endLoading();
                 data.setCount();
                 researchList = data.getResearch_list();
                 adapter.setList(researchList);
@@ -133,7 +133,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
                 dataBinding.layoutResearchInfo.setVisibility(View.VISIBLE);
             }
             @Override
-            public void onCallbackFinish() { activity.setIsLoading(false); }
+            public void onCallbackFinish() { activity.endLoading(); }
         });
     }
 }

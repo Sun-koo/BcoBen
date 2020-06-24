@@ -5,6 +5,8 @@ import java.util.List;
 import kr.co.bcoben.model.LoginData;
 import kr.co.bcoben.model.MenuCheckListData;
 import kr.co.bcoben.model.PlanDataList;
+import kr.co.bcoben.model.PointListData;
+import kr.co.bcoben.model.PointRegisterData;
 import kr.co.bcoben.model.ProjectListData;
 import kr.co.bcoben.model.ProjectMainData;
 import kr.co.bcoben.model.ProjectResearchList;
@@ -83,4 +85,12 @@ public interface RetrofitApi {
     @FormUrlEncoded
     @POST("/app/research/data")
     Call<ResponseData<ResearchSpinnerData>> researchData (@Field("user_id") int id, @Field("research_id") int researchId);
+
+    @FormUrlEncoded
+    @POST("/app/research/point_list")
+    Call<ResponseData<PointListData>> researchPointList(@Field("user_id") int userId, @Field("research_id") int researchId, @Field("plan_id") int planId);
+
+    @FormUrlEncoded
+    @POST("/app/research/point_reg_data")
+    Call<ResponseData<PointRegisterData>> researchPointRegisterData(@Field("user_id") int userId, @Field("research_id") int researchId);
 }

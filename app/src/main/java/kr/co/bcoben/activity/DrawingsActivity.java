@@ -6,12 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,6 +40,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,8 +56,16 @@ import kr.co.bcoben.component.DrawingsSelectDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.DrawingPointData;
 import kr.co.bcoben.model.PlanDataList;
+import kr.co.bcoben.model.PointData;
+import kr.co.bcoben.model.PointListData;
+import kr.co.bcoben.model.PointRegisterData;
+import kr.co.bcoben.model.PointTableData;
 import kr.co.bcoben.model.RecordData;
+import kr.co.bcoben.model.UserData;
+import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
+import kr.co.bcoben.util.FTPConnectUtil;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
@@ -87,7 +93,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private String planFile;
     private float initScale;
     private int currentScale = 2;
-    private List<DrawingPointData> pinList = new ArrayList<>();
+    private List<PointData> pointList = new ArrayList<>();
+    private PointRegisterData pointRegDataList;
     private DrawingPointData regPointData;
     private DrawingPictureListAdapter drawingPictureListAdapter;
 
@@ -96,7 +103,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // table
     private TableListAdapter tableListAdapter;
-    private ArrayList<JSONObject> listTableData;
+    private List<PointTableData> tableDataList = new ArrayList<>();
 
     // popup
     private InputPopupPictureListAdapter inputPopupPictureListAdapter;
@@ -112,13 +119,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // Dummy Data
     private String[] inputDataArray = {"부풀음", "점부식", "박리", "백악화", "직접입력", ""};
-    private int[][] pinPointArray = {{1200, 500}, {1300, 700}, {1000, 1500}, {2000, 1700}, {500, 1200}, {2300, 1400}};
-    private DrawingType[] pinTypeArray = {DrawingType.NORMAL, DrawingType.NORMAL, DrawingType.IMAGE, DrawingType.VOICE, DrawingType.VOICE, DrawingType.MEMO};
-    private String[] urlArray = {
-            "https://cdn.pixabay.com/photo/2019/08/19/10/37/stone-4416019_1280.jpg",
-            "https://cdn.pixabay.com/photo/2013/09/22/19/15/brick-wall-185086_1280.jpg",
-            "https://cdn.pixabay.com/photo/2020/05/22/07/59/girl-5204296_960_720.jpg"
-    };
 
     @Override
     protected int getLayoutResource() {
@@ -127,14 +127,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     @Override
     protected void initView() {
+        startLoading();
+
         planList = getIntent().getParcelableArrayListExtra("plan_list");
         researchId = getIntent().getIntExtra("research_id", 0);
         int planIndex = getIntent().getIntExtra("plan_index", 0);
+        planId = planList.get(planIndex).getPlan_id();
         planFile = planList.get(planIndex).getPlan_img_file();
 
         initTopSpinner();
         initDrawing();
-        initInputPopup();
 
         // 집계표
         dataBinding.checkboxNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -146,11 +148,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
         dataBinding.recyclerTable.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-        listTableData = new ArrayList<>();
-        tableListAdapter = new TableListAdapter(this, listTableData);
+        tableListAdapter = new TableListAdapter(this, tableDataList);
         dataBinding.recyclerTable.setAdapter(tableListAdapter);
 
-        requestTableDataList();
+        requestPointRegisterData();
     }
 
     @Override
@@ -224,7 +225,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     if (index == 0) {   // 새로운 핀 등록
                         regPointData = new DrawingPointData(pin, DrawingType.NORMAL);
                         DecimalFormat df = new DecimalFormat("00");
-                        dataBinding.txtNewPin.setText(df.format(pinList.size() + 1));
+                        dataBinding.txtNewPin.setText(df.format(pointList.size() + 1));
 
                         resetInputPopup();
                         new Handler().postDelayed(new Runnable() {
@@ -241,7 +242,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         showToast(index + "번 Point");
                     } else {    // 핀에 등록된 이미지 클릭
                         index = -(index + 1);
-                        int width = drawingPictureListAdapter.setList(pinList.get(index).getRegImageList());
+                        int width = drawingPictureListAdapter.setList(pointList.get(index).getDrawingPointData().getRegImageList());
 
                         final int i = index;
                         PointF position = dataBinding.imgDrawings.getImagePopupPosition(i, width, dataBinding.layoutPictureListPopup.getHeight());
@@ -280,7 +281,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 super.onReady();
                 initScale = dataBinding.imgDrawings.getMinScale();
                 dataBinding.imgDrawings.setMaxScale(12);
-                requestDrawingPointDataList();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestPointList();
+                    }
+                }, 500);
             }
         });
 
@@ -289,6 +295,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.recyclerPicturePopup.setAdapter(drawingPictureListAdapter);
         dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
     }
+
+    // 도면 사진리스트 팝업 Width 조정
     public int setDrawingPictureListAdapter(int size) {
         ViewGroup.LayoutParams params = dataBinding.layoutPictureListPopup.getLayoutParams();
         if (size == 1) {
@@ -302,12 +310,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         return params.width;
     }
 
+    // 도면 입력 팝업 Initialize
     public void initInputPopup() {
         // 입력 탭
-        dataBinding.researchPopup.inputView.spnMaterial.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
-        dataBinding.researchPopup.inputView.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
-        dataBinding.researchPopup.inputView.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
-        dataBinding.researchPopup.inputView.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputDataArray));
+        dataBinding.researchPopup.inputView.spnMaterial.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getMaterialSpnList()));
+        dataBinding.researchPopup.inputView.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getDirectionSpnList()));
+        dataBinding.researchPopup.inputView.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getDefectSpnList()));
+        dataBinding.researchPopup.inputView.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getArchitectureSpnList()));
 
         setSpinnerListener(dataBinding.researchPopup.inputView.spnMaterial, dataBinding.researchPopup.inputView.editMaterial, dataBinding.researchPopup.inputView.txtMaterial);
         setSpinnerListener(dataBinding.researchPopup.inputView.spnDirection, dataBinding.researchPopup.inputView.editDirection, dataBinding.researchPopup.inputView.txtDirection);
@@ -323,10 +332,19 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 }
             }
         };
+        dataBinding.researchPopup.inputView.editMaterial.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editDirection.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editDefect.setOnFocusChangeListener(focusChangeListener);
+        dataBinding.researchPopup.inputView.editArchitecture.setOnFocusChangeListener(focusChangeListener);
         dataBinding.researchPopup.inputView.editLength.setOnFocusChangeListener(focusChangeListener);
         dataBinding.researchPopup.inputView.editWidth.setOnFocusChangeListener(focusChangeListener);
         dataBinding.researchPopup.inputView.editHeight.setOnFocusChangeListener(focusChangeListener);
         dataBinding.researchPopup.inputView.editCount.setOnFocusChangeListener(focusChangeListener);
+
+        dataBinding.researchPopup.inputView.layoutMaterial.setVisibility(pointRegDataList.getMaterial_list().isEmpty() ? View.GONE : View.VISIBLE);
+        dataBinding.researchPopup.inputView.layoutDirection.setVisibility(pointRegDataList.getDirection_list().isEmpty() ? View.GONE : View.VISIBLE);
+        dataBinding.researchPopup.inputView.layoutDefect.setVisibility(pointRegDataList.getDefect_list().isEmpty() ? View.GONE : View.VISIBLE);
+        dataBinding.researchPopup.inputView.layoutArchitecture.setVisibility(pointRegDataList.getArchitecture_list().isEmpty() ? View.GONE : View.VISIBLE);
 
         // 사진 탭
         inputPopupPictureListAdapter = new InputPopupPictureListAdapter(this, pictureDataList);
@@ -337,41 +355,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         recordListAdapter = new RecordListAdapter(this, recordDataList);
         dataBinding.researchPopup.recordView.recyclerRecord.setAdapter(recordListAdapter);
         dataBinding.researchPopup.recordView.recyclerRecord.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-/*
-        recordThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                byte[] readData = new byte[bufferSize];
-                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.pcm";
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(filePath);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                while (isRecoding) {
-                    int ret = audioRecord.read(readData, 0, bufferSize);
-                    Log.e("aaa", "read bytes is " + ret);
-
-                    try {
-                        fos.write(readData, 0, bufferSize);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                audioRecord.stop();
-                audioRecord.release();
-                audioRecord = null;
-
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });*/
 
         // 메모 탭
         dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
@@ -388,6 +371,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             }
         });
     }
+
+    // 도면 입력 팝업 Spinner 설정
     private void setSpinnerListener(AppCompatSpinner spinner, final EditText editText, final TextView textView) {
         spinner.setSelection(spinner.getCount());
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -399,9 +384,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     editText.setVisibility(View.VISIBLE);
                     textView.setVisibility(View.GONE);
                     showKeyboard(activity, editText);
-                } else {
-                    editText.setText(parent.getSelectedItem().toString());
-                    textView.setText(parent.getSelectedItem().toString());
+                } else if (parent.getSelectedItemPosition() != parent.getCount()) {
+                    editText.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
+                    textView.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
                     editText.setVisibility(View.GONE);
                     textView.setVisibility(View.VISIBLE);
                 }
@@ -410,15 +395,17 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
+
+    // 도면 입력 팝업 초기화
     private void resetInputPopup() {
         setSelectedTab(DrawingType.NORMAL);
 
         // 입력탭
         resetInputPopupContentLayout();
-        dataBinding.researchPopup.inputView.spnMaterial.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
-        dataBinding.researchPopup.inputView.spnDirection.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
-        dataBinding.researchPopup.inputView.spnDefect.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
-        dataBinding.researchPopup.inputView.spnArchitecture.setSelection(dataBinding.researchPopup.inputView.spnMaterial.getCount());
+        dataBinding.researchPopup.inputView.spnMaterial.setSelection(-1);
+        dataBinding.researchPopup.inputView.spnDirection.setSelection(-1);
+        dataBinding.researchPopup.inputView.spnDefect.setSelection(-1);
+        dataBinding.researchPopup.inputView.spnArchitecture.setSelection(-1);
         dataBinding.researchPopup.inputView.editLength.setText("");
         dataBinding.researchPopup.inputView.editWidth.setText("");
         dataBinding.researchPopup.inputView.editHeight.setText("");
@@ -552,12 +539,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.btn_reg:
                 //TODO
                 dataBinding.layoutResearchPopup.setVisibility(View.GONE);
-                dataBinding.imgDrawings.addPin(regPointData);
+//                dataBinding.imgDrawings.addPin(regPointData);
                 break;
 
         }
     }
 
+    // 도면 입력 팝업 상단 탭 클릭 리스너
     public void onInputPopupTabClick(View v) {
         hideKeyboard(this);
         switch (v.getId()) {
@@ -568,6 +556,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.txt_memo_tab: setSelectedTab(DrawingType.MEMO); break;
         }
     }
+
+    // 도면 입력 팝업 상단 탭 이동
     private void setSelectedTab(DrawingType type) {
         dataBinding.researchPopup.txtInputTab.setSelected(false);
         dataBinding.researchPopup.txtPictureTab.setSelected(false);
@@ -708,56 +698,89 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dialog.show();
     }
 
-    //TODO request table data list api
-    private void requestTableDataList() {
-        listTableData.clear();
-
-        for (int i = 0;i < 5;i++) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("number", i + 1);
-                jsonObject.put("legend", "icon");
-                jsonObject.put("content", "균열(수직균열)");
-                jsonObject.put("value", "폭(10)");
-                jsonObject.put("count", 3);
-                listTableData.add(jsonObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
+    // 도면 입력 데이터 리스트
+    private void requestPointList() {
+        RetrofitClient.getRetrofitApi().researchPointList(UserData.getInstance().getUserId(), researchId, planId).enqueue(new RetrofitCallbackModel<PointListData>() {
+            @Override
+            public void onResponseData(PointListData data) {
+                pointList = data.getPoint_list();
+                tableDataList.clear();
+                for (int i = 0; i < pointList.size(); i++) {
+                    PointData point = pointList.get(i);
+                    if (point.getPoint_type() == 1) {
+                        String content = "-";
+                        String measure = "-";
+                        if (point.getMaterial() != null && !point.getMaterial().equals("")) {
+                            content = point.getMaterial();
+                        } else if (point.getDirection() != null && !point.getDirection().equals("")) {
+                            content = point.getDirection();
+                        } else if (point.getDefect() != null && !point.getDefect().equals("")) {
+                            content = point.getDefect();
+                        }
+                        if (point.getLength_unit() != null && !point.getLength_unit().equals("")) {
+                            measure = point.getLength_unit() + "(" + point.getLength() + ")";
+                        } else if (point.getWidth_unit() != null && !point.getWidth_unit().equals("")) {
+                            measure = point.getWidth_unit() + "(" + point.getWidth() + ")";
+                        } else if (point.getHeight_unit() != null && !point.getHeight_unit().equals("")) {
+                            measure = point.getHeight_unit() + "(" + point.getHeight() + ")";
+                        }
+                        tableDataList.add(new PointTableData(i + 1, content, measure, point.getCount()));
+                    }
+                }
+                setImageList(data.getLabel_img());
             }
-        }
-
-        tableListAdapter.setList(listTableData);
-        tableListAdapter.notifyDataSetChanged();
+            @Override
+            public void onCallbackFinish() { endLoading(); }
+        });
     }
 
-    //TODO request table data list api
-    private void requestDrawingPointDataList() {
-//        pinList.clear();
-//        for (int i = 0; i < pinPointArray.length; i++) {
-//            final DrawingPointData data = new DrawingPointData(new PointF(pinPointArray[i][0], pinPointArray[i][1]), pinTypeArray[i]);
-//            if (pinTypeArray[i] == DrawingType.NORMAL || pinTypeArray[i] == DrawingType.IMAGE) {
-//                int count = i % 3 + 1;
-//                final List<String> regUrlList = new ArrayList<>(Arrays.asList(urlArray));
-//                regUrlList.subList(count, regUrlList.size()).clear();
-//
-//                final List<Bitmap> regImageList = new ArrayList<>();
-//                for (String uri : regUrlList) {
-//                    Glide.with(AppApplication.getContext()).asBitmap().load(uri).into(new CustomTarget<Bitmap>() {
-//                        @Override
-//                        public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
-//                            regImageList.add(bitmap);
-//                            if (regImageList.size() == regUrlList.size()) {
-//                                data.setRegImageList(regImageList);
-//                                dataBinding.imgDrawings.invalidate();
-//                            }
-//                        }
-//                        @Override
-//                        public void onLoadCleared(@Nullable Drawable placeholder) {}
-//                    });
-//                }
-//            }
-//            pinList.add(data);
-//        }
-        dataBinding.imgDrawings.setPinList(pinList);
+    private void setImageList(final String labelImg) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!tableDataList.isEmpty() && labelImg != null && !labelImg.equals("")) {
+                    Bitmap bitmap = FTPConnectUtil.getInstance().ftpImageBitmap(labelImg);
+                    for (PointTableData data : tableDataList) {
+                        data.setLabel(bitmap);
+                    }
+                }
+                for (PointData data : pointList) {
+                    if (!data.getPoint_img().isEmpty()) {
+                        List<String> pathList = new ArrayList<>();
+                        for (PointData.PointImg img : data.getPoint_img()) {
+                            pathList.add(img.getImg_url());
+                        }
+                        List<Bitmap> bitmapList = FTPConnectUtil.getInstance().ftpImageBitmap(pathList);
+                        for (int i = 0; i < bitmapList.size(); i++) {
+                            data.getPoint_img().get(i).setImgBitmap(bitmapList.get(i));
+                        }
+                    }
+                    data.setDrawingPointData();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tableListAdapter.setList(tableDataList);
+                        dataBinding.imgDrawings.setPinList(pointList);
+                        endLoading();
+                    }
+                });
+            }
+        }).start();
+    }
+
+    // 도면 입력 등록 팝업 데이터
+    private void requestPointRegisterData() {
+        RetrofitClient.getRetrofitApi().researchPointRegisterData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PointRegisterData>() {
+            @Override
+            public void onResponseData(PointRegisterData data) {
+                data.setSpinnerList();
+                pointRegDataList = data;
+                initInputPopup();
+            }
+            @Override
+            public void onCallbackFinish() {}
+        });
     }
 }

@@ -61,11 +61,10 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send:
-                setIsLoading(true);
+                startLoading();
                 RetrofitClient.getRetrofitApi().sendAuth(UserData.getInstance().getUserId(), "login").enqueue(new RetrofitCallbackModel<LoginData>() {
                     @Override
                     public void onResponseData(LoginData data) {
-                        setIsLoading(false);
                         dataBinding.editCertificateNumber.setText(data.getAuth_no());
                         showToast(R.string.toast_send_number);
 
@@ -73,9 +72,10 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                             authHandler.removeCallbacks(runnable);
                             startAuth();
                         }
+                        endLoading();
                     }
                     @Override
-                    public void onCallbackFinish() { setIsLoading(false); }
+                    public void onCallbackFinish() { endLoading(); }
                 });
                 break;
             case R.id.btn_back:
@@ -85,7 +85,7 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                 String number = dataBinding.editCertificateNumber.getText().toString();
 
                 if (checkValidInput(number)) {
-                    setIsLoading(true);
+                    startLoading();
                     RetrofitClient.getRetrofitApi().checkAuth(UserData.getInstance().getUserId(), "login", number).enqueue(new RetrofitCallback() {
                         @Override
                         public void onResponseData() {
@@ -94,7 +94,7 @@ public class CertificateActivity extends BaseActivity<ActivityCertificateBinding
                             finishAffinity();
                         }
                         @Override
-                        public void onCallbackFinish() { setIsLoading(false); }
+                        public void onCallbackFinish() { endLoading(); }
                     });
                 }
                 break;

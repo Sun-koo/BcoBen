@@ -23,9 +23,7 @@ import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.R;
 
 public class DrawingPointData {
-    public enum DrawingType {
-        NORMAL, IMAGE, VOICE, MEMO
-    }
+    public enum DrawingType { NORMAL, IMAGE, VOICE, MEMO }
     private PointF point;
     private DrawingType type;
     private Bitmap pinImage;
@@ -39,9 +37,6 @@ public class DrawingPointData {
 
     public PointF getPoint() {
         return point;
-    }
-    public void setPoint(PointF point) {
-        this.point = point;
     }
     public DrawingType getType() {
         return type;

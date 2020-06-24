@@ -73,6 +73,25 @@ public class FTPConnectUtil {
         }
     }
 
+    public Bitmap ftpImageBitmap(String path) {
+        Bitmap bitmap = null;
+        if (ftpConnect()) {
+            try {
+                if (path != null && !path.equals("")) {
+                    BufferedInputStream is = new BufferedInputStream(client.retrieveFileStream(path));
+                    bitmap = BitmapFactory.decodeStream(is);
+
+                    is.close();
+                    client.completePendingCommand();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ftpDisconnect();
+        }
+        return bitmap;
+    }
+
     public List<Bitmap> ftpImageBitmap(List<String> pathList) {
         List<Bitmap> bitmapList = new ArrayList<>();
         if (ftpConnect()) {

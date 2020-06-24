@@ -21,8 +21,10 @@ abstract public class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     protected Activity activity;
     private final ObservableBoolean isLoading = new ObservableBoolean(false);
     public ObservableBoolean getIsLoading() { return isLoading; }
-    public void setIsLoading(boolean isLoading) { this.isLoading.set(isLoading); }
-    public void offLoadingDelay() {
+
+    public void startLoading() { isLoading.set(true); }
+    public void endLoading() { isLoading.set(false); }
+    public void endLoadingDelay() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

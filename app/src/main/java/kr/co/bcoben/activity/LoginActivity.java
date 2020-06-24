@@ -96,7 +96,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                 String pw = dataBinding.editPw.getText().toString();
 
                 if (checkValidInput(id, pw)) {
-                    setIsLoading(true);
+                    startLoading();
                     RetrofitClient.getRetrofitApi().userLogin(id, pw, deviceId).enqueue(new RetrofitCallbackModel<LoginData>() {
                         @Override
                         public void onResponseData(LoginData data) {
@@ -109,10 +109,10 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
                             startActivity(intent_login);
                             overridePendingTransition(R.anim.activity_start_in, R.anim.activity_start_out);
 
-                            offLoadingDelay();
+                            endLoadingDelay();
                         }
                         @Override
-                        public void onCallbackFinish() { setIsLoading(false); }
+                        public void onCallbackFinish() { endLoading(); }
                     });
                 }
                 break;

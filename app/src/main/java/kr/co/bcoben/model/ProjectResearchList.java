@@ -16,15 +16,8 @@ public class ProjectResearchList implements DataModel {
     private int tot_count;
     private int reg_count;
 
-    public ProjectResearchList(List<ProjectResearchData> research_list) {
-        this.research_list = research_list;
-    }
-
     public List<ProjectResearchData> getResearch_list() {
         return research_list;
-    }
-    public void setResearch_list(List<ProjectResearchData> research_list) {
-        this.research_list = research_list;
     }
     public int getTot_count() {
         return tot_count;
@@ -49,16 +42,6 @@ public class ProjectResearchList implements DataModel {
         private int tot_count;
         private int reg_count;
         private long update_date;
-
-        public ProjectResearchData(int research_id, String fac_cate_name, String structure_name, String research_name, int tot_count, int reg_count, long update_date) {
-            this.research_id = research_id;
-            this.fac_cate_name = fac_cate_name;
-            this.structure_name = structure_name;
-            this.research_name = research_name;
-            this.tot_count = tot_count;
-            this.reg_count = reg_count;
-            this.update_date = update_date;
-        }
 
         protected ProjectResearchData(Parcel in) {
             research_id = in.readInt();
@@ -85,44 +68,23 @@ public class ProjectResearchList implements DataModel {
         public int getResearch_id() {
             return research_id;
         }
-        public void setResearch_id(int research_id) {
-            this.research_id = research_id;
-        }
         public String getFac_cate_name() {
             return fac_cate_name;
-        }
-        public void setFac_cate_name(String fac_cate_name) {
-            this.fac_cate_name = fac_cate_name;
         }
         public String getStructure_name() {
             return structure_name;
         }
-        public void setStructure_name(String structure_name) {
-            this.structure_name = structure_name;
-        }
         public String getResearch_name() {
             return research_name;
-        }
-        public void setResearch_name(String research_name) {
-            this.research_name = research_name;
         }
         public int getTot_count() {
             return tot_count;
         }
-        public void setTot_count(int tot_count) {
-            this.tot_count = tot_count;
-        }
         public int getReg_count() {
             return reg_count;
         }
-        public void setReg_count(int reg_count) {
-            this.reg_count = reg_count;
-        }
         public long getUpdate_date() {
             return update_date;
-        }
-        public void setUpdate_date(long update_date) {
-            this.update_date = update_date;
         }
 
         @Override

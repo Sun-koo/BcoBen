@@ -197,7 +197,9 @@
     <!--통신 에러-->
     <string name="login_not_found_user_data">아이디, 비밀번호를 확인해주세요</string>
     <string name="not_found_user_data">계정정보가 확인되지 않습니다</string>
+    <string name="login_no_match_device">디바이스에 등록된 계정이 아닙니다</string>
     <string name="no_match_device">디바이스에 등록된 계정이 아닙니다</string>
+    <string name="login_expire_device">디바이스 사용기간이 만료 되었습니다</string>
     <string name="expire_device">디바이스 사용기간이 만료 되었습니다</string>
     <string name="no_match_auth_no">인증번호가 일치하지 않습니다</string>
     <string name="not_validate_user_id">통신 중 에러가 발생했습니다.\n잠시 후 다시 시도해주세요.</string>

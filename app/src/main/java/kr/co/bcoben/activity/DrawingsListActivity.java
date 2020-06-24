@@ -215,7 +215,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 finish();
             }
         }
-        setIsLoading(true);
+        startLoading();
         RetrofitClient.getRetrofitApi().planList(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PlanDataList>() {
             @Override
             public void onResponseData(PlanDataList data) {
@@ -235,7 +235,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 setDrawingsList();
             }
             @Override
-            public void onCallbackFinish() { setIsLoading(false); }
+            public void onCallbackFinish() { endLoading(); }
         });
     }
 
@@ -247,7 +247,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                 finish();
             }
         }
-        setIsLoading(true);
+        startLoading();
         RetrofitClient.getRetrofitApi().researchData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<ResearchSpinnerData>() {
             @Override
             public void onResponseData(ResearchSpinnerData data) {
@@ -283,7 +283,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
             @Override
             public void onCallbackFinish() {
-                setIsLoading(false);
+                endLoading();
             }
         });
     }
@@ -305,7 +305,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
                     @Override
                     public void run() {
                         drawingsListAdapter.setList(planList);
-                        setIsLoading(false);
+                        endLoading();
                     }
                 });
             }

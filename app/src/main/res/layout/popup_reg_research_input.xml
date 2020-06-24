@@ -305,7 +305,7 @@
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:background="@null"
-                android:inputType="text"
+                android:inputType="number"
                 android:maxLines="1"
                 android:hint="@string/popup_reg_research_input_hint2"
                 android:textAlignment="textEnd"
@@ -343,7 +343,7 @@
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:background="@null"
-                android:inputType="text"
+                android:inputType="number"
                 android:maxLines="1"
                 android:hint="@string/popup_reg_research_input_hint2"
                 android:textAlignment="textEnd"
@@ -377,19 +377,19 @@
             <EditText
                 android:id="@+id/edit_height"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:background="@null"
                 android:inputType="number"
                 android:maxLines="1"
                 android:hint="@string/popup_reg_research_input_hint2"
-                android:textAlignment="viewEnd"
-                android:textColorHint="@color/colorTextHintPopupMenu"
+                android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
-                android:textSize="13dp" />
+                android:textColorHint="@color/colorTextHintPopupMenu"
+                android:textSize="13dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -415,19 +415,19 @@
             <EditText
                 android:id="@+id/edit_count"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:background="@null"
                 android:inputType="number"
                 android:maxLines="1"
                 android:hint="@string/popup_reg_research_input_hint2"
-                android:textAlignment="viewEnd"
-                android:textColorHint="@color/colorTextHintPopupMenu"
+                android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
-                android:textSize="13dp" />
+                android:textColorHint="@color/colorTextHintPopupMenu"
+                android:textSize="13dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

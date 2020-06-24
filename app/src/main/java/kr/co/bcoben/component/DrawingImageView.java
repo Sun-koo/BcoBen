@@ -15,14 +15,14 @@ import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.model.DrawingPointData;
+import kr.co.bcoben.model.PointData;
 
 public class DrawingImageView extends SubsamplingScaleImageView {
 
     private final String TAG = "DrawingImageView";
     private final Paint paint = new Paint();
     private final PointF vPin = new PointF();
-    private List<DrawingPointData> pinList;
-    private int saveCnt = 0;
+    private List<PointData> pinList;
 
     public DrawingImageView(Context context) {
         this(context, null);
@@ -32,16 +32,16 @@ public class DrawingImageView extends SubsamplingScaleImageView {
         invalidate();
     }
 
-    public void setPinList(List<DrawingPointData> pinList) {
+    public void setPinList(List<PointData> pinList) {
         this.pinList = pinList;
-        for (DrawingPointData data : this.pinList) {
-            data.setPinImage(initialise(data.getPinImage()));
+        for (PointData data : pinList) {
+            data.getDrawingPointData().setPinImage(initialise(data.getDrawingPointData().getPinImage()));
         }
         invalidate();
     }
 
-    public void addPin(DrawingPointData pin) {
-        pin.setPinImage(initialise(pin.getPinImage()));
+    public void addPin(PointData pin) {
+        pin.getDrawingPointData().setPinImage(initialise(pin.getDrawingPointData().getPinImage()));
         pinList.add(pin);
         invalidate();
     }
@@ -70,7 +70,7 @@ public class DrawingImageView extends SubsamplingScaleImageView {
         if (pinList != null && !pinList.isEmpty()) {
             DecimalFormat df = new DecimalFormat("00");
             for (int i = 0; i < pinList.size(); i++) {
-                DrawingPointData data = pinList.get(i);
+                DrawingPointData data = pinList.get(i).getDrawingPointData();
                 PointF point = data.getPoint();
                 Bitmap pinImage = data.getPinImage();
 
@@ -108,7 +108,7 @@ public class DrawingImageView extends SubsamplingScaleImageView {
 
     public int checkClickPoint(PointF point) {
         for (int i = 1; i <= pinList.size(); i++) {
-            DrawingPointData data = pinList.get(i - 1);
+            DrawingPointData data = pinList.get(i - 1).getDrawingPointData();
             PointF pinPoint = data.getPoint();
             float size = data.getPinImage().getWidth() / getScale();
 
@@ -132,7 +132,7 @@ public class DrawingImageView extends SubsamplingScaleImageView {
     }
 
     public PointF getImagePopupPosition(int index, int popupWidth, int popupHeight) {
-        DrawingPointData data = pinList.get(index);
+        DrawingPointData data = pinList.get(index).getDrawingPointData();
         PointF position = sourceToViewCoord(data.getPoint());
         position.x += 95;
         position.y -= 28;

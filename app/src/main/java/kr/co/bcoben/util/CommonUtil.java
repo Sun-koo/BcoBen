@@ -159,9 +159,17 @@ public class CommonUtil {
     }
     // 카메라 호출
     public static void getCameraImage(Activity act) {
+        getCameraImage(act, null);
+    }
+    public static void getCameraImage(Activity act, @Nullable String filename) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(act.getPackageManager()) != null) {
-            File photoFile = new File(getImagePath(), System.currentTimeMillis() + ".jpg");
+            if (filename == null) {
+                filename = System.currentTimeMillis() + ".jpg";
+            } else if (!filename.contains(".")) {
+                filename += ".jpg";
+            }
+            File photoFile = new File(getImagePath(), filename);
             photoUri = FileProvider.getUriForFile(act, act.getPackageName(), photoFile);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             act.startActivityForResult(takePictureIntent, IMAGE_FROM_CAMERA);
@@ -169,12 +177,20 @@ public class CommonUtil {
     }
     // 갤러리, 카메라 선택
     public static void getFileChooserImage(Activity act) {
+        getFileChooserImage(act, null);
+    }
+    public static void getFileChooserImage(Activity act, @Nullable String filename) {
         Intent i = new Intent(Intent.ACTION_PICK);
         i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.CONTENT_TYPE);
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(act.getPackageManager()) != null) {
-            File photoFile = new File(getImagePath(), System.currentTimeMillis() + ".jpg");
+            if (filename == null) {
+                filename = System.currentTimeMillis() + ".jpg";
+            } else if (!filename.contains("\\.")) {
+                filename += ".jpg";
+            }
+            File photoFile = new File(getImagePath(), filename);
             photoUri = FileProvider.getUriForFile(act, act.getPackageName(), photoFile);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
         }
