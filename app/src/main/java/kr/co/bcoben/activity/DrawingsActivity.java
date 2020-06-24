@@ -918,7 +918,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // 조사내용 데이터 확인 API 호출
     private void requestResearchCheckData() {
-        setIsLoading(true);
+        startLoading();
         RetrofitClient.getRetrofitApi().researchCheckData(UserData.getInstance().getUserId(), researchId, projectId, facilityId, selectedFacCateId, selectedArchitectureId, selectedResearchId).enqueue(new RetrofitCallbackModel<ResearchCheckData>() {
             @Override
             public void onResponseData(ResearchCheckData data) {
@@ -946,12 +946,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     }
                 }
                 initFacCateSpinner();
-                setIsLoading(false);
+                endLoading();
             }
 
             @Override
             public void onCallbackFinish() {
-                setIsLoading(false);
+                startLoading();
             }
         });
     }

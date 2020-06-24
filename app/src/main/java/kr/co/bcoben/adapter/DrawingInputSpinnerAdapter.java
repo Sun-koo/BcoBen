@@ -18,6 +18,10 @@ public class DrawingInputSpinnerAdapter extends ArrayAdapter<String> {
     private List<String> list;
     private int textViewResourceId;
 
+    public DrawingInputSpinnerAdapter(@NonNull Context context, int textViewResourceId, @NonNull String[] objects) {
+        super(context, textViewResourceId, objects);
+    }
+
     public DrawingInputSpinnerAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<String> objects) {
         super(context, textViewResourceId, objects);
         this.list = objects;
