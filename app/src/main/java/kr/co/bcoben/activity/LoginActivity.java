@@ -45,9 +45,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
     @Override
     protected void initView() {
         getDeviceId();
-        // Debug
-        dataBinding.editId.setText("bcoben2");
-        dataBinding.editPw.setText("Bcoben01!@#");
     }
 
     @Override
