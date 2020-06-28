@@ -33,6 +33,7 @@
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_spinner_hint"
                 android:hint="@string/popup_reg_research_input_hint1"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -50,6 +51,7 @@
                 android:background="@null"
                 android:inputType="text"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_input"
                 android:hint="@string/popup_reg_research_input_hint2"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -101,6 +103,7 @@
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_spinner_hint"
                 android:hint="@string/popup_reg_research_input_hint1"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -118,6 +121,7 @@
                 android:background="@null"
                 android:inputType="text"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_input"
                 android:hint="@string/popup_reg_research_input_hint2"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -169,6 +173,7 @@
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_spinner_hint"
                 android:hint="@string/popup_reg_research_input_hint1"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -186,6 +191,7 @@
                 android:background="@null"
                 android:inputType="text"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_input"
                 android:hint="@string/popup_reg_research_input_hint2"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -237,6 +243,7 @@
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_spinner_hint"
                 android:hint="@string/popup_reg_research_input_hint1"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -254,6 +261,7 @@
                 android:background="@null"
                 android:inputType="text"
                 android:maxLines="1"
+                android:tag="@string/popup_reg_research_tag_input"
                 android:hint="@string/popup_reg_research_input_hint2"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorTextHintPopupMenu"
@@ -278,20 +286,21 @@
                 app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-        
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_length"
             android:layout_width="match_parent"
-            android:layout_height="87dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
-            android:orientation="vertical"
+            android:onClick="onInputPopupContentClick"
             android:background="@drawable/bg_drawing_input_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_length_select"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:onClick="onInputPopupContentClick">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/line_length">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -311,29 +320,12 @@
                     android:layout_marginStart="150dp"
                     android:layout_marginEnd="33dp"
                     android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_spinner_hint"
                     android:hint="@string/popup_reg_research_input_hint1"
                     android:textAlignment="textEnd"
                     android:textColor="@color/colorTextHintPopupMenu"
                     android:textColorHint="@color/colorTextHintPopupMenu"
                     android:textSize="13dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <EditText
-                    android:id="@+id/edit_length"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="150dp"
-                    android:layout_marginEnd="33dp"
-                    android:background="@null"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:hint="@string/popup_reg_research_input_hint2"
-                    android:textAlignment="textEnd"
-                    android:textColor="@color/colorTextHintPopupMenu"
-                    android:textColorHint="@color/colorTextHintPopupMenu"
-                    android:textSize="13dp"
-                    android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -352,19 +344,24 @@
                     app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-            
+
             <View
+                android:id="@+id/line_length"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="13dp"
                 android:layout_marginEnd="13dp"
-                android:background="@color/colorBorderPopupMenu"/>
+                android:background="@color/colorBorderPopupMenu"
+                app:layout_constraintTop_toBottomOf="@id/layout_length_select"
+                app:layout_constraintBottom_toTopOf="@id/layout_length_input"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_length_input"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:onClick="onInputPopupContentClick">
+                android:onClick="onInputPopupContentClick"
+                app:layout_constraintTop_toBottomOf="@id/line_length"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -377,15 +374,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
-                <EditText
-                    android:id="@+id/edit_length_input"
+                <TextView
+                    android:id="@+id/txt_length_hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="150dp"
                     android:layout_marginEnd="33dp"
-                    android:background="@null"
-                    android:inputType="number"
                     android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_input_hint"
                     android:hint="@string/popup_reg_research_input_hint2"
                     android:textAlignment="textEnd"
                     android:textColor="@color/colorTextHintPopupMenu"
@@ -394,23 +390,43 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/edit_length"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="150dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_input"
+                    android:hint="@string/popup_reg_research_input_hint2"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/colorTextHintPopupMenu"
+                    android:textColorHint="@color/colorTextHintPopupMenu"
+                    android:textSize="13dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <LinearLayout
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_width"
             android:layout_width="match_parent"
-            android:layout_height="87dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
-            android:orientation="vertical"
+            android:onClick="onInputPopupContentClick"
             android:background="@drawable/bg_drawing_input_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_width_select"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:onClick="onInputPopupContentClick">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/line_width">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -430,29 +446,12 @@
                     android:layout_marginStart="150dp"
                     android:layout_marginEnd="33dp"
                     android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_spinner_hint"
                     android:hint="@string/popup_reg_research_input_hint1"
                     android:textAlignment="textEnd"
                     android:textColor="@color/colorTextHintPopupMenu"
                     android:textColorHint="@color/colorTextHintPopupMenu"
                     android:textSize="13dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <EditText
-                    android:id="@+id/edit_width"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="150dp"
-                    android:layout_marginEnd="33dp"
-                    android:background="@null"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:hint="@string/popup_reg_research_input_hint2"
-                    android:textAlignment="textEnd"
-                    android:textColor="@color/colorTextHintPopupMenu"
-                    android:textColorHint="@color/colorTextHintPopupMenu"
-                    android:textSize="13dp"
-                    android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -473,17 +472,22 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
+                android:id="@+id/line_width"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="13dp"
                 android:layout_marginEnd="13dp"
-                android:background="@color/colorBorderPopupMenu"/>
+                android:background="@color/colorBorderPopupMenu"
+                app:layout_constraintTop_toBottomOf="@id/layout_width_select"
+                app:layout_constraintBottom_toTopOf="@id/layout_width_input"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_width_input"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:onClick="onInputPopupContentClick">
+                android:onClick="onInputPopupContentClick"
+                app:layout_constraintTop_toBottomOf="@id/line_width"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -496,15 +500,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
-                <EditText
-                    android:id="@+id/edit_width_input"
+                <TextView
+                    android:id="@+id/txt_width_hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="150dp"
                     android:layout_marginEnd="33dp"
-                    android:background="@null"
-                    android:inputType="number"
                     android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_input_hint"
                     android:hint="@string/popup_reg_research_input_hint2"
                     android:textAlignment="textEnd"
                     android:textColor="@color/colorTextHintPopupMenu"
@@ -513,23 +516,43 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
+                <EditText
+                    android:id="@+id/edit_width"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="150dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_input"
+                    android:hint="@string/popup_reg_research_input_hint2"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/colorTextHintPopupMenu"
+                    android:textColorHint="@color/colorTextHintPopupMenu"
+                    android:textSize="13dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_height"
             android:layout_width="match_parent"
-            android:layout_height="87dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
-            android:orientation="vertical"
+            android:onClick="onInputPopupContentClick"
             android:background="@drawable/bg_drawing_input_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_height_select"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:onClick="onInputPopupContentClick">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/layout_height_input">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -549,29 +572,12 @@
                     android:layout_marginStart="150dp"
                     android:layout_marginEnd="33dp"
                     android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_spinner_hint"
                     android:hint="@string/popup_reg_research_input_hint1"
                     android:textAlignment="textEnd"
                     android:textColor="@color/colorTextHintPopupMenu"
                     android:textColorHint="@color/colorTextHintPopupMenu"
                     android:textSize="13dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <EditText
-                    android:id="@+id/edit_height"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="150dp"
-                    android:layout_marginEnd="33dp"
-                    android:background="@null"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:hint="@string/popup_reg_research_input_hint2"
-                    android:textAlignment="textEnd"
-                    android:textColor="@color/colorTextHintPopupMenu"
-                    android:textColorHint="@color/colorTextHintPopupMenu"
-                    android:textSize="13dp"
-                    android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -592,17 +598,22 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
+                android:id="@+id/line_height"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="13dp"
                 android:layout_marginEnd="13dp"
-                android:background="@color/colorBorderPopupMenu"/>
+                android:background="@color/colorBorderPopupMenu"
+                app:layout_constraintTop_toBottomOf="@id/layout_height_select"
+                app:layout_constraintBottom_toTopOf="@id/layout_height_input"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_height_input"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:onClick="onInputPopupContentClick">
+                android:onClick="onInputPopupContentClick"
+                app:layout_constraintTop_toBottomOf="@id/line_height"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -615,15 +626,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
-                <EditText
-                    android:id="@+id/edit_height_input"
+                <TextView
+                    android:id="@+id/txt_height_hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="150dp"
                     android:layout_marginEnd="33dp"
-                    android:background="@null"
-                    android:inputType="number"
                     android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_input_hint"
                     android:hint="@string/popup_reg_research_input_hint2"
                     android:textAlignment="textEnd"
                     android:textColor="@color/colorTextHintPopupMenu"
@@ -632,9 +642,28 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
+                <EditText
+                    android:id="@+id/edit_height"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="150dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:tag="@string/popup_reg_research_tag_input"
+                    android:hint="@string/popup_reg_research_input_hint2"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/colorTextHintPopupMenu"
+                    android:textColorHint="@color/colorTextHintPopupMenu"
+                    android:textSize="13dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_count"
@@ -658,9 +687,7 @@
             <EditText
                 android:id="@+id/edit_count"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="150dp"
                 android:layout_marginEnd="33dp"
                 android:background="@null"
@@ -670,7 +697,9 @@
                 android:textAlignment="viewEnd"
                 android:textColorHint="@color/colorTextHintPopupMenu"
                 android:textColor="@color/colorTextHintPopupMenu"
-                android:textSize="13dp" />
+                android:textSize="13dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

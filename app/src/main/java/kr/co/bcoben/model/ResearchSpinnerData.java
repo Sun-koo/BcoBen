@@ -1,16 +1,15 @@
 package kr.co.bcoben.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResearchSpinnerData implements DataModel {
     private ResearchSelectData research_data;
     private ProjectFacData project_fac_data;
-
-    public ResearchSpinnerData(ResearchSelectData research_data, ProjectFacData project_fac_data) {
-        this.research_data = research_data;
-        this.project_fac_data = project_fac_data;
-    }
 
     public ResearchSelectData getResearch_data() {
         return research_data;
@@ -21,11 +20,8 @@ public class ResearchSpinnerData implements DataModel {
     public ProjectFacData getProject_fac_data() {
         return project_fac_data;
     }
-    public void setProject_fac_data(ProjectFacData project_fac_data) {
-        this.project_fac_data = project_fac_data;
-    }
 
-    public static class ResearchSelectData {
+    public static class ResearchSelectData implements Serializable {
         private int research_id;
         private int project_id;
         private int facility_id;
@@ -96,7 +92,7 @@ public class ResearchSpinnerData implements DataModel {
         }
     }
 
-    public static class ProjectFacData {
+    public static class ProjectFacData implements Serializable {
         private List<ResearchRegData.FacilityData.FacCateData> fac_cate_list;
         private List<ResearchRegData.ResearchData> research_list;
 
@@ -105,17 +101,27 @@ public class ResearchSpinnerData implements DataModel {
             this.research_list = research_list;
         }
 
-        public List<ResearchRegData.FacilityData.FacCateData> getFac_cate_list() {
-            return fac_cate_list;
+        public ResearchRegData.FacilityData.FacCateData getFacCateDataID(int itemId) {
+            for (ResearchRegData.FacilityData.FacCateData d : fac_cate_list) {
+                if (d.getItem_id() == itemId) {
+                    return d;
+                }
+            }
+            return null;
         }
-        public void setFac_cate_list(List<ResearchRegData.FacilityData.FacCateData> fac_cate_list) {
-            this.fac_cate_list = fac_cate_list;
+        public List<MenuCheckData> getFacCateList() {
+            List<MenuCheckData> list = new ArrayList<>();
+            for (ResearchRegData.FacilityData.FacCateData d : fac_cate_list) {
+                list.add(d.getData());
+            }
+            return list;
         }
-        public List<ResearchRegData.ResearchData> getResearch_list() {
-            return research_list;
-        }
-        public void setResearch_list(List<ResearchRegData.ResearchData> research_list) {
-            this.research_list = research_list;
+        public List<MenuCheckData> getResearchList() {
+            List<MenuCheckData> list = new ArrayList<>();
+            for (ResearchRegData.ResearchData d : research_list) {
+                list.add(d.getData());
+            }
+            return list;
         }
     }
 }

@@ -10,10 +10,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import kr.co.bcoben.R;
@@ -70,7 +67,6 @@ public class DrawingPictureListAdapter extends RecyclerView.Adapter<DrawingPictu
                 public void onClick(View v) {
                     DrawingPictureDialog.builder(activity)
                             .setPicture(list.get(position))
-                            .build()
                             .show();
                 }
             });

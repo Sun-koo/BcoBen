@@ -125,7 +125,7 @@ public class DrawingsListAdapter extends RecyclerView.Adapter<DrawingsListAdapte
                 @Override
                 public void onClick(View v) {
                     if (layoutDownload.getVisibility() == View.GONE) {
-                        activity.sendSpinnerData(position);
+                        activity.requestCheckData(position);
                     }
                 }
             });

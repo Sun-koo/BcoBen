@@ -34,7 +34,6 @@
                     android:id="@+id/txt_sub_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/main_research_list_sub_title"
                     android:textColor="@color/colorTextLabel"
                     android:textSize="24dp" />
             </LinearLayout>

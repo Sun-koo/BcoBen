@@ -49,5 +49,6 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
     public void onFailure(Call<ResponseData<T>> call, Throwable t) {
         onCallbackFinish();
         showToast(R.string.toast_error_server);
+        t.printStackTrace();
     }
 }

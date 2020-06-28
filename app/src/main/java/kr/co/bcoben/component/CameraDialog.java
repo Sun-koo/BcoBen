@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import kr.co.bcoben.R;
 
@@ -67,10 +66,10 @@ public class CameraDialog extends Dialog {
         }
         public void show() {
             if (btnCameraListener == null) {
-                throw new IllegalArgumentException("Camera Button Listener is null");
+                throw new NullPointerException("Camera Button Listener is null");
             }
             if (btnGalleyListener == null) {
-                throw new IllegalArgumentException("Galley Button Listener is null");
+                throw new NullPointerException("Galley Button Listener is null");
             }
             new CameraDialog(activity, btnCameraListener, btnGalleyListener).show();
         }

@@ -2,6 +2,7 @@ package kr.co.bcoben.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -98,6 +99,26 @@ public class FTPConnectUtil {
             try {
                 for (String path : pathList) {
                     if (path != null && !path.equals("")) {
+                        String folder = path.substring(0, path.lastIndexOf("/"));
+                        String name = path.substring(path.lastIndexOf("/") + 1);
+                        boolean exist = false;
+                        for (int i = 0; i < 5; i++) {
+                            for (FTPFile f : client.listFiles(folder)) {
+                                if (f.getName().equals(name)) {
+                                    exist = true;
+                                    break;
+                                }
+                            }
+                            if (exist) {
+                                break;
+                            } else {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
                         BufferedInputStream is = new BufferedInputStream(client.retrieveFileStream(path));
                         Bitmap bitmap = BitmapFactory.decodeStream(is);
                         bitmapList.add(bitmap);

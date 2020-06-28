@@ -81,7 +81,6 @@
     <string name="main_version">버전</string>
     <string name="main_update">업데이트</string>
     <string name="main_research_list_title">조사 목록</string>
-    <string name="main_research_list_sub_title">(정밀안전진단)</string>
     <string name="main_research_registration">조사 등록</string>
     <string name="main_research_count">%d/%d개소</string>
     <string name="main_research_list_none">등록된 조사가 없습니다.\n조사 등록을 선택하여 조사를 진행하세요!</string>
@@ -174,6 +173,15 @@
     <string name="popup_reg_research_input_count">개소</string>
     <string name="popup_reg_research_input_hint1">선택하세요</string>
     <string name="popup_reg_research_input_hint2">입력하세요</string>
+    <string name="popup_reg_research_tag_spinner_hint">spn_hint</string>
+    <string name="popup_reg_research_tag_input">input</string>
+    <string name="popup_reg_research_tag_input_hint">input_hint</string>
+    <string name="toast_popup_reg_research_not_defect">결함내용을 선택해주세요</string>
+    <string name="toast_popup_reg_research_not_length">길이 측정값을 입력해주세요</string>
+    <string name="toast_popup_reg_research_not_width">가로 측정값을 입력해주세요</string>
+    <string name="toast_popup_reg_research_not_height">세로 측정값을 입력해주세요</string>
+    <string name="toast_popup_reg_research_not_count">개소를 입력해주세요</string>
+    <string name="toast_popup_reg_research_over_count">목표개소를 초과하였습니다</string>
 
     <!--조사 데이터 등록 팝업 사진 Tab-->
     <string name="popup_reg_research_picture_hint">등록하세요</string>

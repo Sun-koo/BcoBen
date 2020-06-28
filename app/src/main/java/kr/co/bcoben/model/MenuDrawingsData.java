@@ -37,7 +37,6 @@ public class MenuDrawingsData {
     public int getFacilityId() {
         return facilityId;
     }
-
     public void setFacilityId(int facilityId) {
         this.facilityId = facilityId;
     }

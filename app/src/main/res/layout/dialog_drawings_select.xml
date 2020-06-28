@@ -10,8 +10,8 @@
         android:layout_width="354dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:background="@drawable/dialog_box">
+        android:background="@drawable/dialog_box"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -25,7 +25,7 @@
                 android:layout_marginBottom="20dp"
                 android:text="@string/drawings_select_dialog_title"
                 android:textColor="@color/colorBlack"
-                android:textSize="16dp"/>
+                android:textSize="16dp" />
 
             <ImageButton
                 android:id="@+id/btn_close"
@@ -34,32 +34,20 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="13dp"
+                android:background="@null"
                 android:padding="13dp"
-                android:src="@drawable/close"
-                android:background="@null"/>
+                android:src="@drawable/close" />
 
         </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
             android:text="@string/drawings_select_dialog_content"
             android:textColor="@color/colorTextDialogContent"
-            android:textSize="12dp"/>
-
-<!--        <Button-->
-<!--            android:id="@+id/btn_input"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="36dp"-->
-<!--            android:layout_marginStart="32dp"-->
-<!--            android:layout_marginEnd="32dp"-->
-<!--            android:layout_marginBottom="5dp"-->
-<!--            android:text="@string/drawings_select_dialog_input"-->
-<!--            android:textColor="@color/colorTextPrimary"-->
-<!--            android:textSize="16dp"-->
-<!--            android:background="@drawable/btn_round_pink"/>-->
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/btn_reset_input"
@@ -68,10 +56,10 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="20dp"
+            android:background="@drawable/btn_round_pink"
             android:text="@string/drawings_select_dialog_reset_input"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="16dp"
-            android:background="@drawable/btn_round_pink"/>
+            android:textSize="16dp" />
 
         <Button
             android:id="@+id/btn_other_select"
@@ -80,11 +68,11 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="23dp"
+            android:background="@drawable/btn_keycolor"
             android:text="@string/drawings_select_dialog_other_select"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp"
-            android:background="@drawable/btn_keycolor"/>
-        
+            android:textSize="16dp" />
+
     </LinearLayout>
 
 </RelativeLayout>
