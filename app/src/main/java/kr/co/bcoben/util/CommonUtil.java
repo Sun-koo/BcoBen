@@ -30,6 +30,9 @@ import androidx.core.content.FileProvider;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
@@ -93,6 +96,12 @@ public class CommonUtil {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
 
+    // 날짜 Format
+    public static String getDateFormat(String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.getDefault());
+        return sdf.format(Calendar.getInstance().getTime());
+    }
+
     // 권한 체크
     public enum PermissionState { GRANT, DENY, ALWAYS_DENY }
     public static boolean requestPermission(Activity act, String[] permissionArray) {
@@ -109,7 +118,7 @@ public class CommonUtil {
         }
         return true;
     }
-    // onRequestPermissionsResult에서 호출
+    // onRequestPermissionsResult 에서 호출
     public static  PermissionState resultRequestPermission(Activity act, String[] permissions, int[] grantResults) {
         boolean isGranted = false;
         for (int result : grantResults) {
@@ -158,9 +167,6 @@ public class CommonUtil {
         act.startActivityForResult(intent, IMAGE_FROM_GALLERY);
     }
     // 카메라 호출
-    public static void getCameraImage(Activity act) {
-        getCameraImage(act, null);
-    }
     public static void getCameraImage(Activity act, @Nullable String filename) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(act.getPackageManager()) != null) {
@@ -176,9 +182,6 @@ public class CommonUtil {
         }
     }
     // 갤러리, 카메라 선택
-    public static void getFileChooserImage(Activity act) {
-        getFileChooserImage(act, null);
-    }
     public static void getFileChooserImage(Activity act, @Nullable String filename) {
         Intent i = new Intent(Intent.ACTION_PICK);
         i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.CONTENT_TYPE);
@@ -265,6 +268,7 @@ public class CommonUtil {
     public static void showErrorMsg(String error) {
         if (error != null) {
             try {
+                Log.e("Retrofit", "Error : " + error);
                 Context context = AppApplication.getContext();
                 String errorCode = error.toLowerCase();
                 int errorCodeId = context.getResources().getIdentifier(errorCode, "string", context.getPackageName());

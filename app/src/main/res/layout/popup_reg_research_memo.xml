@@ -10,7 +10,7 @@
         <RelativeLayout
             android:id="@+id/layout_guide_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="330dp"
             android:background="@drawable/border_round_gray_box">
 
             <kr.co.bcoben.component.CanvasView
@@ -30,6 +30,32 @@
                 android:textSize="13dp"/>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_memo_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/popup_reg_research_memo_count_title"/>
+
+            <TextView
+                android:id="@+id/txt_memo_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(0건)"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_memo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
     

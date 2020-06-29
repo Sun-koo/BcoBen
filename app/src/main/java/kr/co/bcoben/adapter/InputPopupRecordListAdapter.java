@@ -32,14 +32,14 @@ import static kr.co.bcoben.util.RecordUtil.setPlayCompleteListener;
 import static kr.co.bcoben.util.RecordUtil.setPlayPosition;
 import static kr.co.bcoben.util.RecordUtil.stopAudio;
 
-public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.RecordHolder> {
+public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopupRecordListAdapter.RecordHolder> {
 
     private Activity activity;
     private List<RecordData> list;
     private Timer playTimer;
     private boolean isRecording = false;
 
-    public RecordListAdapter(Activity activity, List<RecordData> list) {
+    public InputPopupRecordListAdapter(Activity activity, List<RecordData> list) {
         this.activity = activity;
         this.list = list;
     }

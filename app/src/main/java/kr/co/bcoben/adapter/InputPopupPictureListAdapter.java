@@ -58,7 +58,7 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
                 } else {
                     uploadList.remove(position - list.size());
                 }
-                activity.setPictureCount(getItemCount());
+                activity.setPictureCount();
                 notifyDataSetChanged();
             }
         });
@@ -80,7 +80,7 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
                         });
             }
         });
-        activity.setPictureCount(getItemCount());
+        activity.setPictureCount();
     }
 
     @Override
@@ -93,6 +93,11 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
     }
     public void addImage(Uri uri) {
         uploadList.add(uri);
+        notifyDataSetChanged();
+    }
+    public void resetList() {
+        this.list = new ArrayList<>();
+        this.uploadList = new ArrayList<>();
         notifyDataSetChanged();
     }
     public List<Uri> getUploadList() {

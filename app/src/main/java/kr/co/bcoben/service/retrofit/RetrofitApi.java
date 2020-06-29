@@ -104,7 +104,7 @@ public interface RetrofitApi {
 
     @Multipart
     @POST("/app/research/register_point")
-    Call<ResponseData<PointResponseData>> researchRegisterPoint(@Part("user_id") int userId, @Part("research_id") int researchId, @Part("plan_id") int planId, @Part("point_x") int pointX, @Part("point_y") int pointY, @Part("count") int count,
+    Call<ResponseData<PointListData>> researchRegisterPoint(@Part("user_id") int userId, @Part("research_id") int researchId, @Part("plan_id") int planId, @Part("point_x") int pointX, @Part("point_y") int pointY, @Part("count") int count,
                                                                 @PartMap Map<String, RequestBody> partMap, @Part List<MultipartBody.Part> fileList);
 
     @Multipart

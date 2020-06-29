@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Handler;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,13 +26,16 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
@@ -49,8 +51,9 @@ import kr.co.bcoben.adapter.DrawingInputSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
 import kr.co.bcoben.adapter.DrawingsPlanSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingsSpinnerAdapter;
+import kr.co.bcoben.adapter.InputPopupMemoListAdapter;
 import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
-import kr.co.bcoben.adapter.RecordListAdapter;
+import kr.co.bcoben.adapter.InputPopupRecordListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CanvasView;
@@ -60,9 +63,8 @@ import kr.co.bcoben.model.DrawingPointData;
 import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.PointData;
-import kr.co.bcoben.model.PointListData;
 import kr.co.bcoben.model.PointInputData;
-import kr.co.bcoben.model.PointResponseData;
+import kr.co.bcoben.model.PointListData;
 import kr.co.bcoben.model.PointTableData;
 import kr.co.bcoben.model.RecordData;
 import kr.co.bcoben.model.ResearchSpinnerData;
@@ -78,6 +80,8 @@ import okhttp3.RequestBody;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
+import static kr.co.bcoben.util.CommonUtil.getCachePath;
+import static kr.co.bcoben.util.CommonUtil.getDateFormat;
 import static kr.co.bcoben.util.CommonUtil.getFileChooserImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
@@ -125,8 +129,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private int recordTime;
     private Timer recordTimer;
     private File recordFile;
-    private RecordListAdapter recordListAdapter;
+    private InputPopupRecordListAdapter inputPopupRecordListAdapter;
     private List<RecordData> recordDataList = new ArrayList<>();
+
+    // memo
+    private InputPopupMemoListAdapter inputPopupMemoListAdapter;
 
     @Override
     protected int getLayoutResource() {
@@ -174,7 +181,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             if (requestCode == RECORD_PERMISSION_CODE) {
                 recording();
             } else if (requestCode == IMAGE_PERMISSION_CODE) {
-                getFileChooserImage(this);
+                getFileChooserImage(this, "img_" + getDateFormat("yyMMddHHmmss") + ".jpg");
             }
         } else {
 
@@ -233,7 +240,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
             // popup
             case R.id.btn_reg:
-                requestRegisterPoint();
+                if (dataBinding.researchPopup.txtMemoTab.isSelected() && dataBinding.researchPopup.memoView.txtGuide.getVisibility() == View.GONE) {
+                    Bitmap bitmap = dataBinding.researchPopup.memoView.layoutCanvas.getBitmap();
+                    inputPopupMemoListAdapter.addBitmap(bitmap);
+
+                    dataBinding.researchPopup.memoView.layoutCanvas.clear();
+                    dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
+                    setMemoCount();
+                } else {
+                    requestRegisterPoint();
+                }
                 break;
         }
     }
@@ -319,9 +335,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     int index = dataBinding.imgDrawings.checkClickPoint(pin);
 
                     if (index == 0) {   // 새로운 핀 등록
+                        int pointNum = pointList.size() == 0 ? 1 : pointList.get(pointList.size() - 1).getPoint_num() + 1;
                         regPointData = new DrawingPointData(pin, DrawingType.NORMAL);
                         DecimalFormat df = new DecimalFormat("00");
-                        dataBinding.txtNewPin.setText(df.format(pointList.size() + 1));
+                        dataBinding.txtNewPin.setText(df.format(pointNum));
 
                         resetInputPopup();
                         new Handler().postDelayed(new Runnable() {
@@ -458,12 +475,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         // 사진 탭
         inputPopupPictureListAdapter = new InputPopupPictureListAdapter(this, pictureDataList);
         dataBinding.researchPopup.pictureView.recyclerPicture.setAdapter(inputPopupPictureListAdapter);
-        dataBinding.researchPopup.pictureView.recyclerPicture.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        dataBinding.researchPopup.pictureView.recyclerPicture.setLayoutManager(new GridLayoutManager(this, 2));
 
         // 음성 탭
-        recordListAdapter = new RecordListAdapter(this, recordDataList);
-        dataBinding.researchPopup.recordView.recyclerRecord.setAdapter(recordListAdapter);
-        dataBinding.researchPopup.recordView.recyclerRecord.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        inputPopupRecordListAdapter = new InputPopupRecordListAdapter(this, recordDataList);
+        dataBinding.researchPopup.recordView.recyclerRecord.setAdapter(inputPopupRecordListAdapter);
+        dataBinding.researchPopup.recordView.recyclerRecord.setLayoutManager(new LinearLayoutManager(this));
 
         // 메모 탭
         dataBinding.researchPopup.memoView.layoutCanvas.setMode(CanvasView.Mode.DRAW);
@@ -479,6 +496,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 return false;
             }
         });
+
+        inputPopupMemoListAdapter = new InputPopupMemoListAdapter(this);
+        dataBinding.researchPopup.memoView.recyclerMemo.setAdapter(inputPopupMemoListAdapter);
+        dataBinding.researchPopup.memoView.recyclerMemo.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
     }
 
     // 도면 입력 팝업 Spinner 설정
@@ -487,7 +508,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         final TextView txtInputHint = parent.findViewWithTag(getString(R.string.popup_reg_research_tag_input_hint));
         final EditText editInput = parent.findViewWithTag(getString(R.string.popup_reg_research_tag_input));
 
-        spinner.setSelection(spinner.getCount());
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -498,18 +518,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         editInput.setVisibility(View.VISIBLE);
                         txtSpnHint.setVisibility(View.GONE);
                         showKeyboard(activity, editInput);
-                    } else if (parent.getSelectedItemPosition() != parent.getCount()) {
-                        editInput.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
-                        txtSpnHint.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
+                    } else {
+                        editInput.setText(parent.getItemAtPosition(parent.getSelectedItemPosition()).toString());
+                        txtSpnHint.setText(parent.getItemAtPosition(parent.getSelectedItemPosition()).toString());
                         editInput.setVisibility(View.GONE);
                         txtSpnHint.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    if (parent.getSelectedItemPosition() != parent.getCount()) {
-                        txtSpnHint.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
-                        txtInputHint.setVisibility(View.GONE);
-                        editInput.setVisibility(View.VISIBLE);
-                    }
+                    txtSpnHint.setText(parent.getItemAtPosition(parent.getSelectedItemPosition()).toString());
+                    txtInputHint.setVisibility(parent.getSelectedItemPosition() != 0 ? View.GONE : View.VISIBLE);
+                    editInput.setVisibility(parent.getSelectedItemPosition() != 0 ? View.VISIBLE : View.GONE);
                 }
             }
             @Override
@@ -523,31 +541,36 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
         // 입력탭
         resetInputPopupContentLayout();
-        dataBinding.researchPopup.inputView.spnMaterial.setSelection(-1);
-        dataBinding.researchPopup.inputView.spnDirection.setSelection(-1);
-        dataBinding.researchPopup.inputView.spnDefect.setSelection(-1);
-        dataBinding.researchPopup.inputView.spnArchitecture.setSelection(-1);
-        dataBinding.researchPopup.inputView.spnLength.setSelection(-1);
-        dataBinding.researchPopup.inputView.spnWidth.setSelection(-1);
-        dataBinding.researchPopup.inputView.spnHeight.setSelection(-1);
-        dataBinding.researchPopup.inputView.editLength.setVisibility(View.GONE);
-        dataBinding.researchPopup.inputView.editWidth.setVisibility(View.GONE);
-        dataBinding.researchPopup.inputView.editHeight.setVisibility(View.GONE);
+        dataBinding.researchPopup.inputView.spnMaterial.setSelection(0);
+        dataBinding.researchPopup.inputView.spnDirection.setSelection(0);
+        dataBinding.researchPopup.inputView.spnDefect.setSelection(0);
+        dataBinding.researchPopup.inputView.spnArchitecture.setSelection(0);
+        dataBinding.researchPopup.inputView.spnLength.setSelection(0);
+        dataBinding.researchPopup.inputView.spnWidth.setSelection(0);
+        dataBinding.researchPopup.inputView.spnHeight.setSelection(0);
         dataBinding.researchPopup.inputView.editLength.setText("");
         dataBinding.researchPopup.inputView.editWidth.setText("");
         dataBinding.researchPopup.inputView.editHeight.setText("");
         dataBinding.researchPopup.inputView.editCount.setText("");
 
         // 사진탭
-        pictureDataList = new ArrayList<>();
-        inputPopupPictureListAdapter.setList(pictureDataList);
+        inputPopupPictureListAdapter.resetList();
 
         // 음성탭
+        recordDataList.clear();
+        inputPopupRecordListAdapter.setList(recordDataList);
 
         // 메모탭
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
         dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
+        inputPopupMemoListAdapter.resetList();
     }
+
+    // 도면 입력 팝업 메모 개수
+    public void setMemoCount() {
+        dataBinding.researchPopup.memoView.txtMemoCount.setText("(" + inputPopupMemoListAdapter.getItemCount() + "건)");
+    }
+
     private void calculateScale(boolean plus) {
         if (plus) {
             switch (currentScale) {
@@ -569,6 +592,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.imgDrawings.animateScale(initScale * currentScale / 2.0f).withDuration(500).start();
         showScaleView();
     }
+
     private void showScaleView() {
         DecimalFormat df = new DecimalFormat("0.#");
         String scaleStr = "x" + df.format(currentScale / 2.0f) + "배";
@@ -601,8 +625,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         });
         dataBinding.layoutScale.startAnimation(fadeIn);
     }
-    public void setPictureCount(int count) {
-        dataBinding.researchPopup.pictureView.txtPictureCount.setText("(" + count + "건)");
+    public void setPictureCount() {
+        dataBinding.researchPopup.pictureView.txtPictureCount.setText("(" + inputPopupPictureListAdapter.getItemCount() + "건)");
     }
 
     // 도면 입력 팝업 상단 탭 클릭 리스너
@@ -680,7 +704,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.inputView.editCount); break;
             case R.id.layout_picture_register:
                 if (requestPermission(this, IMAGE_PERMISSION, IMAGE_PERMISSION_CODE)) {
-                    getFileChooserImage(this);
+                    getFileChooserImage(this, "img_" + getDateFormat("yyMMddHHmmss") + ".jpg");
                 }
                 break;
         }
@@ -721,9 +745,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.GONE);
                     dataBinding.researchPopup.recordView.btnRecordStop.setText(R.string.popup_reg_research_record_stop);
 
-                    recordListAdapter.setRecording(false);
-                    RecordData recordData = new RecordData(recordFile, null, recordName, recordTime);
-                    recordListAdapter.addData(recordData);
+                    inputPopupRecordListAdapter.setRecording(false);
+                    RecordData recordData = new RecordData(recordFile, recordName, recordTime);
+                    inputPopupRecordListAdapter.addData(recordData);
                 }
                 break;
         }
@@ -735,11 +759,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (recordDataList.size() + 1) + "(자동완성)";
         dataBinding.researchPopup.recordView.txtRecordingName.setText(recordName);
 
-        recordListAdapter.setRecording(true);
-        recordListAdapter.resetData();
-        recordListAdapter.notifyDataSetChanged();
+        inputPopupRecordListAdapter.setRecording(true);
+        inputPopupRecordListAdapter.resetData();
+        inputPopupRecordListAdapter.notifyDataSetChanged();
 
-        recordFile = startRecord(recordName + ".mp3");
+        String filename = getDateFormat("yyMMddHHmmss") + "_" + UserData.getInstance().getDeviceId() + ".mp3";
+        recordFile = startRecord(filename);
         recordTime = 0;
         recordTimer = new Timer();
         recordTimer.schedule(new TimerTask() {
@@ -789,37 +814,43 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         RetrofitClient.getRetrofitApi().researchPointList(UserData.getInstance().getUserId(), researchSelectData.getResearch_id(), planId).enqueue(new RetrofitCallbackModel<PointListData>() {
             @Override
             public void onResponseData(PointListData data) {
-                pointList = data.getPoint_list();
-                tableDataList.clear();
-                for (int i = 0; i < pointList.size(); i++) {
-                    PointData point = pointList.get(i);
-                    if (point.getPoint_type() == 1) {
-                        String content = "-";
-                        String measure = "-";
-                        if (point.getMaterial() != null && !point.getMaterial().equals("")) {
-                            content = point.getMaterial();
-                        } else if (point.getDirection() != null && !point.getDirection().equals("")) {
-                            content = point.getDirection();
-                        } else if (point.getDefect() != null && !point.getDefect().equals("")) {
-                            content = point.getDefect();
-                        }
-                        if (point.getLength_unit() != null && !point.getLength_unit().equals("")) {
-                            measure = point.getLength_unit() + "(" + point.getLength() + ")";
-                        } else if (point.getWidth_unit() != null && !point.getWidth_unit().equals("")) {
-                            measure = point.getWidth_unit() + "(" + point.getWidth() + ")";
-                        } else if (point.getHeight_unit() != null && !point.getHeight_unit().equals("")) {
-                            measure = point.getHeight_unit() + "(" + point.getHeight() + ")";
-                        }
-                        tableDataList.add(new PointTableData(i + 1, content, measure, point.getCount()));
-                    }
-                }
-                setImageList(data.getLabel_img());
+                responsePointList(data);
             }
             @Override
             public void onCallbackFinish() { endLoading(); }
         });
     }
 
+    // 도면 입력 데이터 처리
+    private void responsePointList(PointListData data) {
+        pointList = data.getPoint_list();
+        tableDataList.clear();
+        for (int i = 0; i < pointList.size(); i++) {
+            PointData point = pointList.get(i);
+            if (point.getPoint_type() == 1) {
+                String content = "-";
+                String measure = "-";
+                if (point.getMaterial() != null && !point.getMaterial().equals("")) {
+                    content = point.getMaterial();
+                } else if (point.getDirection() != null && !point.getDirection().equals("")) {
+                    content = point.getDirection();
+                } else if (point.getDefect() != null && !point.getDefect().equals("")) {
+                    content = point.getDefect();
+                }
+                if (point.getLength_unit() != null && !point.getLength_unit().equals("")) {
+                    measure = point.getLength_unit() + "(" + point.getLength() + ")";
+                } else if (point.getWidth_unit() != null && !point.getWidth_unit().equals("")) {
+                    measure = point.getWidth_unit() + "(" + point.getWidth() + ")";
+                } else if (point.getHeight_unit() != null && !point.getHeight_unit().equals("")) {
+                    measure = point.getHeight_unit() + "(" + point.getHeight() + ")";
+                }
+                tableDataList.add(new PointTableData(i + 1, content, measure, point.getCount()));
+            }
+        }
+        setImageList(data.getLabel_img());
+    }
+
+    // 도면 입력 이미지 가져오기
     private void setImageList(final String labelImg) {
         new Thread(new Runnable() {
             @Override
@@ -917,11 +948,11 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             if (!direction.equals("")) { partMap.put("direction", RequestBody.create(MediaType.parse("multipart/form-data"), direction)); }
             if (!defect.equals("")) { partMap.put("defect", RequestBody.create(MediaType.parse("multipart/form-data"), defect)); }
             if (!architecture.equals("")) { partMap.put("architecture", RequestBody.create(MediaType.parse("multipart/form-data"), architecture)); }
-            if (!lengthUnit.equals("")) { partMap.put("lengthUnit", RequestBody.create(MediaType.parse("multipart/form-data"), lengthUnit)); }
+            if (!lengthUnit.equals("")) { partMap.put("length_unit", RequestBody.create(MediaType.parse("multipart/form-data"), lengthUnit)); }
             if (!length.equals("")) { partMap.put("length", RequestBody.create(MediaType.parse("multipart/form-data"), length)); }
-            if (!widthUnit.equals("")) { partMap.put("widthUnit", RequestBody.create(MediaType.parse("multipart/form-data"), widthUnit)); }
+            if (!widthUnit.equals("")) { partMap.put("width_unit", RequestBody.create(MediaType.parse("multipart/form-data"), widthUnit)); }
             if (!width.equals("")) { partMap.put("width", RequestBody.create(MediaType.parse("multipart/form-data"), width)); }
-            if (!heightUnit.equals("")) { partMap.put("heightUnit", RequestBody.create(MediaType.parse("multipart/form-data"), heightUnit)); }
+            if (!heightUnit.equals("")) { partMap.put("height_unit", RequestBody.create(MediaType.parse("multipart/form-data"), heightUnit)); }
             if (!height.equals("")) { partMap.put("height", RequestBody.create(MediaType.parse("multipart/form-data"), height)); }
 
             List<MultipartBody.Part> fileList = new ArrayList<>();
@@ -937,9 +968,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     }
                 }
             }
-            if (recordListAdapter.getList().size() > 0) {
+            if (inputPopupRecordListAdapter.getList().size() > 0) {
                 List<Integer> voiceTimeList = new ArrayList<>();
-                for (RecordData data : recordListAdapter.getList()) {
+                for (RecordData data : inputPopupRecordListAdapter.getList()) {
                     try {
                         File file = data.getRecordFile();
                         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -952,17 +983,43 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 }
                 partMap.put("voice_time", RequestBody.create(MediaType.parse("multipart/form-data"), voiceTimeList.toString()));
             }
+            if (inputPopupMemoListAdapter.getList().size() > 0) {
+                for (PointData.PointMemo data : inputPopupMemoListAdapter.getList()) {
+                    File file = new File(getCachePath(), data.getMemoBitmapName());
+                    OutputStream output = null;
+                    try {
+                        if (file.createNewFile()) {
+                            output = new FileOutputStream(file);
+                            data.getMemoBitmap().compress(Bitmap.CompressFormat.JPEG, 100, output);
+
+                            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                            MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("memo", URLEncoder.encode(file.getName(), "utf-8"), requestBody);
+                            fileList.add(multipartBody);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (output != null) {
+                            try {
+                                output.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
             if (fileList.size() == 0) {
                 fileList = null;
             }
 
             startLoading();
             RetrofitClient.getRetrofitApi().researchRegisterPoint(UserData.getInstance().getUserId(), researchSelectData.getResearch_id(), planId, pointX, pointY, Integer.parseInt(countStr), partMap, fileList)
-                    .enqueue(new RetrofitCallbackModel<PointResponseData>() {
+                    .enqueue(new RetrofitCallbackModel<PointListData>() {
                         @Override
-                        public void onResponseData(PointResponseData data) {
+                        public void onResponseData(PointListData data) {
                             dataBinding.layoutResearchPopup.setVisibility(View.GONE);
-                            setResponseImage(data.getPoint_data());
+                            responsePointList(data);
                         }
                         @Override
                         public void onCallbackFinish() { endLoading(); }
@@ -978,33 +1035,5 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     // 도면 입력 삭제
     private void requestDeletePoint() {
 
-    }
-
-    private void setResponseImage(final PointData data) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!data.getPoint_img().isEmpty()) {
-                    List<String> pathList = new ArrayList<>();
-                    for (PointData.PointImg img : data.getPoint_img()) {
-                        pathList.add(img.getImg_url());
-                    }
-                    List<Bitmap> bitmapList = FTPConnectUtil.getInstance().ftpImageBitmap(pathList);
-                    for (int i = 0; i < bitmapList.size(); i++) {
-                        data.getPoint_img().get(i).setImgBitmap(bitmapList.get(i));
-                    }
-                }
-                data.setDrawingPointData();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataBinding.imgDrawings.addPin(data);
-                        Log.e(TAG, pointList.size() + "");
-                        endLoading();
-                    }
-                });
-            }
-        }).start();
     }
 }

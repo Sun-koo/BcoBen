@@ -8,6 +8,7 @@ import java.util.List;
 
 public class PointData {
     private int point_id;
+    private int point_num;
     private int point_type;
     private int point_x;
     private int point_y;
@@ -29,6 +30,9 @@ public class PointData {
 
     public int getPoint_id() {
         return point_id;
+    }
+    public int getPoint_num() {
+        return point_num;
     }
     public int getPoint_type() {
         return point_type;
@@ -105,11 +109,6 @@ public class PointData {
         private String img_url;
         private Bitmap imgBitmap;
 
-        public PointImg(int img_id, String img_url) {
-            this.img_id = img_id;
-            this.img_url = img_url;
-        }
-
         public int getImg_id() {
             return img_id;
         }
@@ -129,13 +128,6 @@ public class PointData {
         private String voice_title;
         private int voice_time;
         private String voice_file;
-
-        public PointVoice(int voice_id, String voice_title, int voice_time, String voice_file) {
-            this.voice_id = voice_id;
-            this.voice_title = voice_title;
-            this.voice_time = voice_time;
-            this.voice_file = voice_file;
-        }
 
         public int getVoice_id() {
             return voice_id;
@@ -163,9 +155,11 @@ public class PointData {
         }
     }
 
-    public class PointMemo {
+    public static class PointMemo {
         private int memo_id;
         private String memo_url;
+        private String memoBitmapName;
+        private Bitmap memoBitmap;
 
         public PointMemo(int memo_id, String memo_url) {
             this.memo_id = memo_id;
@@ -175,14 +169,20 @@ public class PointData {
         public int getMemo_id() {
             return memo_id;
         }
-        public void setMemo_id(int memo_id) {
-            this.memo_id = memo_id;
-        }
         public String getMemo_url() {
             return memo_url;
         }
-        public void setMemo_url(String memo_url) {
-            this.memo_url = memo_url;
+        public String getMemoBitmapName() {
+            return memoBitmapName;
+        }
+        public void setMemoBitmapName(String memoBitmapName) {
+            this.memoBitmapName = memoBitmapName;
+        }
+        public Bitmap getMemoBitmap() {
+            return memoBitmap;
+        }
+        public void setMemoBitmap(Bitmap memoBitmap) {
+            this.memoBitmap = memoBitmap;
         }
     }
 }

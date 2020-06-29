@@ -15,27 +15,21 @@ import java.util.List;
 
 public class DrawingInputSpinnerAdapter extends ArrayAdapter<String> {
 
-    private List<String> list;
-    private int textViewResourceId;
-
-    public DrawingInputSpinnerAdapter(@NonNull Context context, int textViewResourceId, @NonNull String[] objects) {
-        super(context, textViewResourceId, objects);
-    }
-
     public DrawingInputSpinnerAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<String> objects) {
         super(context, textViewResourceId, objects);
-        this.list = objects;
-        this.textViewResourceId = textViewResourceId;
-    }
-
-    @Override
-    public int getCount() {
-        int count = super.getCount();
-        return count > 0 ? count - 1 : count;
     }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        return super.getDropDownView(position + 1, convertView, parent);
+        View v;
+        if (position == 0) {
+            TextView tv = new TextView(getContext());
+            tv.setHeight(0);
+            tv.setVisibility(View.GONE);
+            v = tv;
+        } else {
+            v = super.getDropDownView(position, null, parent);
+        }
+        return v;
     }
 }
