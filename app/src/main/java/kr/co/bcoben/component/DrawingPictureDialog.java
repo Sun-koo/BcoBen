@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import kr.co.bcoben.R;
 
@@ -17,28 +16,14 @@ import static kr.co.bcoben.util.CommonUtil.dpToPx;
 
 public class DrawingPictureDialog extends Dialog {
 
-    private ImageView ivPicture;
-    private TextView btnDialogClose;
-
-    private DrawingPictureDialog(Context context) {
+    private DrawingPictureDialog(Context context, Bitmap picture) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_drawing_picture);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setCancelable(false);
 
-        btnDialogClose = findViewById(R.id.btn_dialog_close);
-        ivPicture = findViewById(R.id.iv_picture);
-
-        btnDialogClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-    }
-    private DrawingPictureDialog(Context context, Bitmap picture) {
-        this(context);
+        ImageView ivPicture = findViewById(R.id.iv_picture);
         ivPicture.setImageBitmap(picture);
 
         int picWidth = picture.getWidth();
@@ -49,6 +34,13 @@ public class DrawingPictureDialog extends Dialog {
         ViewGroup.LayoutParams params = ivPicture.getLayoutParams();
         params.width = ivWidth;
         ivPicture.setLayoutParams(params);
+
+        findViewById(R.id.btn_dialog_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
     }
     @Override
     public void onBackPressed() {
@@ -70,8 +62,11 @@ public class DrawingPictureDialog extends Dialog {
             this.picture = picture;
             return this;
         }
-        public DrawingPictureDialog build() {
-            return new DrawingPictureDialog(context, picture);
+        public void show() {
+            if (picture == null) {
+                throw new NullPointerException("Picture is Null");
+            }
+            new DrawingPictureDialog(context, picture).show();
         }
     }
 }

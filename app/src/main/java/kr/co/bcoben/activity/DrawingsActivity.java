@@ -6,10 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -20,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -37,13 +32,13 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.Serializable;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -52,6 +47,8 @@ import java.util.TimerTask;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingInputSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
+import kr.co.bcoben.adapter.DrawingsPlanSpinnerAdapter;
+import kr.co.bcoben.adapter.DrawingsSpinnerAdapter;
 import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
 import kr.co.bcoben.adapter.RecordListAdapter;
 import kr.co.bcoben.adapter.TableListAdapter;
@@ -64,21 +61,20 @@ import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.PointData;
 import kr.co.bcoben.model.PointListData;
-import kr.co.bcoben.model.PointRegisterData;
+import kr.co.bcoben.model.PointInputData;
+import kr.co.bcoben.model.PointResponseData;
 import kr.co.bcoben.model.PointTableData;
 import kr.co.bcoben.model.RecordData;
-import kr.co.bcoben.model.UserData;
-import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
-import kr.co.bcoben.service.retrofit.RetrofitClient;
-import kr.co.bcoben.model.ResearchCheckData;
-import kr.co.bcoben.model.ResearchRegData;
 import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.model.UserData;
 import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
 import kr.co.bcoben.util.FTPConnectUtil;
-import kr.co.bcoben.util.SharedPrefUtil;
+import kr.co.bcoben.util.FileUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import static kr.co.bcoben.model.DrawingPointData.DrawingType;
 import static kr.co.bcoben.util.CommonUtil.dpToPx;
@@ -102,30 +98,19 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // drawing
     private int planId;
-    private int researchId;
+    private int planIndex;
     private String planFile;
     private float initScale;
     private int currentScale = 2;
     private List<PointData> pointList = new ArrayList<>();
-    private PointRegisterData pointRegDataList;
+    private PointInputData pointRegDataList;
     private DrawingPointData regPointData;
     private DrawingPictureListAdapter drawingPictureListAdapter;
 
     // spinner
-    private List<PlanDataList.PlanData> planList;
-    private List<String> planNameList = new ArrayList<>();
-    private List<ResearchRegData.FacilityData.FacCateData> facCateDataList = new ArrayList<>();
-    private List<ResearchRegData.ResearchData> researchDataList = new ArrayList<>();
     private ResearchSpinnerData.ResearchSelectData researchSelectData;
-    private List<MenuCheckData> newFacCateList = new ArrayList<>();
-    private List<MenuCheckData> newArchList = new ArrayList<>();
-    private List<MenuCheckData> newResearchList = new ArrayList<>();
-    private int projectId;
-    private int facilityId;
-    private int selectedFacCateId;
-    private int selectedArchitectureId;
-    private int selectedResearchId;
-    private boolean isFirst = true;
+    private ResearchSpinnerData.ProjectFacData projectFacData;
+    private List<PlanDataList.PlanData> planList;
 
     // table
     private TableListAdapter tableListAdapter;
@@ -143,10 +128,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private RecordListAdapter recordListAdapter;
     private List<RecordData> recordDataList = new ArrayList<>();
 
-    // Dummy Data
-    private String[] inputDataArray = {"부풀음", "점부식", "박리", "백악화", "직접입력", ""};
-    private String[] inputSizeDataArray = {"폭", "단차", "두께", "길이", "기타", ""};
-
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_drawings;
@@ -156,27 +137,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     protected void initView() {
         startLoading();
 
+        researchSelectData = (ResearchSpinnerData.ResearchSelectData) getIntent().getSerializableExtra("research_data");
+        projectFacData = (ResearchSpinnerData.ProjectFacData) getIntent().getSerializableExtra("project_fac_data");
         planList = getIntent().getParcelableArrayListExtra("plan_list");
-        researchId = getIntent().getIntExtra("research_id", 0);
-        int planIndex = getIntent().getIntExtra("plan_index", 0);
+        planIndex = getIntent().getIntExtra("plan_index", 0);
+
         planId = planList.get(planIndex).getPlan_id();
         planFile = planList.get(planIndex).getPlan_img_file();
         planId = planList.get(planIndex).getPlan_id();
 
-        initPlanNameSpinner();
-
-        projectId = getIntent().getIntExtra("project_id", 0);
-        facilityId = getIntent().getIntExtra("facility_id", 0);
-        selectedFacCateId = getIntent().getIntExtra("fac_cate_id", 0);
-        selectedArchitectureId = getIntent().getIntExtra("architecture_id", 0);
-        selectedResearchId = getIntent().getIntExtra("research_type_id", 0);
-        Serializable serialFacCate = getIntent().getSerializableExtra("fac_cate_list");
-        Serializable serialResearch = getIntent().getSerializableExtra("research_list");
-        facCateDataList = (List<ResearchRegData.FacilityData.FacCateData>) serialFacCate;
-        researchDataList = (List<ResearchRegData.ResearchData>) serialResearch;
-
-        requestResearchCheckData();
-
+        initSpinner();
         initDrawing();
 
         // 집계표
@@ -212,6 +182,63 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     @Override
+    public void onBackPressed() {
+        if (dataBinding.layoutResearchPopup.getVisibility() == View.VISIBLE) {
+            dataBinding.researchPopup.btnPopupClose.performClick();
+        } else if (dataBinding.layoutPicturePopup.getVisibility() == View.VISIBLE) {
+            dataBinding.layoutPicturePopup.performClick();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        hideKeyboard(this);
+        switch (v.getId()) {
+            case R.id.btn_home: DrawingsListActivity.isHomeReturn = true;
+            case R.id.btn_close: finish(); break;
+            case R.id.layout_picture_popup: dataBinding.layoutPicturePopup.setVisibility(View.INVISIBLE); break;
+            case R.id.btn_zoom_in: calculateScale(true); break;
+            case R.id.btn_zoom_out: calculateScale(false); break;
+            case R.id.btn_table_handle:
+                boolean isSelected = dataBinding.btnTableHandle.isSelected();
+                dataBinding.btnTableHandle.setSelected(!isSelected);
+                dataBinding.layoutTable.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentScale == 2) {
+                            dataBinding.imgDrawings.animateScale(0.1f).withDuration(10).start();
+                        }
+                    }
+                }, 10);
+                break;
+
+            // table
+            case R.id.btn_select:
+                String btnText = dataBinding.btnSelect.getText().toString();
+
+                dataBinding.btnSelect.setText(btnText.equals(getString(R.string.select)) ? R.string.cancel : R.string.select);
+                dataBinding.txtNumber.setVisibility(btnText.equals(getString(R.string.select)) ? View.GONE : View.VISIBLE);
+                dataBinding.checkboxNumber.setVisibility(btnText.equals(getString(R.string.select)) ? View.VISIBLE : View.GONE);
+                dataBinding.btnDelete.setVisibility(btnText.equals(getString(R.string.select)) ? View.VISIBLE : View.GONE);
+
+                tableListAdapter.setCheckable(btnText.equals(getString(R.string.select)));
+                break;
+            case R.id.btn_delete:
+                //TODO delete api and table data list refresh
+                break;
+
+            // popup
+            case R.id.btn_reg:
+                requestRegisterPoint();
+                break;
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Uri photoUri = getImageResult(this, requestCode, resultCode, data);
         if (photoUri != null) {
@@ -228,161 +255,58 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         stopAudio();
     }
 
-    private void initPlanNameSpinner() {
-        List<String> nameList = new ArrayList<>();
-        for (PlanDataList.PlanData data : planList) {
-            if (SharedPrefUtil.getBoolean(data.getPlan_img_file(), false)) {
-                nameList.add(data.getPlan_name());
-            }
-        }
+    // 스피너 초기화
+    private void initSpinner() {
+        List<MenuCheckData> facCateList = projectFacData.getFacCateList();
+        List<MenuCheckData> architectureList = projectFacData.getFacCateDataID(researchSelectData.getFac_cate_id()).getArchitectureList();
+        List<MenuCheckData> researchList = projectFacData.getResearchList();
 
-        dataBinding.spnPlan.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, nameList));
+        dataBinding.spnCategory.setAdapter(new DrawingsSpinnerAdapter(this, R.layout.item_spinner, facCateList));
+        dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(this, R.layout.item_spinner, architectureList));
+        dataBinding.spnResearch.setAdapter(new DrawingsSpinnerAdapter(this, R.layout.item_spinner, researchList));
+        dataBinding.spnPlan.setAdapter(new DrawingsPlanSpinnerAdapter(this, R.layout.item_spinner, planList));
 
-        for (int i = 0; i < planList.size(); i++) {
-            if (planList.get(i).getPlan_id() == planId) {
-                dataBinding.spnPlan.setSelection(i);
-            }
-        }
+        dataBinding.spnCategory.setSelection(getSpinnerSelectIndex(facCateList, researchSelectData.getFac_cate_id()));
+        dataBinding.spnArchitecture.setSelection(getSpinnerSelectIndex(architectureList, researchSelectData.getStructure_id()));
+        dataBinding.spnResearch.setSelection(getSpinnerSelectIndex(researchList, researchSelectData.getResearch_type_id()));
+        dataBinding.spnPlan.setSelection(planIndex);
+
+        setFacilitySpinnerListener(dataBinding.spnCategory, researchSelectData.getFac_cate_id());
+        setFacilitySpinnerListener(dataBinding.spnArchitecture, researchSelectData.getStructure_id());
+        setFacilitySpinnerListener(dataBinding.spnResearch, researchSelectData.getResearch_type_id());
         dataBinding.spnPlan.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                planId = planList.get(position).getPlan_id();
-                if (!isFirst) {
-                    changeDrawingsImage(position);
+                if (position != planIndex) {
+                    planIndex = position;
                 }
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 
-    private void changeDrawingsImage(int index) {
-        planFile = planList.get(index).getPlan_img_file();
-        initDrawing();
+    // 스피너 Item ID에 맞는 index값 가져오기
+    private int getSpinnerSelectIndex(List<MenuCheckData> list, int itemId) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getItem_id() == itemId) { return i; }
+        }
+        return 0;
     }
 
-    private void initResearchSpinner() {
-        List<String> titleList = new ArrayList<>();
-        for (MenuCheckData data : newResearchList) {
-            titleList.add(data.getItem_name());
-        }
-
-        dataBinding.spnResearch.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
-
-        for (int i = 0; i < newResearchList.size(); i++) {
-            if (newResearchList.get(i).isChecked()) {
-                dataBinding.spnResearch.setSelection(i);
-                selectedResearchId = newResearchList.get(i).getItem_id();
-            }
-        }
-        dataBinding.spnResearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    // 스피너 리스너 설정
+    private void setFacilitySpinnerListener(final AppCompatSpinner spinner, final int selectItemId) {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (MenuCheckData data : newResearchList) {
-                    data.setChecked(false);
-                }
-                newResearchList.get(position).setChecked(true);
-                selectedResearchId = newResearchList.get(position).getItem_id();
-                if (!isFirst) {
+                MenuCheckData data = (MenuCheckData) spinner.getSelectedItem();
+                if (data.getItem_id() != selectItemId) {
                     showDrawingsSelectDialog();
                 }
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
-    }
-
-    private void initFacCateSpinner() {
-        List<String> titleList = new ArrayList<>();
-        for (MenuCheckData data : newFacCateList) {
-            titleList.add(data.getItem_name());
-        }
-
-        dataBinding.spnCategory.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
-        for (int i = 0; i < newFacCateList.size(); i++) {
-            if (newFacCateList.get(i).isChecked()) {
-                dataBinding.spnCategory.setSelection(i);
-                selectedFacCateId = newFacCateList.get(i).getItem_id();
-            }
-        }
-        dataBinding.spnCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (MenuCheckData data : newFacCateList) {
-                    data.setChecked(false);
-                }
-                newFacCateList.get(position).setChecked(true);
-                selectedFacCateId = newFacCateList.get(position).getItem_id();
-                setArchitectureData();
-                if (!isFirst) {
-                    showDrawingsSelectDialog();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-    private void initArchitectureSpinner() {
-        List<String> titleList = new ArrayList<>();
-        for (MenuCheckData data : newArchList) {
-            titleList.add(data.getItem_name());
-        }
-
-        dataBinding.spnArchitecture.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
-        for (int i = 0; i < newArchList.size(); i++) {
-            if (newArchList.get(i).isChecked()) {
-                dataBinding.spnArchitecture.setSelection(i);
-                selectedArchitectureId = newArchList.get(i).getItem_id();
-            }
-        }
-        dataBinding.spnArchitecture.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (MenuCheckData data : newArchList) {
-                    data.setChecked(false);
-                }
-                newArchList.get(position).setChecked(true);
-                selectedArchitectureId = newArchList.get(position).getItem_id();
-                if (!isFirst) {
-                    showDrawingsSelectDialog();
-                }
-                isFirst = false;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-    private void setArchitectureData() {
-        newArchList.clear();
-        int position = 0;
-        for (int i = 0; i < newFacCateList.size(); i++) {
-            if (newFacCateList.get(i).isChecked()) {
-                position = i;
-            }
-        }
-        for (MenuCheckData architectureData : facCateDataList.get(position).getArchitectureList()) {
-            if (architectureData.getItem_id() == researchSelectData.getStructure_id()) {
-                MenuCheckData menuCheckData = new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name());
-                menuCheckData.setChecked(true);
-                newArchList.add(menuCheckData);
-            } else {
-                newArchList.add(new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name()));
-            }
-        }
-        initArchitectureSpinner();
     }
 
     // 도면 이미지 Initialize
@@ -489,24 +413,28 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.spnDirection.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getDirectionSpnList()));
         dataBinding.researchPopup.inputView.spnDefect.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getDefectSpnList()));
         dataBinding.researchPopup.inputView.spnArchitecture.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getArchitectureSpnList()));
-        dataBinding.researchPopup.inputView.spnLength.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputSizeDataArray));
-        dataBinding.researchPopup.inputView.spnWidth.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputSizeDataArray));
-        dataBinding.researchPopup.inputView.spnHeight.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, inputSizeDataArray));
+        dataBinding.researchPopup.inputView.spnLength.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getLengthSpnList()));
+        dataBinding.researchPopup.inputView.spnWidth.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getWidthSpnList()));
+        dataBinding.researchPopup.inputView.spnHeight.setAdapter(new DrawingInputSpinnerAdapter(activity, R.layout.item_spinner_research, pointRegDataList.getHeightSpnList()));
 
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnMaterial, dataBinding.researchPopup.inputView.editMaterial, dataBinding.researchPopup.inputView.txtMaterial);
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnDirection, dataBinding.researchPopup.inputView.editDirection, dataBinding.researchPopup.inputView.txtDirection);
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnDefect, dataBinding.researchPopup.inputView.editDefect, dataBinding.researchPopup.inputView.txtDefect);
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnArchitecture, dataBinding.researchPopup.inputView.editArchitecture, dataBinding.researchPopup.inputView.txtArchitecture);
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnLength, dataBinding.researchPopup.inputView.editLength, dataBinding.researchPopup.inputView.txtLength);
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnWidth, dataBinding.researchPopup.inputView.editWidth, dataBinding.researchPopup.inputView.txtWidth);
-        setSpinnerListener(dataBinding.researchPopup.inputView.spnHeight, dataBinding.researchPopup.inputView.editHeight, dataBinding.researchPopup.inputView.txtHeight);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnMaterial, dataBinding.researchPopup.inputView.layoutMaterial);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnDirection, dataBinding.researchPopup.inputView.layoutDirection);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnDefect, dataBinding.researchPopup.inputView.layoutDefect);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnArchitecture, dataBinding.researchPopup.inputView.layoutArchitecture);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnLength, dataBinding.researchPopup.inputView.layoutLength);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnWidth, dataBinding.researchPopup.inputView.layoutWidth);
+        setInputSpinnerListener(dataBinding.researchPopup.inputView.spnHeight, dataBinding.researchPopup.inputView.layoutHeight);
 
         View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 resetInputPopupContentLayout();
                 if (hasFocus) {
-                    ((ConstraintLayout) v.getParent()).setSelected(true);
+                    if (v.getParent().getParent() instanceof ConstraintLayout) {
+                        ((ConstraintLayout) v.getParent().getParent()).setSelected(true);
+                    } else {
+                        ((ConstraintLayout) v.getParent()).setSelected(true);
+                    }
                 }
             }
         };
@@ -523,6 +451,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.layoutDirection.setVisibility(pointRegDataList.getDirection_list().isEmpty() ? View.GONE : View.VISIBLE);
         dataBinding.researchPopup.inputView.layoutDefect.setVisibility(pointRegDataList.getDefect_list().isEmpty() ? View.GONE : View.VISIBLE);
         dataBinding.researchPopup.inputView.layoutArchitecture.setVisibility(pointRegDataList.getArchitecture_list().isEmpty() ? View.GONE : View.VISIBLE);
+        dataBinding.researchPopup.inputView.layoutLength.setVisibility(pointRegDataList.getLength_list().isEmpty() ? View.GONE : View.VISIBLE);
+        dataBinding.researchPopup.inputView.layoutWidth.setVisibility(pointRegDataList.getWidth_list().isEmpty() ? View.GONE : View.VISIBLE);
+        dataBinding.researchPopup.inputView.layoutHeight.setVisibility(pointRegDataList.getHeight_list().isEmpty() ? View.GONE : View.VISIBLE);
 
         // 사진 탭
         inputPopupPictureListAdapter = new InputPopupPictureListAdapter(this, pictureDataList);
@@ -551,22 +482,34 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     // 도면 입력 팝업 Spinner 설정
-    private void setSpinnerListener(AppCompatSpinner spinner, final EditText editText, final TextView textView) {
+    private void setInputSpinnerListener(AppCompatSpinner spinner, View parent) {
+        final TextView txtSpnHint = parent.findViewWithTag(getString(R.string.popup_reg_research_tag_spinner_hint));
+        final TextView txtInputHint = parent.findViewWithTag(getString(R.string.popup_reg_research_tag_input_hint));
+        final EditText editInput = parent.findViewWithTag(getString(R.string.popup_reg_research_tag_input));
+
         spinner.setSelection(spinner.getCount());
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (parent.getSelectedItemPosition() == parent.getCount() - 1) {
-                    editText.setText("");
-                    textView.setText("");
-                    editText.setVisibility(View.VISIBLE);
-                    textView.setVisibility(View.GONE);
-                    showKeyboard(activity, editText);
-                } else if (parent.getSelectedItemPosition() != parent.getCount()) {
-                    editText.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
-                    textView.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
-                    editText.setVisibility(View.GONE);
-                    textView.setVisibility(View.VISIBLE);
+                if (txtInputHint == null) {
+                    if (parent.getSelectedItemPosition() == parent.getCount() - 1) {
+                        editInput.setText("");
+                        txtSpnHint.setText("");
+                        editInput.setVisibility(View.VISIBLE);
+                        txtSpnHint.setVisibility(View.GONE);
+                        showKeyboard(activity, editInput);
+                    } else if (parent.getSelectedItemPosition() != parent.getCount()) {
+                        editInput.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
+                        txtSpnHint.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
+                        editInput.setVisibility(View.GONE);
+                        txtSpnHint.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (parent.getSelectedItemPosition() != parent.getCount()) {
+                        txtSpnHint.setText(parent.getItemAtPosition(parent.getSelectedItemPosition() + 1).toString());
+                        txtInputHint.setVisibility(View.GONE);
+                        editInput.setVisibility(View.VISIBLE);
+                    }
                 }
             }
             @Override
@@ -584,6 +527,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.spnDirection.setSelection(-1);
         dataBinding.researchPopup.inputView.spnDefect.setSelection(-1);
         dataBinding.researchPopup.inputView.spnArchitecture.setSelection(-1);
+        dataBinding.researchPopup.inputView.spnLength.setSelection(-1);
+        dataBinding.researchPopup.inputView.spnWidth.setSelection(-1);
+        dataBinding.researchPopup.inputView.spnHeight.setSelection(-1);
+        dataBinding.researchPopup.inputView.editLength.setVisibility(View.GONE);
+        dataBinding.researchPopup.inputView.editWidth.setVisibility(View.GONE);
+        dataBinding.researchPopup.inputView.editHeight.setVisibility(View.GONE);
         dataBinding.researchPopup.inputView.editLength.setText("");
         dataBinding.researchPopup.inputView.editWidth.setText("");
         dataBinding.researchPopup.inputView.editHeight.setText("");
@@ -656,73 +605,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.pictureView.txtPictureCount.setText("(" + count + "건)");
     }
 
-    @Override
-    public void onBackPressed() {
-        if (dataBinding.layoutResearchPopup.getVisibility() == View.VISIBLE) {
-            dataBinding.researchPopup.btnPopupClose.performClick();
-        } else if (dataBinding.layoutPicturePopup.getVisibility() == View.VISIBLE) {
-            dataBinding.layoutPicturePopup.performClick();
-        } else {
-            finish();
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        hideKeyboard(this);
-        switch (v.getId()) {
-            case R.id.btn_home: DrawingsListActivity.isHomeReturn = true;
-            case R.id.btn_close: finish(); break;
-            case R.id.layout_picture_popup:
-                dataBinding.layoutPicturePopup.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.btn_zoom_in:
-                calculateScale(true);
-                break;
-            case R.id.btn_zoom_out:
-                calculateScale(false);
-                break;
-            case R.id.btn_table_handle:
-                boolean isSelected = dataBinding.btnTableHandle.isSelected();
-                dataBinding.btnTableHandle.setSelected(!isSelected);
-                dataBinding.layoutTable.setVisibility(isSelected ? View.VISIBLE : View.GONE);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (currentScale == 2) {
-                            dataBinding.imgDrawings.animateScale(0.1f).withDuration(10).start();
-                        }
-                    }
-                }, 10);
-                break;
-
-            // table
-            case R.id.btn_select:
-                String btnText = dataBinding.btnSelect.getText().toString();
-
-                dataBinding.btnSelect.setText(btnText.equals(getString(R.string.select)) ? R.string.cancel : R.string.select);
-                dataBinding.txtNumber.setVisibility(btnText.equals(getString(R.string.select)) ? View.GONE : View.VISIBLE);
-                dataBinding.checkboxNumber.setVisibility(btnText.equals(getString(R.string.select)) ? View.VISIBLE : View.GONE);
-                dataBinding.btnDelete.setVisibility(btnText.equals(getString(R.string.select)) ? View.VISIBLE : View.GONE);
-
-                tableListAdapter.setCheckable(btnText.equals(getString(R.string.select)));
-                break;
-
-            case R.id.btn_delete:
-                //TODO delete api and table data list refresh
-                break;
-
-            // popup
-            case R.id.btn_reg:
-                //TODO
-                dataBinding.layoutResearchPopup.setVisibility(View.GONE);
-//                dataBinding.imgDrawings.addPin(regPointData);
-                break;
-
-        }
-    }
-
     // 도면 입력 팝업 상단 탭 클릭 리스너
     public void onInputPopupTabClick(View v) {
         hideKeyboard(this);
@@ -757,6 +639,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         regPointData.setType(type);
     }
 
+    // 도면 입력 팝업 입력 탭 내용 클릭
     public void onInputPopupContentClick(View v) {
         hideKeyboard(this);
         resetInputPopupContentLayout();
@@ -767,50 +650,34 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             case R.id.layout_direction: dataBinding.researchPopup.inputView.spnDirection.performClick(); break;
             case R.id.layout_defect: dataBinding.researchPopup.inputView.spnDefect.performClick(); break;
             case R.id.layout_architecture: dataBinding.researchPopup.inputView.spnArchitecture.performClick(); break;
-            case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.inputView.editCount); break;
-
-            case R.id.layout_length_select:
-                dataBinding.researchPopup.inputView.spnLength.performClick();
-                dataBinding.researchPopup.inputView.layoutLength.setSelected(true);
-                break;
+            case R.id.layout_length: dataBinding.researchPopup.inputView.spnLength.performClick(); break;
             case R.id.layout_length_input:
                 dataBinding.researchPopup.inputView.layoutLength.setSelected(true);
-                String length = dataBinding.researchPopup.inputView.txtLength.getText().toString();
-                if (length.isEmpty()) {
+                if (dataBinding.researchPopup.inputView.editLength.getVisibility() == View.GONE) {
                     dataBinding.researchPopup.inputView.spnLength.performClick();
                 } else {
-                    showKeyboard(this, dataBinding.researchPopup.inputView.editLengthInput);
+                    showKeyboard(this, dataBinding.researchPopup.inputView.editLength);
                 }
                 break;
-
-            case R.id.layout_width_select:
-                dataBinding.researchPopup.inputView.spnWidth.performClick();
-                dataBinding.researchPopup.inputView.layoutWidth.setSelected(true);
-                break;
+            case R.id.layout_width: dataBinding.researchPopup.inputView.spnWidth.performClick(); break;
             case R.id.layout_width_input:
                 dataBinding.researchPopup.inputView.layoutWidth.setSelected(true);
-                String width = dataBinding.researchPopup.inputView.txtWidth.getText().toString();
-                if (width.isEmpty()) {
+                if (dataBinding.researchPopup.inputView.editWidth.getVisibility() == View.GONE) {
                     dataBinding.researchPopup.inputView.spnWidth.performClick();
                 } else {
-                    showKeyboard(this, dataBinding.researchPopup.inputView.editWidthInput);
+                    showKeyboard(this, dataBinding.researchPopup.inputView.editWidth);
                 }
                 break;
-
-            case R.id.layout_height_select:
-                dataBinding.researchPopup.inputView.spnHeight.performClick();
-                dataBinding.researchPopup.inputView.layoutHeight.setSelected(true);
-                break;
+            case R.id.layout_height: dataBinding.researchPopup.inputView.spnHeight.performClick(); break;
             case R.id.layout_height_input:
                 dataBinding.researchPopup.inputView.layoutHeight.setSelected(true);
-                String height = dataBinding.researchPopup.inputView.txtHeight.getText().toString();
-                if (height.isEmpty()) {
+                if (dataBinding.researchPopup.inputView.editHeight.getVisibility() == View.GONE) {
                     dataBinding.researchPopup.inputView.spnHeight.performClick();
                 } else {
-                    showKeyboard(this, dataBinding.researchPopup.inputView.editHeightInput);
+                    showKeyboard(this, dataBinding.researchPopup.inputView.editHeight);
                 }
                 break;
-
+            case R.id.layout_count: showKeyboard(this, dataBinding.researchPopup.inputView.editCount); break;
             case R.id.layout_picture_register:
                 if (requestPermission(this, IMAGE_PERMISSION, IMAGE_PERMISSION_CODE)) {
                     getFileChooserImage(this);
@@ -818,6 +685,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 break;
         }
     }
+
+    // 도면 입력 팝업 입력 탭 선택 초기화
     private void resetInputPopupContentLayout() {
         dataBinding.researchPopup.inputView.layoutMaterial.setSelected(false);
         dataBinding.researchPopup.inputView.layoutDirection.setSelected(false);
@@ -861,7 +730,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     private void recording() {
-
         dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.GONE);
         dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.VISIBLE);
         recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (recordDataList.size() + 1) + "(자동완성)";
@@ -894,71 +762,31 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // 도면 선택 다이얼로그 출력
     private void showDrawingsSelectDialog() {
-        final DrawingsSelectDialog dialog = new DrawingsSelectDialog(this);
-//        dialog.selectInputListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dialog.dismiss();
-//            }
-//        });
-        dialog.selectResetInputListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        dialog.selectOtherListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
-    }
-
-    // 조사내용 데이터 확인 API 호출
-    private void requestResearchCheckData() {
-        startLoading();
-        RetrofitClient.getRetrofitApi().researchCheckData(UserData.getInstance().getUserId(), researchId, projectId, facilityId, selectedFacCateId, selectedArchitectureId, selectedResearchId).enqueue(new RetrofitCallbackModel<ResearchCheckData>() {
-            @Override
-            public void onResponseData(ResearchCheckData data) {
-                researchSelectData = data.getResearch_data();
-
-                for (ResearchRegData.ResearchData researchData : researchDataList) {
-                    if (researchData.getItem_id() == researchSelectData.getResearch_type_id()) {
-                        MenuCheckData menuCheckData = new MenuCheckData(researchData.getItem_id(), researchData.getItem_name());
-                        menuCheckData.setChecked(true);
-                        newResearchList.add(menuCheckData);
-                    } else {
-                        newResearchList.add(new MenuCheckData(researchData.getItem_id(), researchData.getItem_name()));
+        DrawingsSelectDialog.builder(this)
+                .setBtnResetListener(new DrawingsSelectDialog.BtnClickListener() {
+                    @Override
+                    public void onClick(DrawingsSelectDialog dialog) {
+                        dialog.dismiss();
                     }
-                }
-                initResearchSpinner();
-
-                newFacCateList.clear();
-                for (ResearchRegData.FacilityData.FacCateData facData : facCateDataList) {
-                    if (facData.getItem_id() == researchSelectData.getFac_cate_id()) {
-                        MenuCheckData menuCheckData = new MenuCheckData(facData.getItem_id(), facData.getItem_name());
-                        menuCheckData.setChecked(true);
-                        newFacCateList.add(menuCheckData);
-                    } else {
-                        newFacCateList.add(new MenuCheckData(facData.getItem_id(), facData.getItem_name()));
+                })
+                .setBtnOtherListener(new DrawingsSelectDialog.BtnClickListener() {
+                    @Override
+                    public void onClick(DrawingsSelectDialog dialog) {
+                        dialog.dismiss();
                     }
-                }
-                initFacCateSpinner();
-                endLoading();
-            }
-
-            @Override
-            public void onCallbackFinish() {
-                startLoading();
-            }
-        });
+                })
+                .setBtnCloseListener(new DrawingsSelectDialog.BtnClickListener() {
+                    @Override
+                    public void onClick(DrawingsSelectDialog dialog) {
+                        initSpinner();
+                    }
+                })
+                .show();
     }
 
     // 도면 입력 데이터 리스트
     private void requestPointList() {
-        RetrofitClient.getRetrofitApi().researchPointList(UserData.getInstance().getUserId(), researchId, planId).enqueue(new RetrofitCallbackModel<PointListData>() {
+        RetrofitClient.getRetrofitApi().researchPointList(UserData.getInstance().getUserId(), researchSelectData.getResearch_id(), planId).enqueue(new RetrofitCallbackModel<PointListData>() {
             @Override
             public void onResponseData(PointListData data) {
                 pointList = data.getPoint_list();
@@ -1030,9 +858,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // 도면 입력 등록 팝업 데이터
     private void requestPointRegisterData() {
-        RetrofitClient.getRetrofitApi().researchPointRegisterData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PointRegisterData>() {
+        RetrofitClient.getRetrofitApi().researchPointRegisterData(UserData.getInstance().getUserId(), researchSelectData.getResearch_id()).enqueue(new RetrofitCallbackModel<PointInputData>() {
             @Override
-            public void onResponseData(PointRegisterData data) {
+            public void onResponseData(PointInputData data) {
                 data.setSpinnerList();
                 pointRegDataList = data;
                 initInputPopup();
@@ -1040,5 +868,143 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             @Override
             public void onCallbackFinish() {}
         });
+    }
+
+    // 도면 입력 등록
+    private void requestRegisterPoint() {
+        if (regPointData != null) {
+            int pointX = (int) regPointData.getPoint().x;
+            int pointY = (int) regPointData.getPoint().y;
+            String material = dataBinding.researchPopup.inputView.editMaterial.getText().toString().trim();
+            String direction = dataBinding.researchPopup.inputView.editDirection.getText().toString().trim();
+            String defect = dataBinding.researchPopup.inputView.editDefect.getText().toString().trim();
+            String architecture = dataBinding.researchPopup.inputView.editArchitecture.getText().toString().trim();
+            String lengthUnit = dataBinding.researchPopup.inputView.txtLength.getText().toString().trim();
+            String length = dataBinding.researchPopup.inputView.editLength.getText().toString().trim();
+            String widthUnit = dataBinding.researchPopup.inputView.txtWidth.getText().toString().trim();
+            String width = dataBinding.researchPopup.inputView.editWidth.getText().toString().trim();
+            String heightUnit = dataBinding.researchPopup.inputView.txtHeight.getText().toString().trim();
+            String height = dataBinding.researchPopup.inputView.editHeight.getText().toString().trim();
+            String countStr = dataBinding.researchPopup.inputView.editCount.getText().toString().trim();
+
+            if (!pointRegDataList.getDefect_list().isEmpty() && defect.equals("")) {
+                showToast(R.string.toast_popup_reg_research_not_defect);
+                return;
+            }
+            if (!lengthUnit.equals("") && length.equals("")) {
+                showToast(R.string.toast_popup_reg_research_not_length);
+                return;
+            }
+            if (!widthUnit.equals("") && width.equals("")) {
+                showToast(R.string.toast_popup_reg_research_not_width);
+                return;
+            }
+            if (!heightUnit.equals("") && height.equals("")) {
+                showToast(R.string.toast_popup_reg_research_not_height);
+                return;
+            }
+            if (countStr.equals("")) {
+                showToast(R.string.toast_popup_reg_research_not_count);
+                return;
+            }
+            if (researchSelectData.getTot_count() < researchSelectData.getReg_count() + Integer.parseInt(countStr)) {
+                showToast(R.string.toast_popup_reg_research_over_count);
+                return;
+            }
+
+            Map<String, RequestBody> partMap = new HashMap<>();
+            if (!material.equals("")) { partMap.put("material", RequestBody.create(MediaType.parse("multipart/form-data"), material)); }
+            if (!direction.equals("")) { partMap.put("direction", RequestBody.create(MediaType.parse("multipart/form-data"), direction)); }
+            if (!defect.equals("")) { partMap.put("defect", RequestBody.create(MediaType.parse("multipart/form-data"), defect)); }
+            if (!architecture.equals("")) { partMap.put("architecture", RequestBody.create(MediaType.parse("multipart/form-data"), architecture)); }
+            if (!lengthUnit.equals("")) { partMap.put("lengthUnit", RequestBody.create(MediaType.parse("multipart/form-data"), lengthUnit)); }
+            if (!length.equals("")) { partMap.put("length", RequestBody.create(MediaType.parse("multipart/form-data"), length)); }
+            if (!widthUnit.equals("")) { partMap.put("widthUnit", RequestBody.create(MediaType.parse("multipart/form-data"), widthUnit)); }
+            if (!width.equals("")) { partMap.put("width", RequestBody.create(MediaType.parse("multipart/form-data"), width)); }
+            if (!heightUnit.equals("")) { partMap.put("heightUnit", RequestBody.create(MediaType.parse("multipart/form-data"), heightUnit)); }
+            if (!height.equals("")) { partMap.put("height", RequestBody.create(MediaType.parse("multipart/form-data"), height)); }
+
+            List<MultipartBody.Part> fileList = new ArrayList<>();
+            if (inputPopupPictureListAdapter.getUploadList().size() > 0) {
+                for (Uri uri : inputPopupPictureListAdapter.getUploadList()) {
+                    try {
+                        File file = FileUtil.from(this, uri);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                        MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+                        fileList.add(multipartBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (recordListAdapter.getList().size() > 0) {
+                List<Integer> voiceTimeList = new ArrayList<>();
+                for (RecordData data : recordListAdapter.getList()) {
+                    try {
+                        File file = data.getRecordFile();
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                        MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("voice", URLEncoder.encode(file.getName(), "utf-8"), requestBody);
+                        fileList.add(multipartBody);
+                        voiceTimeList.add(data.getRecordTime());
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                partMap.put("voice_time", RequestBody.create(MediaType.parse("multipart/form-data"), voiceTimeList.toString()));
+            }
+            if (fileList.size() == 0) {
+                fileList = null;
+            }
+
+            startLoading();
+            RetrofitClient.getRetrofitApi().researchRegisterPoint(UserData.getInstance().getUserId(), researchSelectData.getResearch_id(), planId, pointX, pointY, Integer.parseInt(countStr), partMap, fileList)
+                    .enqueue(new RetrofitCallbackModel<PointResponseData>() {
+                        @Override
+                        public void onResponseData(PointResponseData data) {
+                            dataBinding.layoutResearchPopup.setVisibility(View.GONE);
+                            setResponseImage(data.getPoint_data());
+                        }
+                        @Override
+                        public void onCallbackFinish() { endLoading(); }
+                    });
+        }
+    }
+
+    // 도면 입력 수정
+    private void requestUpdatePoint() {
+
+    }
+
+    // 도면 입력 삭제
+    private void requestDeletePoint() {
+
+    }
+
+    private void setResponseImage(final PointData data) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!data.getPoint_img().isEmpty()) {
+                    List<String> pathList = new ArrayList<>();
+                    for (PointData.PointImg img : data.getPoint_img()) {
+                        pathList.add(img.getImg_url());
+                    }
+                    List<Bitmap> bitmapList = FTPConnectUtil.getInstance().ftpImageBitmap(pathList);
+                    for (int i = 0; i < bitmapList.size(); i++) {
+                        data.getPoint_img().get(i).setImgBitmap(bitmapList.get(i));
+                    }
+                }
+                data.setDrawingPointData();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataBinding.imgDrawings.addPin(data);
+                        Log.e(TAG, pointList.size() + "");
+                        endLoading();
+                    }
+                });
+            }
+        }).start();
     }
 }

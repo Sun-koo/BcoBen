@@ -150,6 +150,9 @@ public class RecordListAdapter extends RecyclerView.Adapter<RecordListAdapter.Re
         this.list = list;
         notifyDataSetChanged();
     }
+    public List<RecordData> getList() {
+        return list;
+    }
     public void addData(RecordData data) {
         list.add(data);
         notifyDataSetChanged();

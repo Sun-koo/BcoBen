@@ -22,31 +22,24 @@ public class DrawingsListData {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public Bitmap getBitmap() {
         return bitmap;
     }
-
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
-
     public String getFilePath() {
         return filePath;
     }
-
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }

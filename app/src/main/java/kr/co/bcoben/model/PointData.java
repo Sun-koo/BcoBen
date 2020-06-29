@@ -92,6 +92,7 @@ public class PointData {
             for (PointImg img : point_img) {
                 if (isFirst) {
                     drawingPointData.setRegImage(img.getImgBitmap());
+                    isFirst = false;
                 }
                 regImageList.add(img.getImgBitmap());
             }

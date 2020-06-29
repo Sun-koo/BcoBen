@@ -3,7 +3,7 @@ package kr.co.bcoben.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PointRegisterData implements DataModel {
+public class PointInputData implements DataModel {
     private List<ItemData> material_list;
     private List<ItemData> direction_list;
     private List<ItemData> defect_list;

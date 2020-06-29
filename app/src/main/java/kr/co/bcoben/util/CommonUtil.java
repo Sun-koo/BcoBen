@@ -187,7 +187,7 @@ public class CommonUtil {
         if (takePictureIntent.resolveActivity(act.getPackageManager()) != null) {
             if (filename == null) {
                 filename = System.currentTimeMillis() + ".jpg";
-            } else if (!filename.contains("\\.")) {
+            } else if (!filename.contains(".")) {
                 filename += ".jpg";
             }
             File photoFile = new File(getImagePath(), filename);
@@ -204,29 +204,38 @@ public class CommonUtil {
         if (resultCode == RESULT_OK) {
             String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg");
             switch (requestCode) {
-                case IMAGE_FROM_CAMERA:
-                    MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
-                        @Override
-                        public void onScanCompleted(String path, Uri uri) {
-                            Log.e("getImageResult", path);
-                        }
-                    });
+                case IMAGE_FROM_CAMERA: {
+//                    MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+//                        @Override
+//                        public void onScanCompleted(String path, Uri uri) {
+//                            Log.e("getImageResult", path);
+//                        }
+//                    });
+                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    mediaScanIntent.setData(photoUri);
+                    act.sendBroadcast(mediaScanIntent);
                     return photoUri;
-                case IMAGE_FROM_GALLERY:
+                }
+                case IMAGE_FROM_GALLERY: {
                     photoUri = data.getData();
                     return photoUri;
-                case IMAGE_FROM_GAL_CAM:
+                }
+                case IMAGE_FROM_GAL_CAM: {
                     if (data != null && data.getData() != null) {
                         photoUri = data.getData();
                     } else {
-                        MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String path, Uri uri) {
-                                Log.e("getImageResult", path);
-                            }
-                        });
+//                        MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+//                            @Override
+//                            public void onScanCompleted(String path, Uri uri) {
+//                                Log.e("getImageResult", path);
+//                            }
+//                        });
+                        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        mediaScanIntent.setData(photoUri);
+                        act.sendBroadcast(mediaScanIntent);
                     }
                     return photoUri;
+                }
             }
         }
         return null;

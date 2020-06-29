@@ -2,24 +2,24 @@ package kr.co.bcoben.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
-import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingsListAdapter;
+import kr.co.bcoben.adapter.DrawingsSpinnerAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
 import kr.co.bcoben.model.MenuCheckData;
-import kr.co.bcoben.model.ResearchRegData;
+import kr.co.bcoben.model.ResearchCheckData;
 import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.util.FTPConnectUtil;
 import kr.co.bcoben.model.PlanDataList;
@@ -32,17 +32,13 @@ import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBinding> implements View.OnClickListener {
 
-    static boolean isHomeReturn = false;
+    public static boolean isHomeReturn = false;
+    private final int DRAWING_ACTIVITY_REQUEST = 1001;
+
     private ResearchSpinnerData.ResearchSelectData researchSelectData;
-    private List<MenuCheckData> newFacCateList = new ArrayList<>();
-    private List<MenuCheckData> newArchList = new ArrayList<>();
-    private List<MenuCheckData> newResearchList = new ArrayList<>();
-    private List<ResearchRegData.FacilityData.FacCateData> facCateDataList = new ArrayList<>();
-    private List<ResearchRegData.ResearchData> researchDataList = new ArrayList<>();
+    private ResearchSpinnerData.ProjectFacData projectFacData;
     private int researchId = -1;
-    private int selectedResearchId = 0;
-    private int selectedFacCateId = 0;
-    private int selectedArchitectureId = 0;
+    private boolean isFirst = true;
 
     private DrawingsListAdapter drawingsListAdapter;
     private List<PlanDataList.PlanData> planList = new ArrayList<>();
@@ -54,24 +50,17 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
 
     @Override
     protected void initView() {
-//        listCategory = getIntent().getStringArrayListExtra("category_list");
-//        listArchitecture = getIntent().getStringArrayListExtra("architecture_list");
-//        listResearch = getIntent().getStringArrayListExtra("research_list");
-//        listFacility = getIntent().getStringArrayListExtra("facility_list");
-//        category = getIntent().getStringExtra("category");
-//        architecture = getIntent().getStringExtra("architecture");
-//        research = getIntent().getStringExtra("research");
-//        facility = getIntent().getStringExtra("facility");
-
-//        dataBinding.spnCategory.setEnabled(false);
-//        dataBinding.spnArchitecture.setEnabled(false);
+        if (researchId == -1) {
+            researchId = getIntent().getIntExtra("research_id", 0);
+            if (researchId == 0) {
+                showToast(R.string.toast_error_invalidate);
+                finish();
+            }
+        }
 
         drawingsListAdapter = new DrawingsListAdapter(DrawingsListActivity.this, planList);
         dataBinding.recyclerDrawings.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
         dataBinding.recyclerDrawings.setAdapter(drawingsListAdapter);
-
-        requestSpinnerData();
-        requestDrawingsList();
     }
 
     @Override
@@ -80,7 +69,32 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         if (isHomeReturn) {
             isHomeReturn = false;
             finish();
-            return;
+        }
+
+        drawingsListAdapter.notifyDataSetChanged();
+        if (isFirst) {
+            requestSpinnerData();
+            isFirst = false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == DRAWING_ACTIVITY_REQUEST) {
+                if (data != null) {
+                    int facCateId = data.getIntExtra("fac_cate_id", 0);
+                    int structureId = data.getIntExtra("structure_id", 0);
+                    int researchTypeId = data.getIntExtra("research_type_id", 0);
+
+                    researchSelectData.setFac_cate_id(facCateId);
+                    researchSelectData.setStructure_id(structureId);
+                    researchSelectData.setResearch_type_id(researchTypeId);
+
+                    initSpinner();
+                }
+            }
         }
     }
 
@@ -103,125 +117,64 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         }
     }
 
-    private void initResearchSpinner() {
-        List<String> titleList = new ArrayList<>();
-        for (MenuCheckData data : newResearchList) {
-            titleList.add(data.getItem_name());
-        }
-
-        dataBinding.spnResearch.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
-
-        for (int i = 0; i < newResearchList.size(); i++) {
-            if (newResearchList.get(i).isChecked()) {
-                dataBinding.spnResearch.setSelection(i);
-                selectedResearchId = newResearchList.get(i).getItem_id();
-            }
-        }
-        dataBinding.spnResearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    // 상단 스피너 데이터
+    private void requestSpinnerData() {
+        startLoading();
+        RetrofitClient.getRetrofitApi().researchData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<ResearchSpinnerData>() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (MenuCheckData data : newResearchList) {
-                    data.setChecked(false);
-                }
-                newResearchList.get(position).setChecked(true);
-                selectedResearchId = newResearchList.get(position).getItem_id();
+            public void onResponseData(ResearchSpinnerData data) {
+                researchSelectData = data.getResearch_data();
+                projectFacData = data.getProject_fac_data();
+
+                initSpinner();
+
+                requestDrawingsList();
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onCallbackFinish() {
+                endLoading();
             }
         });
     }
 
-    private void initFacCateSpinner() {
-        List<String> titleList = new ArrayList<>();
-        for (MenuCheckData data : newFacCateList) {
-            titleList.add(data.getItem_name());
-        }
+    // 스피너 초기화
+    private void initSpinner() {
+        List<MenuCheckData> facCateList = projectFacData.getFacCateList();
+        List<MenuCheckData> architectureList = projectFacData.getFacCateDataID(researchSelectData.getFac_cate_id()).getArchitectureList();
+        List<MenuCheckData> researchList = projectFacData.getResearchList();
 
-        dataBinding.spnCategory.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
-        for (int i = 0; i < newFacCateList.size(); i++) {
-            if (newFacCateList.get(i).isChecked()) {
-                dataBinding.spnCategory.setSelection(i);
-                selectedFacCateId = newFacCateList.get(i).getItem_id();
-            }
-        }
+        dataBinding.spnCategory.setAdapter(new DrawingsSpinnerAdapter(this, R.layout.item_spinner, facCateList));
+        dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(this, R.layout.item_spinner, architectureList));
+        dataBinding.spnResearch.setAdapter(new DrawingsSpinnerAdapter(this, R.layout.item_spinner, researchList));
+
+        dataBinding.spnCategory.setSelection(getSpinnerSelectIndex(facCateList, researchSelectData.getFac_cate_id()));
+        dataBinding.spnArchitecture.setSelection(getSpinnerSelectIndex(architectureList, researchSelectData.getStructure_id()));
+        dataBinding.spnResearch.setSelection(getSpinnerSelectIndex(researchList, researchSelectData.getResearch_type_id()));
+
         dataBinding.spnCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (MenuCheckData data : newFacCateList) {
-                    data.setChecked(false);
-                }
-                newFacCateList.get(position).setChecked(true);
-                selectedFacCateId = newFacCateList.get(position).getItem_id();
-                setArchitectureData();
-            }
+                MenuCheckData data = (MenuCheckData) dataBinding.spnCategory.getSelectedItem();
+                List<MenuCheckData> architectureList = projectFacData.getFacCateDataID(data.getItem_id()).getArchitectureList();
 
+                dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(activity, R.layout.item_spinner, architectureList));
+                dataBinding.spnArchitecture.setSelection(getSpinnerSelectIndex(architectureList, researchSelectData.getStructure_id()));
+            }
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-    private void initArchitectureSpinner() {
-        List<String> titleList = new ArrayList<>();
-        for (MenuCheckData data : newArchList) {
-            titleList.add(data.getItem_name());
-        }
-
-        dataBinding.spnArchitecture.setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, titleList));
-        for (int i = 0; i < newArchList.size(); i++) {
-            if (newArchList.get(i).isChecked()) {
-                dataBinding.spnArchitecture.setSelection(i);
-                selectedArchitectureId = newArchList.get(i).getItem_id();
-            }
-        }
-        dataBinding.spnArchitecture.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (MenuCheckData data : newArchList) {
-                    data.setChecked(false);
-                }
-                newArchList.get(position).setChecked(true);
-                selectedArchitectureId = newArchList.get(position).getItem_id();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 
-    private void setArchitectureData() {
-        newArchList.clear();
-        int position = 0;
-        for (int i = 0; i < newFacCateList.size(); i++) {
-            if (newFacCateList.get(i).isChecked()) {
-                position = i;
-            }
+    // 스피너 Item ID에 맞는 index값 가져오기
+    private int getSpinnerSelectIndex(List<MenuCheckData> list, int itemId) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getItem_id() == itemId) { return i; }
         }
-        for (MenuCheckData architectureData : facCateDataList.get(position).getArchitectureList()) {
-            if (architectureData.getItem_id() == researchSelectData.getStructure_id()) {
-                MenuCheckData menuCheckData = new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name());
-                menuCheckData.setChecked(true);
-                newArchList.add(menuCheckData);
-            } else {
-                newArchList.add(new MenuCheckData(architectureData.getItem_id(), architectureData.getItem_name()));
-            }
-        }
-        initArchitectureSpinner();
+        return 0;
     }
 
+    // 도면 리스트 데이터
     private void requestDrawingsList() {
-        if (researchId == -1) {
-            researchId = getIntent().getIntExtra("research_id", 0);
-            if (researchId == 0) {
-                showToast(R.string.toast_error_invalidate);
-                finish();
-            }
-        }
         startLoading();
         RetrofitClient.getRetrofitApi().planList(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<PlanDataList>() {
             @Override
@@ -246,53 +199,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         });
     }
 
-    private void requestSpinnerData() {
-        if (researchId == -1) {
-            researchId = getIntent().getIntExtra("research_id", 0);
-            if (researchId == 0) {
-                showToast(R.string.toast_error_invalidate);
-                finish();
-            }
-        }
-        startLoading();
-        RetrofitClient.getRetrofitApi().researchData(UserData.getInstance().getUserId(), researchId).enqueue(new RetrofitCallbackModel<ResearchSpinnerData>() {
-            @Override
-            public void onResponseData(ResearchSpinnerData data) {
-                researchSelectData = data.getResearch_data();
-                researchDataList = data.getProject_fac_data().getResearch_list();
-                facCateDataList = data.getProject_fac_data().getFac_cate_list();
-
-                for (ResearchRegData.ResearchData researchData : researchDataList) {
-                    if (researchData.getItem_id() == researchSelectData.getResearch_type_id()) {
-                        MenuCheckData menuCheckData = new MenuCheckData(researchData.getItem_id(), researchData.getItem_name());
-                        menuCheckData.setChecked(true);
-                        newResearchList.add(menuCheckData);
-                    } else {
-                        newResearchList.add(new MenuCheckData(researchData.getItem_id(), researchData.getItem_name()));
-                    }
-                }
-                initResearchSpinner();
-
-                newFacCateList.clear();
-                for (ResearchRegData.FacilityData.FacCateData facData : facCateDataList) {
-                    if (facData.getItem_id() == researchSelectData.getFac_cate_id()) {
-                        MenuCheckData menuCheckData = new MenuCheckData(facData.getItem_id(), facData.getItem_name());
-                        menuCheckData.setChecked(true);
-                        newFacCateList.add(menuCheckData);
-                    } else {
-                        newFacCateList.add(new MenuCheckData(facData.getItem_id(), facData.getItem_name()));
-                    }
-                }
-                initFacCateSpinner();
-            }
-
-            @Override
-            public void onCallbackFinish() {
-                endLoading();
-            }
-        });
-    }
-
+    // 도면 리스트 Bitmap 가져오기
     private void setDrawingsList() {
         new Thread(new Runnable() {
             @Override
@@ -318,6 +225,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         drawingsListAdapter.setList(planList);
     }
 
+    // 도면 다운로드 요청
     public void downloadFile(final int position) {
         new Thread(new Runnable() {
             @Override
@@ -351,6 +259,7 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         }).start();
     }
 
+    // 도면 다운로드 처리
     private void planDownload(int position, PlanDataList.PlanData data) {
         boolean isComplete = FTPConnectUtil.getInstance().ftpPlanDownload(position, data, drawingsListAdapter);
         if (isComplete) {
@@ -364,18 +273,35 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         }
     }
 
-    public void sendSpinnerData(int index) {
+    // 스피너 데이터 체크
+    public void requestCheckData(final int planIndex) {
+        int researchId = researchSelectData.getResearch_id();
+        int projectId = researchSelectData.getProject_id();
+        int facilityId = researchSelectData.getFacility_id();
+        int facCateId = ((MenuCheckData) dataBinding.spnCategory.getSelectedItem()).getItem_id();
+        int structureId = ((MenuCheckData) dataBinding.spnArchitecture.getSelectedItem()).getItem_id();
+        int researchTypeId = ((MenuCheckData) dataBinding.spnResearch.getSelectedItem()).getItem_id();
+
+        startLoading();
+        RetrofitClient.getRetrofitApi().researchCheckData(UserData.getInstance().getUserId(), researchId, projectId, facilityId, facCateId, structureId, researchTypeId).enqueue(new RetrofitCallbackModel<ResearchCheckData>() {
+            @Override
+            public void onResponseData(ResearchCheckData data) {
+                researchSelectData = data.getResearch_data();
+                startDrawingsActivity(planIndex);
+                endLoadingDelay();
+            }
+            @Override
+            public void onCallbackFinish() { endLoading(); }
+        });
+    }
+
+    // 도면 상세화면 이동
+    public void startDrawingsActivity(int planIndex) {
         Intent intent = new Intent(DrawingsListActivity.this, DrawingsActivity.class);
         intent.putParcelableArrayListExtra("plan_list", (ArrayList<? extends Parcelable>) planList);
-        intent.putExtra("plan_index", index);
-        intent.putExtra("research_id", researchId);
-        intent.putExtra("project_id", researchSelectData.getProject_id());
-        intent.putExtra("facility_id", researchSelectData.getFacility_id());
-        intent.putExtra("fac_cate_id", selectedFacCateId);
-        intent.putExtra("architecture_id", selectedArchitectureId);
-        intent.putExtra("research_type_id", selectedResearchId);
-        intent.putExtra("fac_cate_list", (Serializable) facCateDataList);
-        intent.putExtra("research_list", (Serializable) researchDataList);
-        startActivity(intent);
+        intent.putExtra("plan_index", planIndex);
+        intent.putExtra("research_data", researchSelectData);
+        intent.putExtra("project_fac_data", projectFacData);
+        startActivityForResult(intent, DRAWING_ACTIVITY_REQUEST);
     }
 }

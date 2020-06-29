@@ -73,7 +73,6 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                 DrawingPictureDialog.builder(activity)
                                         .setPicture(resource)
-                                        .build()
                                         .show();
                             }
                             @Override
@@ -95,6 +94,9 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
     public void addImage(Uri uri) {
         uploadList.add(uri);
         notifyDataSetChanged();
+    }
+    public List<Uri> getUploadList() {
+        return uploadList;
     }
 
     static class InputPopupPictureHolder extends RecyclerView.ViewHolder {
