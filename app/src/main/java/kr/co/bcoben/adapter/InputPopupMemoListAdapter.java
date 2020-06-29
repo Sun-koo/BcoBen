@@ -18,7 +18,7 @@ import kr.co.bcoben.model.PointData;
 
 import static kr.co.bcoben.util.CommonUtil.getDateFormat;
 
-public class InputPopupMemoListAdapter extends RecyclerView.Adapter<InputPopupMemoListAdapter.DrawingPictureHolder> {
+public class InputPopupMemoListAdapter extends RecyclerView.Adapter<InputPopupMemoListAdapter.InputPopupMemoHolder> {
 
     private DrawingsActivity activity;
     private List<PointData.PointMemo> list = new ArrayList<>();
@@ -30,22 +30,19 @@ public class InputPopupMemoListAdapter extends RecyclerView.Adapter<InputPopupMe
 
     @NonNull
     @Override
-    public DrawingPictureHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public InputPopupMemoHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_memo,viewGroup, false);
-        return new DrawingPictureHolder(view);
+        return new InputPopupMemoHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DrawingPictureHolder holder, int position) {
+    public void onBindViewHolder(@NonNull InputPopupMemoHolder holder, int position) {
         holder.onBind(list.get(position));
     }
 
     @Override
     public int getItemCount() {
         return list.size();
-    }
-    public List<PointData.PointMemo> getList() {
-        return list;
     }
     public void setList(List<PointData.PointMemo> list) {
         this.list = list;
@@ -58,6 +55,15 @@ public class InputPopupMemoListAdapter extends RecyclerView.Adapter<InputPopupMe
         list.add(memo);
         notifyItemChanged(list.size() - 1);
     }
+    public List<PointData.PointMemo> getUploadList() {
+        List<PointData.PointMemo> uploadList = new ArrayList<>();
+        for (PointData.PointMemo data : list) {
+            if (data.getMemo_id() == 0) {
+                uploadList.add(data);
+            }
+        }
+        return uploadList;
+    }
     public List<Integer> getDeleteList() {
         return deleteList;
     }
@@ -67,12 +73,12 @@ public class InputPopupMemoListAdapter extends RecyclerView.Adapter<InputPopupMe
         notifyDataSetChanged();
     }
 
-    class DrawingPictureHolder extends RecyclerView.ViewHolder {
+    class InputPopupMemoHolder extends RecyclerView.ViewHolder {
 
         private ImageView ivMemo;
         private ImageView btnDelete;
 
-        DrawingPictureHolder(@NonNull View view) {
+        InputPopupMemoHolder(@NonNull View view) {
             super(view);
             ivMemo = view.findViewById(R.id.iv_memo);
             btnDelete = view.findViewById(R.id.btn_delete);

@@ -2,7 +2,9 @@ package kr.co.bcoben.model;
 
 import android.graphics.Bitmap;
 import android.graphics.PointF;
+import android.net.Uri;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,10 +106,16 @@ public class PointData {
         }
     }
 
-    public class PointImg {
+    public static class PointImg {
         private int img_id;
         private String img_url;
         private Bitmap imgBitmap;
+        private Uri imgUri;
+
+        public PointImg(int img_id, String img_url) {
+            this.img_id = img_id;
+            this.img_url = img_url;
+        }
 
         public int getImg_id() {
             return img_id;
@@ -121,37 +129,69 @@ public class PointData {
         public void setImgBitmap(Bitmap imgBitmap) {
             this.imgBitmap = imgBitmap;
         }
+        public Uri getImgUri() {
+            return imgUri;
+        }
+        public void setImgUri(Uri imgUri) {
+            this.imgUri = imgUri;
+        }
     }
 
-    public class PointVoice {
+    public static class PointVoice {
         private int voice_id;
-        private String voice_title;
+        private int voice_num;
         private int voice_time;
         private String voice_file;
+        private File voiceFile;
+        private String voiceName;
+        private int playTime;
+        private boolean isPlay;
+
+        public PointVoice(int voice_id, int voice_num, int voice_time, File voiceFile, String voiceName) {
+            this.voice_id = voice_id;
+            this.voice_num = voice_num;
+            this.voice_time = voice_time;
+            this.voiceFile = voiceFile;
+            this.voiceName = voiceName;
+            this.playTime = 0;
+            this.isPlay = false;
+        }
 
         public int getVoice_id() {
             return voice_id;
         }
-        public void setVoice_id(int voice_id) {
-            this.voice_id = voice_id;
-        }
-        public String getVoice_title() {
-            return voice_title;
-        }
-        public void setVoice_title(String voice_title) {
-            this.voice_title = voice_title;
+        public int getVoice_num() {
+            return voice_num;
         }
         public int getVoice_time() {
             return voice_time;
         }
-        public void setVoice_time(int voice_time) {
-            this.voice_time = voice_time;
-        }
         public String getVoice_file() {
             return voice_file;
         }
-        public void setVoice_file(String voice_file) {
-            this.voice_file = voice_file;
+        public File getVoiceFile() {
+            return voiceFile;
+        }
+        public String getVoiceName() {
+            return voiceName;
+        }
+        public int getPlayTime() {
+            return playTime;
+        }
+        public void setPlayTime(int playTime) {
+            if (playTime < 0) {
+                this.playTime = 0;
+            } else if (playTime > voice_time) {
+                this.playTime = voice_time;
+            } else {
+                this.playTime = playTime;
+            }
+        }
+        public boolean isPlay() {
+            return isPlay;
+        }
+        public void setPlay(boolean play) {
+            isPlay = play;
         }
     }
 

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -24,17 +25,16 @@ import java.util.List;
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsActivity;
 import kr.co.bcoben.component.DrawingPictureDialog;
+import kr.co.bcoben.model.PointData;
 
 public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopupPictureListAdapter.InputPopupPictureHolder> {
 
     private DrawingsActivity activity;
-    private List<String> list;
-    private List<Uri> uploadList;
+    private List<PointData.PointImg> list = new ArrayList<>();
+    private List<Integer> deleteList = new ArrayList<>();
 
-    public InputPopupPictureListAdapter(DrawingsActivity activity, List<String> list) {
+    public InputPopupPictureListAdapter(DrawingsActivity activity) {
         this.activity = activity;
-        this.list = list;
-        this.uploadList = new ArrayList<>();
     }
 
     @NonNull
@@ -46,75 +46,92 @@ public class InputPopupPictureListAdapter extends RecyclerView.Adapter<InputPopu
 
     @Override
     public void onBindViewHolder(@NonNull InputPopupPictureHolder holder, final int position) {
-        Glide.with(activity.getApplicationContext())
-                .load(position < list.size() ? list.get(position) : uploadList.get(position - list.size()))
-                .apply(RequestOptions.bitmapTransform(new RoundedCorners(5)))
-                .into(holder.ivPicture);
-        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (position < list.size()) {
-                    list.remove(position);
-                } else {
-                    uploadList.remove(position - list.size());
-                }
-                activity.setPictureCount();
-                notifyDataSetChanged();
-            }
-        });
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Glide.with(activity)
-                        .asBitmap()
-                        .load(position < list.size() ? list.get(position) : uploadList.get(position - list.size()))
-                        .into(new CustomTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                DrawingPictureDialog.builder(activity)
-                                        .setPicture(resource)
-                                        .show();
-                            }
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {}
-                        });
-            }
-        });
-        activity.setPictureCount();
+        holder.onBind(list.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return list.size() + uploadList.size();
+        return list.size();
     }
-    public void setList(List<String> list) {
+    public void setList(List<PointData.PointImg> list) {
         this.list = list;
         notifyDataSetChanged();
     }
     public void addImage(Uri uri) {
-        uploadList.add(uri);
-        notifyDataSetChanged();
+        final PointData.PointImg img = new PointData.PointImg(0, null);
+        img.setImgUri(uri);
+        Glide.with(activity)
+                .asBitmap()
+                .load(uri)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
+                        img.setImgBitmap(bitmap);
+                        list.add(img);
+                        notifyDataSetChanged();
+                    }
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {}
+                });
+    }
+    public List<PointData.PointImg> getUploadList() {
+        List<PointData.PointImg> uploadList =  new ArrayList<>();
+        for (PointData.PointImg data : list) {
+            if (data.getImg_id() == 0) {
+                uploadList.add(data);
+            }
+        }
+        return uploadList;
+    }
+    public List<Integer> getDeleteList() {
+        return deleteList;
     }
     public void resetList() {
         this.list = new ArrayList<>();
-        this.uploadList = new ArrayList<>();
+        this.deleteList = new ArrayList<>();
         notifyDataSetChanged();
     }
-    public List<Uri> getUploadList() {
-        return uploadList;
-    }
 
-    static class InputPopupPictureHolder extends RecyclerView.ViewHolder {
+    class InputPopupPictureHolder extends RecyclerView.ViewHolder {
 
-        View view;
-        ImageView ivPicture;
-        ImageView btnDelete;
+        private View view;
+        private ImageView ivPicture;
+        private ImageView btnDelete;
 
         InputPopupPictureHolder(View view) {
             super(view);
             this.view = view;
             this.ivPicture = view.findViewById(R.id.iv_picture);
             this.btnDelete = view.findViewById(R.id.btn_delete);
+        }
+
+        void onBind(final PointData.PointImg data) {
+            Glide.with(activity.getApplicationContext())
+                    .asBitmap()
+                    .load(data.getImgBitmap())
+                    .apply(RequestOptions.bitmapTransform(new RoundedCorners(5)))
+                    .into(ivPicture);
+
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (data.getImg_id() != 0) {
+                        deleteList.add(data.getImg_id());
+                    }
+                    list.remove(data);
+                    activity.setPictureCount();
+                    notifyDataSetChanged();
+                }
+            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DrawingPictureDialog.builder(activity)
+                            .setPicture(data.getImgBitmap())
+                            .show();
+                }
+            });
+            activity.setPictureCount();
         }
     }
 }

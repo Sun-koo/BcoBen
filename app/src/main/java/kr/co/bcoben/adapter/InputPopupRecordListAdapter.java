@@ -16,12 +16,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import kr.co.bcoben.R;
-import kr.co.bcoben.model.RecordData;
+import kr.co.bcoben.model.PointData;
 import kr.co.bcoben.util.RecordUtil;
 
 import static kr.co.bcoben.util.RecordUtil.isPlaying;
@@ -32,28 +33,28 @@ import static kr.co.bcoben.util.RecordUtil.setPlayCompleteListener;
 import static kr.co.bcoben.util.RecordUtil.setPlayPosition;
 import static kr.co.bcoben.util.RecordUtil.stopAudio;
 
-public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopupRecordListAdapter.RecordHolder> {
+public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopupRecordListAdapter.InputPopupRecordHolder> {
 
     private Activity activity;
-    private List<RecordData> list;
+    private List<PointData.PointVoice> list = new ArrayList<>();
+    private List<Integer> deleteList = new ArrayList<>();
     private Timer playTimer;
     private boolean isRecording = false;
 
-    public InputPopupRecordListAdapter(Activity activity, List<RecordData> list) {
+    public InputPopupRecordListAdapter(Activity activity) {
         this.activity = activity;
-        this.list = list;
     }
 
     @NonNull
     @Override
-    public RecordHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public InputPopupRecordHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_record_file, viewGroup, false);
-        return new RecordHolder(view);
+        return new InputPopupRecordHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecordHolder holder, int position) {
-        final RecordData data = list.get(position);
+    public void onBindViewHolder(@NonNull final InputPopupRecordHolder holder, int position) {
+        final PointData.PointVoice data = list.get(position);
         holder.onBind(data);
 
         holder.layoutRecordInfo.setOnClickListener(new View.OnClickListener() {
@@ -65,11 +66,11 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                         playTimer = null;
                     }
 
-                    resetData();
+                    resetPlay();
                     data.setPlay(true);
                     notifyDataSetChanged();
 
-                    playAudio(data.getRecordFile().getAbsolutePath());
+                    playAudio(data.getVoiceFile().getAbsolutePath());
                     setPlayCompleteListener(new RecordUtil.PlayCompleteListener() {
                         @Override
                         public void onComplete() {
@@ -120,7 +121,7 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
         });
     }
 
-    private TimerTask getPlayTask(final RecordHolder holder, final RecordData data) {
+    private TimerTask getPlayTask(final InputPopupRecordHolder holder, final PointData.PointVoice data) {
         return new TimerTask() {
             @Override
             public void run() {
@@ -129,7 +130,7 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                     public void run() {
                         holder.txtRecordCurrentTime.setText(getPlayTime(data.getPlayTime()));
                         holder.seekRecordPlay.setProgress(data.getPlayTime());
-                        if (data.getPlayTime() == data.getRecordTime()) {
+                        if (data.getPlayTime() == data.getVoice_time()) {
                             if (playTimer != null) {
                                 playTimer.cancel();
                                 playTimer = null;
@@ -146,19 +147,33 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
     public int getItemCount() {
         return list.size();
     }
-    public void setList(List<RecordData> list) {
+    public void setList(List<PointData.PointVoice> list) {
         this.list = list;
         notifyDataSetChanged();
     }
-    public List<RecordData> getList() {
-        return list;
-    }
-    public void addData(RecordData data) {
+    public void addData(PointData.PointVoice data) {
         list.add(data);
         notifyDataSetChanged();
     }
-    public void resetData() {
-        for (RecordData data : list) {
+    public List<PointData.PointVoice> getUploadList() {
+        List<PointData.PointVoice> uploadList = new ArrayList<>();
+        for (PointData.PointVoice data : list) {
+            if (data.getVoice_id() == 0) {
+                uploadList.add(data);
+            }
+        }
+        return uploadList;
+    }
+    public List<Integer> getDeleteList() {
+        return deleteList;
+    }
+    public void resetList() {
+        this.list = new ArrayList<>();
+        this.deleteList = new ArrayList<>();
+        notifyDataSetChanged();
+    }
+    public void resetPlay() {
+        for (PointData.PointVoice data : list) {
             data.setPlay(false);
             data.setPlayTime(0);
         }
@@ -175,7 +190,7 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
         }
     }
 
-    static String getPlayTime(int time) {
+    private String getPlayTime(int time) {
         time /= 1000;
         DecimalFormat df = new DecimalFormat("00");
         int min = time / 60;
@@ -183,16 +198,17 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
         return df.format(min) + ":" + df.format(sec);
     }
 
-    static class RecordHolder extends RecyclerView.ViewHolder {
+    class InputPopupRecordHolder extends RecyclerView.ViewHolder {
 
-        RelativeLayout layoutRecordInfo;
-        TextView txtRecordInfoName, txtRecordInfoTime;
-        LinearLayout layoutRecordPlay;
-        TextView txtRecordPlayName, txtRecordCurrentTime, txtRecordTotalTime;
-        SeekBar seekRecordPlay;
-        Button btnBackwards, btnForward, btnStop;
+        private RelativeLayout layoutRecordInfo;
+        private TextView txtRecordInfoName, txtRecordInfoTime;
+        private LinearLayout layoutRecordPlay;
+        private TextView txtRecordPlayName, txtRecordCurrentTime, txtRecordTotalTime;
+        private TextView txtRecordDelete;
+        private SeekBar seekRecordPlay;
+        private Button btnBackwards, btnForward, btnStop;
 
-        RecordHolder(View view) {
+        InputPopupRecordHolder(View view) {
             super(view);
 
             layoutRecordInfo = view.findViewById(R.id.layout_record_info);
@@ -202,20 +218,21 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
             txtRecordPlayName = view.findViewById(R.id.txt_record_play_name);
             txtRecordCurrentTime = view.findViewById(R.id.txt_record_current_time);
             txtRecordTotalTime = view.findViewById(R.id.txt_record_total_time);
+            txtRecordDelete = view.findViewById(R.id.txt_record_delete);
             seekRecordPlay = view.findViewById(R.id.seek_record_play);
             btnBackwards = view.findViewById(R.id.btn_backwards);
             btnForward = view.findViewById(R.id.btn_forward);
             btnStop = view.findViewById(R.id.btn_stop);
         }
 
-        void onBind(final RecordData data) {
-            txtRecordInfoName.setText(data.getRecordName());
-            txtRecordPlayName.setText(data.getRecordName());
-            txtRecordInfoTime.setText(getPlayTime(data.getRecordTime()));
-            txtRecordTotalTime.setText(getPlayTime(data.getRecordTime()));
+        void onBind(final PointData.PointVoice data) {
+            txtRecordInfoName.setText(data.getVoiceName());
+            txtRecordPlayName.setText(data.getVoiceName());
+            txtRecordInfoTime.setText(getPlayTime(data.getVoice_time()));
+            txtRecordTotalTime.setText(getPlayTime(data.getVoice_time()));
             txtRecordCurrentTime.setText(getPlayTime(data.getPlayTime()));
             btnStop.setText(R.string.popup_reg_research_record_stop);
-            seekRecordPlay.setMax(data.getRecordTime());
+            seekRecordPlay.setMax(data.getVoice_time());
 
             if (data.isPlay()) {
                 layoutRecordInfo.setVisibility(View.GONE);
@@ -229,6 +246,19 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     return true;
+                }
+            });
+            txtRecordDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    stopAudio();
+                    resetPlay();
+
+                    if (data.getVoice_id() != 0) {
+                        deleteList.add(data.getVoice_id());
+                    }
+                    list.remove(data);
+                    notifyDataSetChanged();
                 }
             });
         }
