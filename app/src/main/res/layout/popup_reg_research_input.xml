@@ -684,22 +684,29 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
 
-            <EditText
-                android:id="@+id/edit_count"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="150dp"
-                android:layout_marginEnd="33dp"
-                android:background="@null"
-                android:inputType="number"
-                android:maxLines="1"
-                android:hint="@string/popup_reg_research_input_hint2"
-                android:textAlignment="viewEnd"
-                android:textColorHint="@color/colorTextHintPopupMenu"
-                android:textColor="@color/colorTextHintPopupMenu"
-                android:textSize="13dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <EditText
+                    android:id="@+id/edit_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="150dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:hint="@string/popup_reg_research_input_hint2"
+                    android:textAlignment="viewEnd"
+                    android:textColorHint="@color/colorTextHintPopupMenu"
+                    android:textColor="@color/colorTextHintPopupMenu"
+                    android:textSize="13dp"/>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

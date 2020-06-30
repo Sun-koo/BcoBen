@@ -180,13 +180,11 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
     }
     public void setRecording(boolean isRecording) {
         this.isRecording = isRecording;
-        if (isRecording) {
-            stopAudio();
-            if (playTimer != null) {
-                playTimer.cancel();
-                playTimer.purge();
-                playTimer = null;
-            }
+        stopAudio();
+        if (playTimer != null) {
+            playTimer.cancel();
+            playTimer.purge();
+            playTimer = null;
         }
     }
 

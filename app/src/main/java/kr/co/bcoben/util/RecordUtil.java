@@ -48,6 +48,10 @@ public class RecordUtil {
         }
     }
 
+    public static boolean isRecording() {
+        return recorder != null;
+    }
+
     // 오디오 파일 재생
     public static void playAudio(String filename) {
         if (player != null) {
@@ -108,12 +112,16 @@ public class RecordUtil {
 
     // 오디오 재생위치 변경
     public static void setPlayPosition(int sec) {
-        player.seekTo(player.getCurrentPosition() + sec);
+        int msec = player.getCurrentPosition() + sec;
+        if (msec > player.getDuration()) {
+            msec = player.getDuration();
+        }
+        player.seekTo(msec);
     }
 
     // 오디오 파일 재생 플래그
     public static boolean isPlaying() {
-        return player.isPlaying();
+        return player != null && player.isPlaying();
     }
 
     // 오디오 파일 재생 완료 리스너

@@ -153,6 +153,7 @@
     <string name="table_column3">부재/방향/결함내용</string>
     <string name="table_column4">측정(값)</string>
     <string name="table_column5">개소</string>
+    <string name="toast_table_delete_non_select">삭제할 데이터를 선택해주세요</string>
 
     <!--조사 데이터 등록 팝업-->
     <string name="popup_reg_research_input">입력</string>
@@ -160,6 +161,8 @@
     <string name="popup_reg_research_record">음성</string>
     <string name="popup_reg_research_memo">메모</string>
     <string name="popup_reg_research_reg">등록하기</string>
+    <string name="popup_reg_research_del">삭제</string>
+    <string name="popup_reg_research_save">저장</string>
 
     <!--조사 데이터 등록 팝업 입력 Tab-->
     <string name="popup_reg_research_input_sub_title">부재</string>
@@ -194,6 +197,9 @@
     <string name="popup_reg_research_record_backwards">-10초</string>
     <string name="popup_reg_research_record_forward">+10초</string>
     <string name="popup_reg_research_record_save">저장</string>
+    <string name="toast_popup_reg_research_record_tab_change">녹음을 종료한 후 이동해주세요</string>
+    <string name="toast_popup_reg_research_record_register">녹음을 종료한 후 다시 시도해주세요</string>
+    <string name="toast_popup_reg_research_record_register_save">저장되지 않은 녹음 파일이 있습니다. 저장을 완료한 후 다시 시도해주세요</string>
 
     <!--조사 데이터 등록 팝업 메모 Tab-->
     <string name="popup_reg_research_memo_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>

@@ -91,7 +91,7 @@ import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
 
-    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+    private final String[] PERMISSION = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
 
     public enum ResearchStep {
         GRADE("grade"), FACILITY("facility"), FACILITY_CATEGORY("fac_cate"), ARCHITECTURE("structure"), RESEARCH("research_type");

@@ -172,8 +172,14 @@ public class PointData {
         public File getVoiceFile() {
             return voiceFile;
         }
+        public void setVoiceFile(File voiceFile) {
+            this.voiceFile = voiceFile;
+        }
         public String getVoiceName() {
             return voiceName;
+        }
+        public void setVoiceName(String voiceName) {
+            this.voiceName = voiceName;
         }
         public int getPlayTime() {
             return playTime;

@@ -97,6 +97,7 @@ public class InputPopupMemoListAdapter extends RecyclerView.Adapter<InputPopupMe
                     notifyDataSetChanged();
                 }
             });
+            activity.setMemoCount();
         }
     }
 }
