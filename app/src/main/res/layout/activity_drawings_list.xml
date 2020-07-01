@@ -188,7 +188,7 @@
                     android:gravity="center"
                     android:text="@string/close"
                     android:textColor="@color/colorBackgroundNavy"
-                    android:textSize="14dp"
+                    android:textSize="15dp"
                     android:onClick="onClick"/>
 
             </RelativeLayout>
@@ -201,7 +201,7 @@
                 android:padding="13dp"
                 android:text="@string/drawings_list_download_all"
                 android:textColor="@color/colorBlack"
-                android:textSize="14dp"
+                android:textSize="15dp"
                 android:onClick="onClick" />
 
             <androidx.recyclerview.widget.RecyclerView

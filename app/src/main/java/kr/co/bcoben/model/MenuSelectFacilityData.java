@@ -9,13 +9,13 @@ public class MenuSelectFacilityData {
     private String facility;
     private String facCate;
     private String arch;
-    private List<Integer> idList;
+    private List<String> nameList;
 
-    public MenuSelectFacilityData(String facility, String facCate, String arch, List<Integer> idList) {
+    public MenuSelectFacilityData(String facility, String facCate, String arch, List<String> nameList) {
         this.facility = facility;
         this.facCate = facCate;
         this.arch = arch;
-        this.idList = idList;
+        this.nameList = nameList;
     }
 
     public String getFacility() {
@@ -36,10 +36,10 @@ public class MenuSelectFacilityData {
     public void setArch(String arch) {
         this.arch = arch;
     }
-    public List<Integer> getIdList() {
-        return idList;
+    public List<String> getNameList() {
+        return nameList;
     }
-    public void setIdList(List<Integer> idList) {
-        this.idList = idList;
+    public void setNameList(List<String> nameList) {
+        this.nameList = nameList;
     }
 }

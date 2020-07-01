@@ -78,6 +78,60 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/layout_self"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="34dp"
+        android:paddingEnd="34dp"
+        android:background="@color/colorBackgroundPink"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:background="@drawable/border_square_gray_box"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_self"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:maxLines="1"
+                android:inputType="text"
+                android:hint="@string/side_menu_hint_self"
+                android:textColorHint="@color/colorHintGray"
+                android:textSize="16dp"
+                android:textColor="@color/colorTextPrimary"/>
+
+            <Button
+                android:id="@+id/btn_reg_self"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="18dp"
+                android:background="@drawable/circle_keycolor"
+                android:text="@string/registration"
+                android:textColor="@color/colorWhite"
+                android:textSize="13dp"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/line_bottom_self"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorBorderPink"/>
+
     <Button
         android:id="@+id/btn_project_next"
         android:layout_width="169dp"

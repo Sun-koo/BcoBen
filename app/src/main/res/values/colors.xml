@@ -16,6 +16,7 @@
     <color name="colorButtonNavy">#545871</color>
     <color name="colorButtonPink">#EBD0CE</color>
     <color name="colorTabBorder">#E9E9F0</color>
+    <color name="colorDividerInputSelf">#BABABA</color>
 
     <color name="colorTextPrimary">#545871</color>
     <color name="colorTextLabel">#9597A6</color>

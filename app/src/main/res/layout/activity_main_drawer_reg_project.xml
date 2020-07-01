@@ -34,7 +34,7 @@
                         android:layout_marginStart="24dp"
                         android:text="@string/side_menu_summary"
                         android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
+                        android:textSize="19dp" />
 
                     <LinearLayout
                         android:id="@+id/layout_summary_value"
@@ -55,7 +55,7 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textColor="@color/text_drawer_list_selector"
-                            android:textSize="14dp" />
+                            android:textSize="15dp" />
 
                         <TextView
                             android:id="@+id/txt_summary_date"
@@ -64,7 +64,7 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textColor="@color/text_drawer_list_selector"
-                            android:textSize="14dp" />
+                            android:textSize="15dp" />
 
                     </LinearLayout>
 
@@ -91,7 +91,7 @@
                         android:layout_marginStart="24dp"
                         android:text="@string/side_menu_grade"
                         android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
+                        android:textSize="19dp" />
 
                     <TextView
                         android:id="@+id/txt_grade"
@@ -104,7 +104,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/text_drawer_list_selector"
-                        android:textSize="14dp" />
+                        android:textSize="15dp" />
                 </RelativeLayout>
 
                 <View
@@ -132,7 +132,7 @@
                             android:layout_marginStart="24dp"
                             android:text="@string/side_menu_facility"
                             android:textColor="@color/text_drawer_list"
-                            android:textSize="18dp" />
+                            android:textSize="19dp" />
 
                         <TextView
                             android:id="@+id/txt_facility"
@@ -145,7 +145,7 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textColor="@color/text_drawer_list_selector"
-                            android:textSize="14dp" />
+                            android:textSize="15dp" />
                     </RelativeLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -176,7 +176,7 @@
                         android:layout_marginStart="24dp"
                         android:text="@string/side_menu_research_category"
                         android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
+                        android:textSize="19dp" />
 
                     <TextView
                         android:id="@+id/txt_research"
@@ -188,7 +188,7 @@
                         android:layout_marginEnd="30dp"
                         android:ellipsize="end"
                         android:textColor="@color/text_drawer_list_selector"
-                        android:textSize="18dp"
+                        android:textSize="19dp"
                         android:textStyle="bold"/>
                 </RelativeLayout>
 
@@ -217,7 +217,7 @@
                         android:layout_marginStart="24dp"
                         android:text="@string/side_menu_drawings"
                         android:textColor="@color/text_drawer_list"
-                        android:textSize="18dp" />
+                        android:textSize="19dp" />
 
                 </RelativeLayout>
 
@@ -237,7 +237,7 @@
                     android:onClick="onClick"
                     android:text="@string/side_menu_project_button"
                     android:textColor="@color/colorTextNavy"
-                    android:textSize="16dp"
+                    android:textSize="17dp"
                     android:textStyle="bold" />
 
                 <Button
@@ -250,7 +250,7 @@
                     android:onClick="onDrawerProjectMenuClick"
                     android:text="@string/side_menu_reg_cancel"
                     android:textColor="@color/colorWhite"
-                    android:textSize="18dp"/>
+                    android:textSize="19dp"/>
 
             </LinearLayout>
 
@@ -277,7 +277,7 @@
                     android:layout_centerVertical="true"
                     android:text="@string/side_menu_please_input"
                     android:textColor="@color/colorTextLabel"
-                    android:textSize="21dp" />
+                    android:textSize="22dp" />
 
             </RelativeLayout>
 
@@ -332,7 +332,7 @@
                     android:onClick="onDrawerProjectMenuClick"
                     android:text="@string/side_menu_project_next_button"
                     android:textColor="@color/colorWhite"
-                    android:textSize="18dp"
+                    android:textSize="19dp"
                     android:background="@drawable/btn_keycolor" />
 
             </LinearLayout>

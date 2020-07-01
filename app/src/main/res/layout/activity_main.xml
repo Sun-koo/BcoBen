@@ -50,7 +50,7 @@
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
                         android:text="@string/main_project_text"
-                        android:textSize="12dp"
+                        android:textSize="13dp"
                         android:textColor="@color/colorTextLabel"
                         android:textStyle="bold" />
 
@@ -81,7 +81,7 @@
                     android:onClick="onClick"
                     android:padding="3dp"
                     android:text="@string/main_logout"
-                    android:textSize="20dp"
+                    android:textSize="21dp"
                     android:textColor="@color/colorWhite" />
 
                 <LinearLayout
@@ -98,7 +98,7 @@
                         android:layout_marginEnd="4dp"
                         android:layout_gravity="center_vertical"
                         android:text="@string/main_version"
-                        android:textSize="20dp"
+                        android:textSize="21dp"
                         android:textColor="@color/colorTextGray" />
 
                     <TextView
@@ -108,7 +108,7 @@
                         android:layout_gravity="center_vertical"
                         android:onClick="onClick"
                         android:text="1.0.0"
-                        android:textSize="20dp"
+                        android:textSize="21dp"
                         android:textColor="@color/colorTextGray" />
 
                     <Button
@@ -118,7 +118,7 @@
                         android:layout_marginStart="13dp"
                         android:onClick="onClick"
                         android:text="@string/main_update"
-                        android:textSize="16dp"
+                        android:textSize="17dp"
                         android:textColor="@color/colorTextPrimary"
                         android:background="@drawable/btn_round_white"
                         android:visibility="gone"/>

@@ -24,7 +24,7 @@
                 android:gravity="center_vertical"
                 android:text="서초구청"
                 android:textColor="@color/colorTextLabel"
-                android:textSize="21dp" />
+                android:textSize="22dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                     android:layout_marginStart="24dp"
                     android:text="@string/side_menu_grade"
                     android:textColor="@color/text_drawer_list"
-                    android:textSize="18dp" />
+                    android:textSize="19dp" />
 
                 <TextView
                     android:id="@+id/txt_grade"
@@ -60,7 +60,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/text_drawer_list_selector"
-                    android:textSize="14dp" />
+                    android:textSize="15dp" />
             </RelativeLayout>
 
             <View
@@ -83,7 +83,7 @@
                     android:layout_marginStart="24dp"
                     android:text="@string/side_menu_facility"
                     android:textColor="@color/text_drawer_list"
-                    android:textSize="18dp" />
+                    android:textSize="19dp" />
 
                 <TextView
                     android:id="@+id/txt_facility"
@@ -96,7 +96,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/text_drawer_list_selector"
-                    android:textSize="14dp" />
+                    android:textSize="15dp" />
             </RelativeLayout>
 
             <View
@@ -119,7 +119,7 @@
                     android:layout_marginStart="24dp"
                     android:text="@string/side_menu_facility_category"
                     android:textColor="@color/text_drawer_list"
-                    android:textSize="18dp" />
+                    android:textSize="19dp" />
 
                 <TextView
                     android:id="@+id/txt_facility_category"
@@ -132,7 +132,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/text_drawer_list_selector"
-                    android:textSize="14dp" />
+                    android:textSize="15dp" />
             </RelativeLayout>
 
             <View
@@ -155,7 +155,7 @@
                     android:layout_marginStart="24dp"
                     android:text="@string/side_menu_architecture"
                     android:textColor="@color/text_drawer_list"
-                    android:textSize="18dp" />
+                    android:textSize="19dp" />
 
                 <TextView
                     android:id="@+id/txt_architecture"
@@ -168,7 +168,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/text_drawer_list_selector"
-                    android:textSize="14dp" />
+                    android:textSize="15dp" />
             </RelativeLayout>
 
             <View
@@ -191,7 +191,7 @@
                     android:layout_marginStart="24dp"
                     android:text="@string/side_menu_research_category"
                     android:textColor="@color/text_drawer_list"
-                    android:textSize="18dp" />
+                    android:textSize="19dp" />
 
                 <TextView
                     android:id="@+id/txt_research"
@@ -204,7 +204,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/text_drawer_list_selector"
-                    android:textSize="14dp" />
+                    android:textSize="15dp" />
             </RelativeLayout>
 
             <View
@@ -223,7 +223,7 @@
                 android:onClick="onDrawerResearchMenuClick"
                 android:text="조사 입력하기"
                 android:textColor="@color/colorTextNavy"
-                android:textSize="18dp"
+                android:textSize="19dp"
                 android:textStyle="bold" />
 
             <Button
@@ -237,7 +237,7 @@
                 android:onClick="onDrawerResearchMenuClick"
                 android:text="@string/side_menu_research_move_home"
                 android:textColor="@color/colorWhite"
-                android:textSize="18dp"/>
+                android:textSize="19dp"/>
 
         </LinearLayout>
 
@@ -261,7 +261,7 @@
                     android:layout_centerVertical="true"
                     android:text="@string/side_menu_please_select"
                     android:textColor="@color/colorTextLabel"
-                    android:textSize="21dp" />
+                    android:textSize="22dp" />
 
             </RelativeLayout>
 

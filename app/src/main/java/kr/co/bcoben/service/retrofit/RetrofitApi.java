@@ -3,6 +3,7 @@ package kr.co.bcoben.service.retrofit;
 import java.util.List;
 import java.util.Map;
 
+import kr.co.bcoben.model.AppUpdateData;
 import kr.co.bcoben.model.LoginData;
 import kr.co.bcoben.model.MenuCheckListData;
 import kr.co.bcoben.model.PlanDataList;
@@ -70,7 +71,7 @@ public interface RetrofitApi {
     @Multipart
     @POST("/app/project/register")
     Call<ResponseData<ProjectListData>> regProject(@Part("user_id") int userId, @Part("project_name") RequestBody projectName, @Part("start_date") RequestBody startDate, @Part("end_date") RequestBody endDate,
-                                                   @Part("grade_id") int gradeId, @Part("facility_list") RequestBody facilityList, @Part("research_list") RequestBody researchList,
+                                                   @Part("grade_name") String gradeName, @Part("facility_list") RequestBody facilityList, @Part("research_list") RequestBody researchList,
                                                    @Part List<MultipartBody.Part> planList);
 
     @FormUrlEncoded
@@ -115,4 +116,7 @@ public interface RetrofitApi {
     @FormUrlEncoded
     @POST("/app/research/delete_point")
     Call<ResponseData> researchDeletePoint(@Field("user_id") int userId, @Field("point_id_list") List<Integer> deletePointList);
+
+    @POST("/app/update")
+    Call<ResponseData<AppUpdateData>> appUpdate();
 }

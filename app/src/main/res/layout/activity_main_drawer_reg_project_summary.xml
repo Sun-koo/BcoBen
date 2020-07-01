@@ -22,7 +22,7 @@
             android:inputType="text"
             android:hint="@string/side_menu_hint_input_project_name"
             android:textColorHint="@color/colorHintGray"
-            android:textSize="18dp"
+            android:textSize="19dp"
             android:textColor="@color/colorTextPrimary" />
 
         <LinearLayout
@@ -42,7 +42,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="@string/side_menu_project_start_date"
                     android:textColor="@color/colorTextLabel"
-                    android:textSize="18dp"/>
+                    android:textSize="19dp"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                         android:editable="false"
                         android:hint="@string/side_menu_hint_project_date"
                         android:textColorHint="@color/colorHintGray"
-                        android:textSize="18dp"
+                        android:textSize="19dp"
                         android:textColor="@color/colorTextPrimary" />
 
                     <RelativeLayout
@@ -88,7 +88,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="@string/side_menu_project_end_date"
                     android:textColor="@color/colorTextLabel"
-                    android:textSize="18dp"/>
+                    android:textSize="19dp"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -105,7 +105,7 @@
                         android:editable="false"
                         android:hint="@string/side_menu_hint_project_date"
                         android:textColorHint="@color/colorHintGray"
-                        android:textSize="18dp"
+                        android:textSize="19dp"
                         android:textColor="@color/colorTextPrimary" />
 
                     <RelativeLayout

@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/certificate_title"
                         android:textColor="@color/colorTextPrimary"
-                        android:textSize="42dp"
+                        android:textSize="43dp"
                         android:textStyle="bold" />
 
                     <Button
@@ -64,7 +64,7 @@
                         android:background="@drawable/btn_keycolor"
                         android:text="@string/certificate_send_number"
                         android:textColor="@color/colorWhite"
-                        android:textSize="17dp"
+                        android:textSize="18dp"
                         android:onClick="onClick" />
 
                     <RelativeLayout
@@ -79,7 +79,7 @@
                             android:layout_marginStart="10dp"
                             android:text="@string/certificate_input_number"
                             android:textColor="@color/colorTextLabel"
-                            android:textSize="17dp" />
+                            android:textSize="18dp" />
 
                         <TextView
                             android:id="@+id/txt_remain_time"
@@ -90,7 +90,7 @@
                             android:layout_marginEnd="10dp"
                             android:text="@string/certificate_remain_time"
                             android:textColor="@color/colorTextLabel"
-                            android:textSize="14dp" />
+                            android:textSize="15dp" />
 
                     </RelativeLayout>
 
@@ -106,7 +106,7 @@
                         android:maxLength="6"
                         android:hint="@string/certificate_hint_text"
                         android:textColorHint="@color/colorHintPink"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -116,7 +116,7 @@
                         android:layout_marginBottom="26dp"
                         android:text="@string/certificate_guide_text"
                         android:textColor="@color/colorTextLabel"
-                        android:textSize="14dp" />
+                        android:textSize="15dp" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -131,7 +131,7 @@
                             android:onClick="onClick"
                             android:text="@string/back"
                             android:textColor="@color/colorTextPrimary"
-                            android:textSize="21dp" />
+                            android:textSize="22dp" />
 
                         <Button
                             android:id="@+id/btn_complete"
@@ -142,7 +142,7 @@
                             android:onClick="onClick"
                             android:text="@string/certificate_complete"
                             android:textColor="@color/colorTextPrimary"
-                            android:textSize="21dp" />
+                            android:textSize="22dp" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>

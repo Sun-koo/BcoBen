@@ -25,7 +25,7 @@
                 android:layout_marginBottom="20dp"
                 android:text="@string/drawings_select_dialog_title"
                 android:textColor="@color/colorBlack"
-                android:textSize="16dp" />
+                android:textSize="17dp" />
 
             <ImageButton
                 android:id="@+id/btn_close"
@@ -47,7 +47,7 @@
             android:layout_marginBottom="10dp"
             android:text="@string/drawings_select_dialog_content"
             android:textColor="@color/colorTextDialogContent"
-            android:textSize="12dp" />
+            android:textSize="13dp" />
 
         <Button
             android:id="@+id/btn_reset_input"
@@ -59,7 +59,7 @@
             android:background="@drawable/btn_round_pink"
             android:text="@string/drawings_select_dialog_reset_input"
             android:textColor="@color/colorTextPrimary"
-            android:textSize="16dp" />
+            android:textSize="17dp" />
 
         <Button
             android:id="@+id/btn_other_select"
@@ -71,7 +71,7 @@
             android:background="@drawable/btn_keycolor"
             android:text="@string/drawings_select_dialog_other_select"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="17dp" />
 
     </LinearLayout>
 

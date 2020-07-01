@@ -32,7 +32,7 @@
                     android:layout_marginEnd="60dp"
                     android:text="@string/side_menu_facility"
                     android:textColor="@color/colorBlack"
-                    android:textSize="14dp"/>
+                    android:textSize="15dp"/>
 
                     <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/flex_layout_facility"
@@ -59,7 +59,7 @@
                     android:layout_marginStart="22dp"
                     android:text="@string/side_menu_drawings"
                     android:textColor="@color/colorWhite"
-                    android:textSize="11dp"/>
+                    android:textSize="12dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
                     android:layout_marginEnd="34dp"
                     android:text="@string/side_menu_project_upload_drawings"
                     android:textColor="@color/colorWhite"
-                    android:textSize="11dp"/>
+                    android:textSize="12dp"/>
 
             </RelativeLayout>
 
@@ -87,14 +87,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/side_menu_project_reg_drawings"
                 android:textColor="@color/colorTextLabel"
-                android:textSize="18dp"/>
+                android:textSize="19dp"/>
 
             <TextView
                 android:id="@+id/txt_drawings_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorTextLabel"
-                android:textSize="18dp"/>
+                android:textSize="19dp"/>
 
         </LinearLayout>
 

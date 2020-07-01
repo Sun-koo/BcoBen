@@ -28,6 +28,8 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.MenuCheckData;
 
+import static kr.co.bcoben.util.CommonUtil.showToast;
+
 public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInputListAdapter.MenuCheckInputHolder> {
 
     private Activity activity;
@@ -49,8 +51,37 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
     public void onBindViewHolder(@NonNull final MenuCheckInputHolder holder, int position) {
         if (list.size() > position) {
             holder.onBind(list.get(position), position);
+
+        } else if (list.size() == position) {
+            holder.layoutMenuInput.setVisibility(View.GONE);
+            holder.layoutSelf.setVisibility(View.VISIBLE);
+            holder.btnNext.setVisibility(View.GONE);
+
+            holder.btnReg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String name = holder.editNameSelf.getText().toString();
+                    String count = holder.editCountSelf.getText().toString();
+
+                    if (name.isEmpty()) {
+                        showToast(R.string.toast_input_research);
+                        return;
+                    }
+                    if (count.isEmpty()) {
+                        showToast(R.string.toast_input_research_count);
+                        return;
+                    }
+                    MenuCheckData data = new MenuCheckData(0, name);
+                    data.setTot_count(Integer.parseInt(count));
+                    data.setChecked(true);
+                    list.add(data);
+                    notifyDataSetChanged();
+                }
+            });
+
         } else {
             holder.layoutMenuInput.setVisibility(View.GONE);
+            holder.layoutSelf.setVisibility(View.GONE);
             holder.btnNext.setVisibility(View.VISIBLE);
 
             holder.btnNext.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +95,7 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
 
     @Override
     public int getItemCount() {
-        return list.size() + 1;
+        return list.size() + 2;
     }
 
     public void setList(List<MenuCheckData> list) {
@@ -80,10 +111,11 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
 
         View view;
         RelativeLayout layoutMenuInput;
+        LinearLayout layoutSelf;
         TextView txtName;
         CheckBox checkBox;
-        EditText editCount;
-        Button btnNext;
+        EditText editCount, editNameSelf, editCountSelf;
+        Button btnNext, btnReg;
         EditCountTextChangeListener textChangeListener;
 
         public MenuCheckInputHolder(View view, EditCountTextChangeListener textChangeListener) {
@@ -93,10 +125,14 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
             this.textChangeListener = textChangeListener;
 
             layoutMenuInput = view.findViewById(R.id.layout_menu_input);
+            layoutSelf = view.findViewById(R.id.layout_self);
             txtName = view.findViewById(R.id.txt_name);
             checkBox = view.findViewById(R.id.checkbox);
             editCount = view.findViewById(R.id.edit_count);
+            editNameSelf = view.findViewById(R.id.edit_name_self);
+            editCountSelf = view.findViewById(R.id.edit_count_self);
             btnNext = view.findViewById(R.id.btn_project_next);
+            btnReg = view.findViewById(R.id.btn_reg);
 
             editCount.addTextChangedListener(textChangeListener);
         }
@@ -105,6 +141,7 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
             textChangeListener.setPosition(position);
             textChangeListener.setEditText(editCount);
             layoutMenuInput.setVisibility(View.VISIBLE);
+            layoutSelf.setVisibility(View.GONE);
             btnNext.setVisibility(View.GONE);
 
             txtName.setText(data.getItem_name());

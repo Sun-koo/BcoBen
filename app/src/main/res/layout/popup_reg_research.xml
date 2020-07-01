@@ -42,7 +42,7 @@
                         android:paddingEnd="15dp"
                         android:text="@string/popup_reg_research_input"
                         android:textColor="@color/text_drawing_input_tab"
-                        android:textSize="14dp" />
+                        android:textSize="15dp" />
 
                     <TextView
                         android:id="@+id/txt_picture_tab"
@@ -56,7 +56,7 @@
                         android:paddingEnd="15dp"
                         android:text="@string/popup_reg_research_picture"
                         android:textColor="@color/text_drawing_input_tab"
-                        android:textSize="14dp"/>
+                        android:textSize="15dp"/>
 
                     <TextView
                         android:id="@+id/txt_record_tab"
@@ -70,7 +70,7 @@
                         android:paddingEnd="15dp"
                         android:text="@string/popup_reg_research_record"
                         android:textColor="@color/text_drawing_input_tab"
-                        android:textSize="14dp"/>
+                        android:textSize="15dp"/>
 
                     <TextView
                         android:id="@+id/txt_memo_tab"
@@ -84,7 +84,7 @@
                         android:paddingEnd="15dp"
                         android:text="@string/popup_reg_research_memo"
                         android:textColor="@color/text_drawing_input_tab"
-                        android:textSize="14dp"/>
+                        android:textSize="15dp"/>
                 </LinearLayout>
 
                 <TextView
@@ -194,7 +194,7 @@
                     android:onClick="onClick"
                     android:text="@string/popup_reg_research_reg"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="16dp"
+                    android:textSize="17dp"
                     android:background="@drawable/btn_round_pink"/>
 
             </LinearLayout>

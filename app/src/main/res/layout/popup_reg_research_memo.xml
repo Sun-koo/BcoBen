@@ -27,7 +27,7 @@
                 android:layout_centerInParent="true"
                 android:text="@string/popup_reg_research_memo_guide_text"
                 android:textColor="@color/colorTextPrimary"
-                android:textSize="13dp"/>
+                android:textSize="14dp"/>
 
         </RelativeLayout>
 

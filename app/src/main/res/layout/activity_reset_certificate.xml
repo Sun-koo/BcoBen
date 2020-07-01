@@ -42,7 +42,7 @@
                     android:paddingTop="50dp"
                     android:paddingBottom="50dp"
                     android:paddingStart="133dp"
-                    android:paddingEnd="266dp"
+                    android:paddingEnd="265dp"
                     android:background="@color/colorBackgroundPink"
                     android:gravity="center_vertical"
                     android:orientation="vertical">
@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/reset_certificate_title"
                         android:textColor="@color/colorTextPrimary"
-                        android:textSize="42dp"
+                        android:textSize="43dp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -63,7 +63,7 @@
                         android:layout_marginStart="10dp"
                         android:text="@string/id"
                         android:textColor="@color/colorTextLabel"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <EditText
                         android:id="@+id/edit_id"
@@ -77,7 +77,7 @@
                         android:maxLines="1"
                         android:hint="@string/reset_certificate_id_hint_text"
                         android:textColorHint="@color/colorHintBlue"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
                         android:layout_marginStart="10dp"
                         android:text="@string/phone_input"
                         android:textColor="@color/colorTextLabel"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <EditText
                         android:id="@+id/edit_phone"
@@ -101,7 +101,7 @@
                         android:maxLines="1"
                         android:hint="@string/reset_certificate_phone_hint_text"
                         android:textColorHint="@color/colorHintBlue"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <Button
                         android:id="@+id/btn_send"
@@ -112,7 +112,7 @@
                         android:background="@drawable/btn_keycolor"
                         android:text="@string/reset_certificate_send_number"
                         android:textColor="@color/colorWhite"
-                        android:textSize="17dp"
+                        android:textSize="18dp"
                         android:onClick="onClick" />
 
                     <RelativeLayout
@@ -127,7 +127,7 @@
                             android:layout_marginStart="10dp"
                             android:text="@string/certificate_input_number"
                             android:textColor="@color/colorTextLabel"
-                            android:textSize="17dp" />
+                            android:textSize="18dp" />
 
                         <TextView
                             android:id="@+id/txt_remain_time"
@@ -138,7 +138,7 @@
                             android:layout_marginEnd="10dp"
                             android:text="@string/certificate_remain_time"
                             android:textColor="@color/colorTextLabel"
-                            android:textSize="14dp"
+                            android:textSize="15dp"
                             android:visibility="gone"/>
 
                     </RelativeLayout>
@@ -156,7 +156,7 @@
                         android:maxLength="6"
                         android:hint="@string/certificate_hint_text"
                         android:textColorHint="@color/colorHintPink"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -166,7 +166,7 @@
                         android:layout_marginBottom="30dp"
                         android:text="@string/certificate_guide_text"
                         android:textColor="@color/colorTextLabel"
-                        android:textSize="17dp" />
+                        android:textSize="18dp" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -181,7 +181,7 @@
                             android:onClick="onClick"
                             android:text="@string/back"
                             android:textColor="@color/colorTextPrimary"
-                            android:textSize="21dp" />
+                            android:textSize="22dp" />
 
                         <Button
                             android:id="@+id/btn_complete"
@@ -193,7 +193,7 @@
                             android:onClick="onClick"
                             android:text="@string/certificate_complete"
                             android:textColor="@color/colorTextPrimary"
-                            android:textSize="21dp" />
+                            android:textSize="22dp" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>

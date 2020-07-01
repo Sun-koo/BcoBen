@@ -22,7 +22,7 @@
                 android:layout_marginStart="22dp"
                 android:text="@string/popup_reg_research_picture"
                 android:textColor="@color/colorWhite"
-                android:textSize="13dp"/>
+                android:textSize="14dp"/>
 
             <TextView
                 android:id="@+id/txt_picture"
@@ -34,7 +34,7 @@
                 android:layout_marginEnd="33dp"
                 android:text="@string/popup_reg_research_picture_hint"
                 android:textColor="@color/colorWhite"
-                android:textSize="13dp"/>
+                android:textSize="14dp"/>
 
         </RelativeLayout>
 

@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -120,6 +121,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private ProjectStep currentProjectStep = ProjectStep.SUMMARY;
     private MenuCheckListAdapter menuCheckListAdapter;
     private TreeViewAdapter treeViewAdapter;
+    private List<MenuCheckData> projectFacilityList, projectFacCateList, projectArchitectureList = new ArrayList<>();   // For Update Tree Data
     private MenuCheckFacilityListAdapter menuCheckFacilityListAdapter;
     private MenuCheckInputListAdapter menuCheckInputListAdapter;
     private MenuCheckResearchListAdapter menuCheckResearchListAdapter;
@@ -130,7 +132,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<MenuDrawingsData> regDrawingsList = new ArrayList<>();
     private List<CheckBox> cbList = new ArrayList<>();
     private String checkedFacility = "";
-    private int checkedFacilityId = 0;
     public boolean isImageIntent = false;
 
     // main
@@ -215,7 +216,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             } catch (IOException e) {
                 filename = uri.getLastPathSegment();
             }
-            regDrawingsList.add(new MenuDrawingsData(filename, checkedFacility, uri, checkedFacilityId));
+            regDrawingsList.add(new MenuDrawingsData(filename, checkedFacility, uri));
             menuDrawingsListAdapter.setList(regDrawingsList);
             dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("(" + menuDrawingsListAdapter.getItemCount() + "건)");
         } else {
@@ -280,34 +281,41 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 String[] projectDateArr = projectDate.split(" ~ ");
                 String startDate = projectDateArr[0];
                 String endDate = projectDateArr[1];
-                // 진단등급 등록번호
-                int gradeId = 0;
+                // 진단등급
+                String gradeName = "";
                 for (MenuCheckData data : regProjectGrade) {
                     if (data.isChecked()) {
-                        gradeId = data.getItem_id();
+                        gradeName = data.getItem_name();
                     }
                 }
-                if (gradeId == 0) {
+                if (gradeName.isEmpty()) {
                     showToast(R.string.toast_input_select_grade);
                     return;
                 }
                 // 시설물 등록번호 리스트
-                List<List<Integer>> facilityList = new ArrayList<>();
+//                List<List<Integer>> facilityList = new ArrayList<>();
+                List<List<String>> facilityList = new ArrayList<>();
                 for (MenuSelectFacilityData data : regProjectFacility) {
-                    facilityList.add(data.getIdList());
+                    List<String> list = new ArrayList<>();
+
+                    for (String name : data.getNameList()) {
+                        list.add("\"" + name + "\"");
+                    }
+                    facilityList.add(list);
                 }
                 if (facilityList.isEmpty()) {
                     showToast(R.string.toast_input_select_facility);
                     return;
                 }
                 // 조사종류 리스트
-                final List<List<Integer>> researchList = new ArrayList<>();
+//                final List<List<Integer>> researchList = new ArrayList<>();
+                final List<List<String>> researchList = new ArrayList<>();
 
                 for (MenuCheckData data : menuCheckResearchListAdapter.getSelectedValue()) {
                     if (data.isChecked()) {
-                        List<Integer> list = new ArrayList<>();
-                        list.add(data.getItem_id());
-                        list.add(data.getTot_count());
+                        List<String> list = new ArrayList<>();
+                        list.add("\"" + data.getItem_name() + "\"");
+                        list.add("\"" + data.getTot_count() + "\"");
                         researchList.add(list);
                     }
                 }
@@ -316,28 +324,29 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     return;
                 }
                 // 도면 이미지 리스트
-                List<Integer> idList = new ArrayList<>();
+                List<String> facilityNameList = new ArrayList<>();
                 for (MenuDrawingsData data1 : regDrawingsList) {
-                    if (!idList.contains(data1.getFacilityId())) {
-                        idList.add(data1.getFacilityId());
+                    if (!facilityNameList.contains(data1.getFacility())) {
+                        facilityNameList.add(data1.getFacility());
                     }
                 }
-                if (idList.isEmpty()) {
+                if (facilityNameList.isEmpty()) {
                     showToast(R.string.toast_input_select_drawings);
                     return;
                 }
                 List<MultipartBody.Part> requestBodyList = new ArrayList<>();
-                for (int id : idList) {
+                for (String facility : facilityNameList) {
 
                     for (MenuDrawingsData data : regDrawingsList) {
 
-                        if (data.getFacilityId() == id) {
+                        if (data.getFacility().equals(facility)) {
 
                             try {
                                 File file = FileUtil.from(this, data.getUri());
 
                                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("plan" + id + "", file.getName(), requestBody);
+//                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("plan" + facility, file.getName(), requestBody);
+                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData(URLEncoder.encode("plan" + facility, "utf-8"), file.getName(), requestBody);
                                 requestBodyList.add(multipartBody);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -353,7 +362,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 RequestBody researchListBody = RequestBody.create(MediaType.parse("multipart/form-data"), researchList.toString());
 
                 startLoading();
-                RetrofitClient.getRetrofitApi().regProject(UserData.getInstance().getUserId(), projectNameBody, startDateBody, endDateBody, gradeId, facilityListBody, researchListBody, requestBodyList).enqueue(new RetrofitCallbackModel<ProjectListData>() {
+                RetrofitClient.getRetrofitApi().regProject(UserData.getInstance().getUserId(), projectNameBody, startDateBody, endDateBody, gradeName, facilityListBody, researchListBody, requestBodyList).enqueue(new RetrofitCallbackModel<ProjectListData>() {
                     @Override
                     public void onResponseData(ProjectListData data) {
                         closeDrawer();
@@ -744,6 +753,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         for (MenuCheckData data : list) {
             data.setChecked(false);
             data.setTot_count(0);
+            if (data.getItem_id() == 0) {
+                list.remove(data);
+            }
         }
     }
 
@@ -918,16 +930,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.removeAllViews();
 
                 List<String> facilityList = new ArrayList<>();
-                List<Integer> facilityIdList = new ArrayList<>();
+//                List<Integer> facilityIdList = new ArrayList<>();
                 for (MenuSelectFacilityData data : regProjectFacility) {
                     facilityList.add(data.getFacility());
-                    facilityIdList.add(data.getIdList().get(0));
+//                    facilityIdList.add(data.getIdList().get(0));
                 }
                 facilityList = new ArrayList<>(new HashSet<>(facilityList));
-                facilityIdList = new ArrayList<>(new HashSet<>(facilityIdList));
+//                facilityIdList = new ArrayList<>(new HashSet<>(facilityIdList));
 
                 for (int i=0;i < facilityList.size();i++) {
-                    facilityCheckListItemAdd(facilityList.get(i), facilityIdList.get(i));
+//                    facilityCheckListItemAdd(facilityList.get(i), facilityIdList.get(i));
+                    facilityCheckListItemAdd(facilityList.get(i));
                 }
 
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawings.setSelected(true);
@@ -1151,13 +1164,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         });
     }
 
-    public void setSelectedFacilityData(String facility, String facCate, String arch, List<Integer> list) {
+    public void setSelectedFacilityData(String facility, String facCate, String arch, List<String> list) {
         boolean isContain = false;
         for (MenuSelectFacilityData data : regProjectFacility) {
-            List<Integer> idList = data.getIdList();
+            List<String> nameList = data.getNameList();
             boolean equal = true;
-            for (int i = 0; i < idList.size(); i++) {
-                if ((int) idList.get(i) != (int) list.get(i)) {
+            for (int i = 0; i < nameList.size(); i++) {
+                if (!nameList.get(i).equals(list.get(i))) {
                     equal = false;
                     break;
                 }
@@ -1193,33 +1206,46 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                    ResearchRegData.FacilityData.FacCateData cateData = new ResearchRegData.FacilityData.FacCateData(d.getItem_id(), d.getItem_name(), newResearchArchList);
                    newResearchFacCateList.add(cateData);
                }
-
-               initMenuFacilityTreeData(data.getFacility_list(), data.getFac_cate_list(), data.getStructure_list());
+               projectFacilityList = data.getFacility_list();
+               projectFacCateList = data.getFac_cate_list();
+               projectArchitectureList = data.getStructure_list();
+//               initMenuFacilityTreeData(data.getFacility_list(), data.getFac_cate_list(), data.getStructure_list());
+               initMenuFacilityTreeData();
            }
            @Override
            public void onCallbackFinish() {}
        });
     }
 
-    private void initMenuFacilityTreeData(List<MenuCheckData> facilityList, List<MenuCheckData> facCateList, List<MenuCheckData> archList) {
+//    private void initMenuFacilityTreeData(List<MenuCheckData> facilityList, List<MenuCheckData> facCateList, List<MenuCheckData> archList) {
+    private void initMenuFacilityTreeData() {
         final List<TreeNode> nodes = new ArrayList<>();
 
-        for (MenuCheckData facilityData : facilityList) {
+        for (MenuCheckData facilityData : projectFacilityList) {
             TreeNode<Dir> facility = new TreeNode<>(new Dir(facilityData.getItem_name(), facilityData.getItem_id()));
             nodes.add(facility);
 
-            for (MenuCheckData facCateData : facCateList) {
+            for (MenuCheckData facCateData : projectFacCateList) {
                 TreeNode<Dir> facCate = new TreeNode<>(new Dir(facCateData.getItem_name(), facCateData.getItem_id()));
 
-                for (MenuCheckData archData : archList) {
+                for (MenuCheckData archData : projectArchitectureList) {
                     facCate.addChild(new TreeNode<>(new Dir(archData.getItem_name(), archData.getItem_id())));
+                    if (projectArchitectureList.get(projectArchitectureList.size() - 1) == archData) {
+                        // 구조형식 직접입력
+                        facCate.addChild(new TreeNode<>(new Dir("", -3)));
+                    }
                 }
                 facility.addChild(facCate);
+                if (projectFacCateList.get(projectFacCateList.size() - 1) == facCateData) {
+                    // 시설물 분류 직접입력
+                    facility.addChild(new TreeNode<>(new Dir("", -2)));
+                }
             }
         }
-
+        // 시설물 직접입력
+        nodes.add(new TreeNode<>(new Dir("", -1)));
         // for next button
-        nodes.add(new TreeNode<>(new Dir("", 0)));
+        nodes.add(new TreeNode<>(new Dir("", -10)));
 
         dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setLayoutManager(new LinearLayoutManager(this));
         treeViewAdapter = new TreeViewAdapter(nodes, Arrays.asList(new MenuNodeBinder(this)));
@@ -1246,7 +1272,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setAdapter(treeViewAdapter);
     }
 
-    private void facilityCheckListItemAdd(String item, int id) {
+    public void updateFacilityTreeData(String name, int id) {
+        if (id == -1) {
+            projectFacilityList.add(new MenuCheckData(0, name));
+        } else if (id == -2){
+            projectFacCateList.add(new MenuCheckData(0, name));
+        } else {
+            projectArchitectureList.add(new MenuCheckData(0, name));
+        }
+        initMenuFacilityTreeData();
+    }
+
+    private void facilityCheckListItemAdd(String item) {
         LinearLayout view = (LinearLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_menu_check_facility, null);
 
         final TextView facilityName = view.findViewById(R.id.txt_facility_name);
@@ -1255,7 +1292,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         cbList.add(cbFacility);
 
         facilityName.setText(item);
-        facilityName.setTag(id);
+//        facilityName.setTag(id);
         cbFacility.setChecked(false);
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -1265,7 +1302,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     cb.setChecked(cb == cbFacility);
                 }
                 checkedFacility = facilityName.getText().toString();
-                checkedFacilityId = (int) facilityName.getTag();
+//                checkedFacilityId = (int) facilityName.getTag();
             }
         });
         dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.addView(view);

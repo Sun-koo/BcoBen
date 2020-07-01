@@ -40,7 +40,7 @@
                     android:layout_marginEnd="9dp"
                     android:text="비파괴, 장비조사 | 지반(BH)"
                     android:textColor="@color/colorTextNavy"
-                    android:textSize="16dp" />
+                    android:textSize="17dp" />
 
             </LinearLayout>
 
@@ -60,9 +60,65 @@
                 android:imeOptions="actionDone"
                 android:alpha="0.38"
                 android:textColorHint="@color/colorHintGray"
-                android:textSize="16dp"
+                android:textSize="17dp"
                 android:textColor="@color/colorTextPrimary"/>
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_self"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:background="@drawable/border_square_gray_box"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/edit_name_self"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:maxLines="1"
+                android:inputType="text"
+                android:hint="@string/side_menu_hint_self"
+                android:imeOptions="actionDone"
+                android:textColorHint="@color/colorHintGray"
+                android:textSize="17dp"
+                android:textColor="@color/colorTextPrimary"/>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_margin="13dp"
+                android:background="@color/colorDividerInputSelf"/>
+
+            <EditText
+                android:id="@+id/edit_count_self"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:maxLines="1"
+                android:inputType="number"
+                android:hint="@string/side_menu_hint_count"
+                android:imeOptions="actionDone"
+                android:textColorHint="@color/colorHintGray"
+                android:textSize="17dp"
+                android:textColor="@color/colorTextPrimary"/>
+
+            <Button
+                android:id="@+id/btn_reg"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/circle_keycolor"
+                android:text="@string/registration"
+                android:textColor="@color/colorWhite"
+                android:textSize="14dp"/>
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_project_next"
@@ -72,7 +128,7 @@
             android:onClick="onClick"
             android:text="@string/side_menu_project_next_button"
             android:textColor="@color/colorWhite"
-            android:textSize="18dp"
+            android:textSize="19dp"
             android:background="@drawable/btn_keycolor"
             android:visibility="gone" />
 

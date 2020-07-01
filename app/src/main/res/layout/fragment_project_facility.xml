@@ -33,7 +33,7 @@
                     android:layout_marginStart="10dp"
                     android:text="@string/main_research_registration"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="18dp"
+                    android:textSize="19dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="33dp"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="32dp"
+                    android:textSize="33dp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="16dp"/>
+                    android:textSize="17dp"/>
             </LinearLayout>
         </RelativeLayout>
 
@@ -113,7 +113,7 @@
             android:lineSpacingExtra="6dp"
             android:gravity="center"
             android:text="@string/main_research_list_none"
-            android:textSize="13dp"
+            android:textSize="14dp"
             android:textColor="@color/colorTextPrimary"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"

@@ -24,7 +24,7 @@
                 android:layout_marginBottom="24dp"
                 android:text="@string/camera_dialog_title"
                 android:textColor="@color/colorBlack"
-                android:textSize="16dp"/>
+                android:textSize="17dp"/>
 
             <ImageButton
                 android:id="@+id/btn_close"
@@ -53,7 +53,7 @@
                 android:layout_marginEnd="20dp"
                 android:text="@string/camera_dialog_take"
                 android:textColor="@color/colorWhite"
-                android:textSize="14dp"
+                android:textSize="15dp"
                 android:background="@drawable/btn_keycolor_camera_dialog"/>
 
             <Button
@@ -62,7 +62,7 @@
                 android:layout_height="111dp"
                 android:text="@string/camera_dialog_album"
                 android:textColor="@color/colorWhite"
-                android:textSize="14dp"
+                android:textSize="15dp"
                 android:background="@drawable/btn_keycolor_camera_dialog"/>
 
         </LinearLayout>

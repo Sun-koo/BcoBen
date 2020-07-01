@@ -10,9 +10,13 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
 import kr.co.bcoben.component.PermissionDialog;
+import kr.co.bcoben.model.AppUpdateData;
+import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
+import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
 
 import static kr.co.bcoben.util.CommonUtil.requestPermission;
@@ -30,6 +34,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+//        requestAppUpdate();
         if (requestPermission(this, PERMISSION)) {
             startApp();
         }
@@ -86,5 +91,23 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     }).show();
         }
+    }
+
+    private void requestAppUpdate() {
+        RetrofitClient.getRetrofitApi().appUpdate().enqueue(new RetrofitCallbackModel<AppUpdateData>() {
+            @Override
+            public void onResponseData(AppUpdateData data) {
+                AppApplication.setUpdateData(data.getUpdate_data());
+
+                if (requestPermission(SplashActivity.this, PERMISSION)) {
+                    startApp();
+                }
+            }
+
+            @Override
+            public void onCallbackFinish() {
+
+            }
+        });
     }
 }

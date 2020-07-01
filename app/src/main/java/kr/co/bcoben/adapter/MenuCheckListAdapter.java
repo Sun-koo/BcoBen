@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +27,8 @@ import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.MenuCheckData;
 import tellh.com.recyclertreeview_lib.TreeNode;
 import tellh.com.recyclertreeview_lib.TreeViewBinder;
+
+import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MenuCheckListAdapter extends RecyclerView.Adapter {
 
@@ -52,6 +55,7 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
             view.txtName.setVisibility(View.VISIBLE);
             view.checkBox.setVisibility(View.VISIBLE);
             view.bottomLine.setVisibility(View.VISIBLE);
+            view.layoutSelf.setVisibility(View.GONE);
             view.btnNext.setVisibility(View.GONE);
 
             view.txtName.setText(list.get(position).getItem_name());
@@ -70,10 +74,37 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
 //                    list.get(position).setChecked(view.checkBox.isChecked());
                 }
             });
+        } else if (list.size() == position) {
+            view.txtName.setVisibility(View.GONE);
+            view.checkBox.setVisibility(View.GONE);
+            view.bottomLine.setVisibility(View.GONE);
+            view.layoutSelf.setVisibility(View.VISIBLE);
+            view.btnNext.setVisibility(View.GONE);
+
+            view.btnReg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String name = view.editName.getText().toString();
+                    if (name.isEmpty()) {
+                        showToast(R.string.toast_input_grade);
+                        return;
+                    }
+
+                    for (MenuCheckData data : list) {
+                        data.setChecked(false);
+                    }
+                    MenuCheckData data = new MenuCheckData(0, name);
+                    data.setChecked(true);
+                    list.add(data);
+                    notifyDataSetChanged();
+                }
+            });
+
         } else {
             view.txtName.setVisibility(View.GONE);
             view.checkBox.setVisibility(View.GONE);
             view.bottomLine.setVisibility(View.GONE);
+            view.layoutSelf.setVisibility(View.GONE);
             view.btnNext.setVisibility(View.VISIBLE);
 
             view.btnNext.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +118,7 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return list.size() + 1;
+        return list.size() + 2;
     }
 
     public void setList(List<MenuCheckData> mList) {
@@ -101,20 +132,24 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
 
     private class MenuCheckHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout listLayout;
+        LinearLayout listLayout, layoutSelf;
         TextView txtName;
         CheckBox checkBox;
-        Button btnNext;
+        Button btnNext, btnReg;
         View bottomLine;
+        EditText editName;
 
         public MenuCheckHolder(View view) {
             super(view);
 
             listLayout = view.findViewById(R.id.list_layout);
+            layoutSelf = view.findViewById(R.id.layout_self);
             txtName = view.findViewById(R.id.txt_name);
             checkBox = view.findViewById(R.id.checkbox);
             btnNext = view.findViewById(R.id.btn_project_next);
+            btnReg = view.findViewById(R.id.btn_reg);
             bottomLine = view.findViewById(R.id.line_bottom);
+            editName = view.findViewById(R.id.edit_name);
         }
     }
 }

@@ -22,7 +22,7 @@
             android:layout_marginEnd="9dp"
             android:text="비파괴, 장비조사 | 지반(BH)"
             android:textColor="@color/colorTextLabelPink"
-            android:textSize="16dp" />
+            android:textSize="17dp" />
 
         <TextView
             android:id="@+id/txt_count"
@@ -34,7 +34,7 @@
             android:layout_marginEnd="9dp"
             android:text="20개소"
             android:textColor="@color/colorTextLabelPink"
-            android:textSize="14dp" />
+            android:textSize="15dp" />
 
     </RelativeLayout>
 

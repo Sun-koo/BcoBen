@@ -17,7 +17,7 @@
         android:paddingEnd="33dp"
         android:text="본관동 > 터널 > RC조"
         android:textColor="@color/text_drawer_list_selector"
-        android:textSize="16dp"/>
+        android:textSize="17dp"/>
 
     <TextView
         android:id="@+id/btn_remove"
@@ -31,6 +31,6 @@
         android:paddingEnd="33dp"
         android:text="@string/minus_button"
         android:textColor="@color/text_drawer_list_selector"
-        android:textSize="16dp"/>
+        android:textSize="17dp"/>
 
 </RelativeLayout>
