@@ -34,10 +34,10 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-//        requestAppUpdate();
-        if (requestPermission(this, PERMISSION)) {
-            startApp();
-        }
+        requestAppUpdate();
+//        if (requestPermission(this, PERMISSION)) {
+//            startApp();
+//        }
     }
 
     @Override
