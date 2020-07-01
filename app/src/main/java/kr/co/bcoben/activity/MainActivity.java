@@ -358,11 +358,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 RequestBody projectNameBody = RequestBody.create(MediaType.parse("multipart/form-data"), projectName);
                 RequestBody startDateBody = RequestBody.create(MediaType.parse("multipart/form-data"), startDate);
                 RequestBody endDateBody = RequestBody.create(MediaType.parse("multipart/form-data"), endDate);
+                RequestBody gradeNameBody = RequestBody.create(MediaType.parse("multipart/form-data"), gradeName);
                 RequestBody facilityListBody = RequestBody.create(MediaType.parse("multipart/form-data"), facilityList.toString());
                 RequestBody researchListBody = RequestBody.create(MediaType.parse("multipart/form-data"), researchList.toString());
 
                 startLoading();
-                RetrofitClient.getRetrofitApi().regProject(UserData.getInstance().getUserId(), projectNameBody, startDateBody, endDateBody, gradeName, facilityListBody, researchListBody, requestBodyList).enqueue(new RetrofitCallbackModel<ProjectListData>() {
+                RetrofitClient.getRetrofitApi().regProject(UserData.getInstance().getUserId(), projectNameBody, startDateBody, endDateBody, gradeNameBody, facilityListBody, researchListBody, requestBodyList).enqueue(new RetrofitCallbackModel<ProjectListData>() {
                     @Override
                     public void onResponseData(ProjectListData data) {
                         closeDrawer();

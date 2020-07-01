@@ -71,7 +71,7 @@ public interface RetrofitApi {
     @Multipart
     @POST("/app/project/register")
     Call<ResponseData<ProjectListData>> regProject(@Part("user_id") int userId, @Part("project_name") RequestBody projectName, @Part("start_date") RequestBody startDate, @Part("end_date") RequestBody endDate,
-                                                   @Part("grade_name") String gradeName, @Part("facility_list") RequestBody facilityList, @Part("research_list") RequestBody researchList,
+                                                   @Part("grade_name") RequestBody gradeName, @Part("facility_list") RequestBody facilityList, @Part("research_list") RequestBody researchList,
                                                    @Part List<MultipartBody.Part> planList);
 
     @FormUrlEncoded
