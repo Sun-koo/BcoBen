@@ -82,6 +82,7 @@ import tellh.com.recyclertreeview_lib.TreeViewAdapter;
 import static kr.co.bcoben.util.CommonUtil.finishApp;
 import static kr.co.bcoben.util.CommonUtil.getAppVersion;
 import static kr.co.bcoben.util.CommonUtil.getCameraImage;
+import static kr.co.bcoben.util.CommonUtil.getDateFormat;
 import static kr.co.bcoben.util.CommonUtil.getGalleryImage;
 import static kr.co.bcoben.util.CommonUtil.getImageResult;
 import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
@@ -91,7 +92,7 @@ import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
 
-    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+    private final String[] PERMISSION = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
 
     public enum ResearchStep {
         GRADE("grade"), FACILITY("facility"), FACILITY_CATEGORY("fac_cate"), ARCHITECTURE("structure"), RESEARCH("research_type");
@@ -1078,8 +1079,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     public void onClick(CameraDialog dialog) {
                         dialog.dismiss();
                         isImageIntent = true;
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
-                        String filename = "plan_" + sdf.format(Calendar.getInstance().getTime()) + ".jpg";
+                        String filename = "plan_" + getDateFormat("yyMMddHHmmss") + ".jpg";
                         getCameraImage(MainActivity.this, filename);
                     }
                 })

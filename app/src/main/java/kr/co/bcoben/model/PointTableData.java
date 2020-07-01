@@ -3,6 +3,7 @@ package kr.co.bcoben.model;
 import android.graphics.Bitmap;
 
 public class PointTableData {
+    private int pointId;
     private int num;
     private Bitmap label;
     private String content;
@@ -10,7 +11,8 @@ public class PointTableData {
     private int count;
     private boolean isChecked;
 
-    public PointTableData(int num, String content, String measure, int count) {
+    public PointTableData(int pointId, int num, String content, String measure, int count) {
+        this.pointId = pointId;
         this.num = num;
         this.content = content;
         this.measure = measure;
@@ -18,6 +20,9 @@ public class PointTableData {
         this.isChecked = false;
     }
 
+    public int getPointId() {
+        return pointId;
+    }
     public int getNum() {
         return num;
     }

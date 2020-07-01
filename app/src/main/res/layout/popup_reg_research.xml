@@ -177,7 +177,7 @@
                                 android:id="@+id/memo_view"
                                 layout="@layout/popup_reg_research_memo"
                                 android:layout_width="match_parent"
-                                android:layout_height="390dp"/>
+                                android:layout_height="wrap_content"/>
 
                         </LinearLayout>
 
@@ -185,17 +185,52 @@
                     
                 </ScrollView>
 
-
-                <Button
-                    android:id="@+id/btn_reg"
+                <LinearLayout
+                    android:id="@+id/layout_btn_register"
                     android:layout_width="match_parent"
-                    android:layout_height="36dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp">
+                    <Button
+                        android:id="@+id/btn_reg"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:onClick="onClick"
+                        android:text="@string/popup_reg_research_reg"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="17dp"
+                        android:background="@drawable/btn_round_pink"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_btn_modify"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:onClick="onClick"
-                    android:text="@string/popup_reg_research_reg"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="17dp"
-                    android:background="@drawable/btn_round_pink"/>
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_del"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:onClick="onClick"
+                        android:text="@string/popup_reg_research_del"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="17dp"
+                        android:background="@drawable/btn_round_pink"/>
+                    <Button
+                        android:id="@+id/btn_save"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="22dp"
+                        android:onClick="onClick"
+                        android:text="@string/popup_reg_research_save"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="17dp"
+                        android:background="@drawable/btn_round_pink"/>
+                </LinearLayout>
+
 
             </LinearLayout>
 

@@ -24,7 +24,7 @@ import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private final String[] PERMISSION = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
+    private final String[] PERMISSION = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
 
     private Handler handler = new Handler();
     private Runnable runnable;

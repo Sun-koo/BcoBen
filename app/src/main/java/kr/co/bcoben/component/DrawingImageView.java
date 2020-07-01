@@ -69,8 +69,8 @@ public class DrawingImageView extends SubsamplingScaleImageView {
 
         if (pinList != null && !pinList.isEmpty()) {
             DecimalFormat df = new DecimalFormat("00");
-            for (int i = 0; i < pinList.size(); i++) {
-                DrawingPointData data = pinList.get(i).getDrawingPointData();
+            for (PointData pointData : pinList) {
+                DrawingPointData data = pointData.getDrawingPointData();
                 PointF point = data.getPoint();
                 Bitmap pinImage = data.getPinImage();
 
@@ -81,7 +81,7 @@ public class DrawingImageView extends SubsamplingScaleImageView {
                     float vX = vPin.x - (pinImage.getWidth() / 2.0f);
                     float vY = vPin.y - (pinImage.getHeight() / 2.0f);
                     canvas.drawBitmap(pinImage, vX, vY, paint);
-                    canvas.drawText(df.format(i + 1), vX, vY - 7, paint);
+                    canvas.drawText(df.format(pointData.getPoint_num()), vX, vY - 7, paint);
 
                     if (data.getRegImage() != null) {
                         paint.setColor(getResources().getColor(R.color.colorWhite));

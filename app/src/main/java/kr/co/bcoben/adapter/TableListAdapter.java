@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.R;
@@ -60,6 +61,15 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.Tabl
     public void setAllChecked(boolean isChecked) {
         isAllChecked = isChecked;
         notifyDataSetChanged();
+    }
+    public List<Integer> getCheckedList() {
+        List<Integer> checkedList = new ArrayList<>();
+        for (PointTableData data : list) {
+            if (data.isChecked()) {
+                checkedList.add(data.getPointId());
+            }
+        }
+        return checkedList;
     }
 
     class TableHolder extends RecyclerView.ViewHolder {

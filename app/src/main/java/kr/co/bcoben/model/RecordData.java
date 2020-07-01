@@ -6,15 +6,13 @@ import java.io.File;
 
 public class RecordData {
     private File recordFile;
-    private String recordUrl;
     private String recordName;
     private int recordTime;
     private int playTime;
     private boolean isPlay;
 
-    public RecordData(@Nullable File recordFile, @Nullable String recordUrl, String recordName, int recordTime) {
+    public RecordData(File recordFile, String recordName, int recordTime) {
         this.recordFile = recordFile;
-        this.recordUrl = recordUrl;
         this.recordName = recordName;
         this.recordTime = recordTime;
         this.playTime = 0;
@@ -26,12 +24,6 @@ public class RecordData {
     }
     public void setRecordFile(File recordFile) {
         this.recordFile = recordFile;
-    }
-    public String getRecordUrl() {
-        return recordUrl;
-    }
-    public void setRecordUrl(String recordUrl) {
-        this.recordUrl = recordUrl;
     }
     public String getRecordName() {
         return recordName;

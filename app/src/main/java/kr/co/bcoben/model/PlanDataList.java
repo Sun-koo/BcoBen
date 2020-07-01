@@ -113,15 +113,6 @@ public class PlanDataList implements DataModel {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
-            if (obj instanceof PlanData) {
-                PlanData data = (PlanData) obj;
-                return plan_id == data.getPlan_id() && plan_name.equals(data.getPlan_name()) && plan_img.equals(data.getPlan_img()) && plan_thumb.equals(data.getPlan_thumb());
-            }
-            return false;
-        }
-
-        @Override
         public int describeContents() {
             return 0;
         }

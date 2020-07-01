@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -19,6 +21,8 @@ import java.util.List;
 
 import kr.co.bcoben.adapter.DrawingsListAdapter;
 import kr.co.bcoben.model.PlanDataList;
+
+import static kr.co.bcoben.util.CommonUtil.getCachePath;
 
 public class FTPConnectUtil {
     private final String TAG = "Connect FTP";
@@ -68,7 +72,7 @@ public class FTPConnectUtil {
                 client.logout();
                 client.disconnect();
                 client = null;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -135,7 +139,7 @@ public class FTPConnectUtil {
         return bitmapList;
     }
 
-    public boolean ftpPlanDownload(int position, PlanDataList.PlanData planData, DrawingsListAdapter adapter) {
+    public boolean ftpPlanDownload(int position, PlanDataList.PlanData planData, @Nullable DrawingsListAdapter adapter) {
         boolean result = false;
         if (ftpConnect()) {
             try {
@@ -155,13 +159,17 @@ public class FTPConnectUtil {
 
                 double download = 0;
                 int len;
-                adapter.setData(position, planData, DrawingsListAdapter.START_DOWNLOAD);
+                if (adapter != null) {
+                    adapter.setData(position, planData, DrawingsListAdapter.START_DOWNLOAD);
+                }
                 while ((len = input.read(data)) != -1) {
                     output.write(data, 0, len);
-                    download += len;
-                    int percent = (int) (download / size * 100);
-                    planData.setDownPercent(percent);
-                    adapter.setData(position, planData, DrawingsListAdapter.DOWNLOADING);
+                    if (adapter != null) {
+                        download += len;
+                        int percent = (int) (download / size * 100);
+                        planData.setDownPercent(percent);
+                        adapter.setData(position, planData, DrawingsListAdapter.DOWNLOADING);
+                    }
                 }
                 output.close();
                 input.close();
@@ -172,6 +180,41 @@ public class FTPConnectUtil {
             ftpDisconnect();
         }
         return result;
+    }
+
+    public List<File> ftpFileTempDownload(List<String> pathList) {
+        List<File> fileList = new ArrayList<>();
+        if (ftpConnect()) {
+            try {
+                for (String path : pathList) {
+                    String filename = "voice_" + path.substring(path.lastIndexOf("/") + 1);
+                    File saveFile = new File(getCachePath(), filename);
+                    if (!saveFile.exists()) {
+                        if (saveFile.createNewFile()) {
+                            FileOutputStream output = new FileOutputStream(saveFile);
+                            InputStream input = client.retrieveFileStream(path);
+                            byte[] data = new byte[4096];
+
+                            int len;
+                            while ((len = input.read(data)) != -1) {
+                                output.write(data, 0, len);
+                            }
+                            output.close();
+                            input.close();
+                            if (client.completePendingCommand()) {
+                                fileList.add(saveFile);
+                            }
+                        }
+                    } else {
+                        fileList.add(saveFile);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ftpDisconnect();
+        }
+        return fileList;
     }
 
     private long ftpFileSize(String path) {

@@ -105,17 +105,17 @@ public interface RetrofitApi {
 
     @Multipart
     @POST("/app/research/register_point")
-    Call<ResponseData<PointResponseData>> researchRegisterPoint(@Part("user_id") int userId, @Part("research_id") int researchId, @Part("plan_id") int planId, @Part("point_x") int pointX, @Part("point_y") int pointY, @Part("count") int count,
+    Call<ResponseData<PointListData>> researchRegisterPoint(@Part("user_id") int userId, @Part("research_id") int researchId, @Part("plan_id") int planId, @Part("point_x") int pointX, @Part("point_y") int pointY, @Part("count") int count,
                                                                 @PartMap Map<String, RequestBody> partMap, @Part List<MultipartBody.Part> fileList);
 
     @Multipart
     @POST("/app/research/update_point")
-    Call<ResponseData<PointResponseData>> researchUpdatePoint(@Part("user_id") int userId, @Part("research_id") int researchId, @Part("plan_id") int planId, @Part("point_x") int pointX, @Part("point_y") int pointY, @Part("count") int count,
+    Call<ResponseData<PointListData>> researchUpdatePoint(@Part("user_id") int userId, @Part("research_id") int researchId, @Part("point_id") int pointId, @Part("count") int count,
                                                               @PartMap Map<String, RequestBody> partMap, @Part List<MultipartBody.Part> fileList);
 
     @FormUrlEncoded
     @POST("/app/research/delete_point")
-    Call<ResponseData> researchDeletePoint(@Field("user_id") int userId, @Field("point_id_list") List<Integer> deletePointList);
+    Call<ResponseData<PointListData>> researchDeletePoint(@Field("user_id") int userId, @Field("point_id_list") List<Integer> deletePointList);
 
     @POST("/app/update")
     Call<ResponseData<AppUpdateData>> appUpdate();
