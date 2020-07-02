@@ -48,7 +48,7 @@ public class MenuNodeBinder extends TreeViewBinder<MenuNodeBinder.ViewHolder> {
 
         if (node.isLeaf()) {
             holder.txtChildName.setText(dirNode.dirName);
-            holder.btnReg.setOnClickListener(new View.OnClickListener() {
+            holder.layoutFacilityChildMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Dir masterDir = (Dir) node.getParent().getParent().getContent();
