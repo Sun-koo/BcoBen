@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +49,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.DrawingInputSpinnerAdapter;
 import kr.co.bcoben.adapter.DrawingPictureListAdapter;
@@ -55,10 +58,11 @@ import kr.co.bcoben.adapter.DrawingsSpinnerAdapter;
 import kr.co.bcoben.adapter.InputPopupMemoListAdapter;
 import kr.co.bcoben.adapter.InputPopupPictureListAdapter;
 import kr.co.bcoben.adapter.InputPopupRecordListAdapter;
-import kr.co.bcoben.adapter.TableListAdapter;
+import kr.co.bcoben.adapter.DrawingsDataListAdapter;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CanvasView;
 import kr.co.bcoben.component.DrawingsSelectDialog;
+import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.databinding.ActivityDrawingsBinding;
 import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.PlanDataList;
@@ -71,6 +75,7 @@ import kr.co.bcoben.model.ResearchSpinnerData;
 import kr.co.bcoben.model.UserData;
 import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
+import kr.co.bcoben.util.CommonUtil;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
 import kr.co.bcoben.util.FTPConnectUtil;
 import kr.co.bcoben.util.FileUtil;
@@ -120,7 +125,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private List<PlanDataList.PlanData> planList;
 
     // table
-    private TableListAdapter tableListAdapter;
+    private DrawingsDataListAdapter drawingsDataListAdapter;
     private List<PointTableData> tableDataList = new ArrayList<>();
 
     // popup
@@ -158,22 +163,22 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.checkboxNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                tableListAdapter.setAllChecked(isChecked);
+                drawingsDataListAdapter.setAllChecked(isChecked);
             }
         });
 
         dataBinding.recyclerTable.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-        tableListAdapter = new TableListAdapter(this, tableDataList);
-        dataBinding.recyclerTable.setAdapter(tableListAdapter);
+        drawingsDataListAdapter = new DrawingsDataListAdapter(this, tableDataList);
+        dataBinding.recyclerTable.setAdapter(drawingsDataListAdapter);
 
         requestPointRegisterData();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionState state = resultRequestPermission(this, permissions, grantResults);
+        final PermissionState state = resultRequestPermission(this, permissions, grantResults);
 
         if (state == PermissionState.GRANT) {
             if (requestCode == RECORD_PERMISSION_CODE) {
@@ -182,7 +187,31 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 getFileChooserImage(this, "img_" + getDateFormat("yyMMddHHmmss") + ".jpg");
             }
         } else {
+            int contentStrId;
+            if (requestCode == RECORD_PERMISSION_CODE) {
+                contentStrId = R.string.dialog_permission_content_image;
+            } else if (requestCode == IMAGE_PERMISSION_CODE) {
+                contentStrId = R.string.dialog_permission_content_record;
+            } else {
+                contentStrId = R.string.dialog_permission_content;
+            }
 
+            PermissionDialog.builder(this)
+                    .setTxtPermissionContent(contentStrId)
+                    .setBtnConfirmListener(new PermissionDialog.BtnClickListener() {
+                        @Override
+                        public void onClick(PermissionDialog dialog) {
+                            if (state == CommonUtil.PermissionState.ALWAYS_DENY) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                startActivityForResult(intent, requestCode);
+                            } else if (state == CommonUtil.PermissionState.DENY) {
+                                requestPermission(activity, permissions, requestCode);
+                            }
+                            dialog.dismiss();
+                        }
+                    }).show();
         }
     }
 
@@ -229,13 +258,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 dataBinding.txtNumber.setVisibility(isSelected ? View.GONE : View.VISIBLE);
                 dataBinding.checkboxNumber.setVisibility(isSelected ? View.VISIBLE : View.GONE);
                 dataBinding.btnDelete.setVisibility(isSelected ? View.VISIBLE : View.GONE);
-                dataBinding.checkboxNumber.setSelected(false);
+                dataBinding.checkboxNumber.setChecked(false);
 
-                tableListAdapter.setCheckable(isSelected);
+                drawingsDataListAdapter.setCheckable(isSelected);
                 break;
             }
             case R.id.btn_delete: {
-                List<Integer> deletePointList = tableListAdapter.getCheckedList();
+                List<Integer> deletePointList = drawingsDataListAdapter.getCheckedList();
                 if (deletePointList.size() == 0) {
                     showToast(R.string.toast_table_delete_non_select);
                     return;
@@ -502,6 +531,33 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.recyclerPicturePopup.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
     }
 
+    public void selectTableData(int pointId) {
+        PointData data = null;
+        for (PointData d : pointList) {
+            if (d.getPoint_id() == pointId) {
+                data = d;
+                break;
+            }
+        }
+        if (data != null) {
+            DecimalFormat df = new DecimalFormat("00");
+            final PointF point = dataBinding.imgDrawings.sourceToViewCoord(data.getPoint_x(), data.getPoint_y());
+            dataBinding.txtNewPin.setText(df.format(data.getPoint_num()));
+
+            setupInputPopup(data);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dataBinding.ivNewPin.setTranslationX(point.x - dataBinding.ivNewPin.getWidth() / 2.0f);
+                    dataBinding.ivNewPin.setTranslationY(point.y - dataBinding.ivNewPin.getHeight() / 2.0f);
+                    dataBinding.txtNewPin.setX(dataBinding.ivNewPin.getX());
+                    dataBinding.txtNewPin.setY(dataBinding.ivNewPin.getY() + dataBinding.ivNewPin.getHeight() + 3);
+                    dataBinding.layoutResearchPopup.setVisibility(View.VISIBLE);
+                }
+            }, 1);
+        }
+    }
+
     // 도면 사진리스트 팝업 Width 조정
     public int setDrawingPictureListAdapter(int size) {
         ViewGroup.LayoutParams params = dataBinding.layoutPictureListPopup.getLayoutParams();
@@ -540,10 +596,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             public void onFocusChange(View v, boolean hasFocus) {
                 resetInputPopupContentLayout();
                 if (hasFocus) {
-                    if (v.getParent().getParent() instanceof ConstraintLayout) {
-                        ((ConstraintLayout) v.getParent().getParent()).setSelected(true);
+                    if (v.getParent().getParent().getParent() instanceof ConstraintLayout) {
+                        ((ConstraintLayout) v.getParent().getParent().getParent()).setSelected(true);
                     } else {
-                        ((ConstraintLayout) v.getParent()).setSelected(true);
+                        ((ConstraintLayout) v.getParent().getParent()).setSelected(true);
                     }
                 }
             }
@@ -609,11 +665,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         txtSpnHint.setVisibility(View.GONE);
                         editInput.setVisibility(View.VISIBLE);
                         txtSpnHint.setText("");
-                        if (!spinner.isSelected()) {
+                        Log.e(TAG, spinner.isSelected() + " " + editInput.getText().toString());
+                        if (spinner.isSelected()) {
                             editInput.setText("");
                             showKeyboard(activity, editInput);
                         }
-                        spinner.setSelected(false);
+                        spinner.setSelected(true);
                     } else {
                         txtSpnHint.setVisibility(View.VISIBLE);
                         editInput.setVisibility(View.GONE);
@@ -648,6 +705,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.editWidth.setText("");
         dataBinding.researchPopup.inputView.editHeight.setText("");
         dataBinding.researchPopup.inputView.editCount.setText("");
+        dataBinding.researchPopup.inputView.editCount.setVisibility(View.VISIBLE);
 
         // 사진탭
         inputPopupPictureListAdapter.resetList();
@@ -658,7 +716,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.GONE);
         dataBinding.researchPopup.recordView.btnRecordStop.setText(R.string.popup_reg_research_record_stop);
         inputPopupRecordListAdapter.resetList();
-        voiceNum = 0;
+        voiceNum = 1;
 
         // 메모탭
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
@@ -687,6 +745,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.inputView.editWidth.setText(data.getWidth() == 0 ? "" : String.valueOf(data.getWidth()));
         dataBinding.researchPopup.inputView.editHeight.setText(data.getHeight() == 0 ? "" : String.valueOf(data.getHeight()));
         dataBinding.researchPopup.inputView.editCount.setText(String.valueOf(data.getCount()));
+        dataBinding.researchPopup.inputView.editCount.setVisibility(View.VISIBLE);
 
         // 사진탭
         inputPopupPictureListAdapter.resetList();
@@ -698,13 +757,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         dataBinding.researchPopup.recordView.btnRecordStop.setText(R.string.popup_reg_research_record_stop);
         inputPopupRecordListAdapter.resetList();
         inputPopupRecordListAdapter.setList(data.getPoint_voice());
-
-        for (int i = data.getPoint_voice().size() - 1; i >= 0; i--) {
-            if (data.getPoint_voice().get(i).getVoice_num() != 0) {
-                voiceNum = data.getPoint_voice().get(i).getVoice_num();
-                break;
-            }
-        }
+        voiceNum = data.getVoice_num();
 
         // 메모탭
         dataBinding.researchPopup.memoView.layoutCanvas.clear();
@@ -732,7 +785,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             if (itemName == null) {
                 spinner.setSelection(0);
             } else {
-                spinner.setSelected(true);
+                spinner.setSelected(false);
                 spinner.setSelection(spnList.size() - 1);
                 editText.setText(itemName);
             }
@@ -943,7 +996,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private void recording() {
         dataBinding.researchPopup.recordView.btnRecord.setVisibility(View.GONE);
         dataBinding.researchPopup.recordView.layoutRecording.setVisibility(View.VISIBLE);
-        recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (++voiceNum) + "(자동완성)";
+        recordName = dataBinding.txtNewPin.getText().toString() + " 음성녹음 - " + (voiceNum++) + "(자동완성)";
         dataBinding.researchPopup.recordView.txtRecordingName.setText(recordName);
 
         inputPopupRecordListAdapter.setRecording(true);
@@ -1109,7 +1162,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tableListAdapter.setList(tableDataList);
+                        drawingsDataListAdapter.setList(tableDataList);
                         dataBinding.imgDrawings.setPinList(pointList);
                         endLoading();
                     }
@@ -1312,11 +1365,22 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private void requestDeletePoint(List<Integer> deletePointList) {
         if (deletePointList.size() > 0) {
             startLoading();
-            RetrofitClient.getRetrofitApi().researchDeletePoint(UserData.getInstance().getUserId(), deletePointList)
+            RetrofitClient.getRetrofitApi().researchDeletePoint(UserData.getInstance().getUserId(), deletePointList.toString())
                     .enqueue(new RetrofitCallbackModel<PointListData>() {
                         @Override
                         public void onResponseData(PointListData data) {
                             dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE);
+
+                            boolean isSelected = dataBinding.btnSelect.getText().toString().equals(getString(R.string.select));
+                            if (!isSelected) {
+                                dataBinding.btnSelect.setText(R.string.select);
+                                dataBinding.txtNumber.setVisibility(View.VISIBLE);
+                                dataBinding.checkboxNumber.setVisibility(View.GONE);
+                                dataBinding.btnDelete.setVisibility(View.GONE);
+                                dataBinding.checkboxNumber.setChecked(false);
+                                drawingsDataListAdapter.setCheckable(false);
+                            }
+
                             responsePointList(data);
                         }
                         @Override
@@ -1335,7 +1399,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 try {
                     File file = FileUtil.from(this, data.getImgUri());
                     RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                    MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+                    MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("image", URLEncoder.encode(file.getName(), "utf-8"), requestBody);
                     fileList.add(multipartBody);
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -25,6 +25,7 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.model.PointData;
 import kr.co.bcoben.util.RecordUtil;
 
+import static kr.co.bcoben.util.RecordUtil.getPlayPosition;
 import static kr.co.bcoben.util.RecordUtil.isPlaying;
 import static kr.co.bcoben.util.RecordUtil.pauseAudio;
 import static kr.co.bcoben.util.RecordUtil.playAudio;
@@ -76,7 +77,12 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                         public void onComplete() {
                             Log.e("RecordListAdapter", "onComplete");
                             holder.btnStop.setText(R.string.popup_reg_research_record_start);
-                            data.setPlayTime(0);
+                            data.setPlayTime(getPlayPosition());
+
+                            if (playTimer != null) {
+                                playTimer.cancel();
+                                playTimer = null;
+                            }
                         }
                     });
 
@@ -92,8 +98,10 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                 if (isPlaying()) {
                     pauseAudio();
                     holder.btnStop.setText(R.string.popup_reg_research_record_start);
-                    playTimer.cancel();
-                    playTimer = null;
+                    if (playTimer != null) {
+                        playTimer.cancel();
+                        playTimer = null;
+                    }
                 } else {
                     resumeAudio();
                     holder.btnStop.setText(R.string.popup_reg_research_record_stop);
@@ -108,7 +116,9 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
             public void onClick(View v) {
                 int sec = -10 * 1000;
                 setPlayPosition(sec);
-                data.setPlayTime(data.getPlayTime() + sec);
+                data.setPlayTime(getPlayPosition());
+                holder.txtRecordCurrentTime.setText(getPlayTime(data.getPlayTime()));
+                holder.seekRecordPlay.setProgress(data.getPlayTime());
             }
         });
         holder.btnForward.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +126,9 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
             public void onClick(View v) {
                 int sec = 10 * 1000;
                 setPlayPosition(sec);
-                data.setPlayTime(data.getPlayTime() + sec);
+                data.setPlayTime(getPlayPosition());
+                holder.txtRecordCurrentTime.setText(getPlayTime(data.getPlayTime()));
+                holder.seekRecordPlay.setProgress(data.getPlayTime());
             }
         });
     }
@@ -125,6 +137,7 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
         return new TimerTask() {
             @Override
             public void run() {
+                data.setPlayTime(getPlayPosition());
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -138,7 +151,6 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                         }
                     }
                 });
-                data.setPlayTime(data.getPlayTime() + 10);
             }
         };
     }
@@ -180,12 +192,12 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
     }
     public void setRecording(boolean isRecording) {
         this.isRecording = isRecording;
-        stopAudio();
         if (playTimer != null) {
             playTimer.cancel();
             playTimer.purge();
             playTimer = null;
         }
+        stopAudio();
     }
 
     private String getPlayTime(int time) {

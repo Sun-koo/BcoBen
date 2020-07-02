@@ -3,9 +3,13 @@
     <string name="dialog_app_finish_title">서비스 종료</string>
     <string name="dialog_app_finish_content">앱을 종료 하시겠습니까?</string>
     <string name="dialog_permission_title">앱 권한</string>
-    <string name="dialog_permission_content">정상적인 앱 사용을 위해 권한을 허용해 주십시오</string>
-    <string name="dialog_permission_exit">종료</string>
+    <string name="dialog_permission_content">정상적인 앱 사용을 위해 권한을 허용해 주십시오.</string>
     <string name="dialog_permission_setting">권한 설정</string>
+    <string name="dialog_app_update_title">앱 업데이트</string>
+    <string name="dialog_app_update_content">앱의 새로운 버전이 있습니다.\n정상적인 앱 사용을 위해 업데이트를 진행해 주십시오.</string>
+    <string name="dialog_app_update_update">업데이트</string>
+    <string name="dialog_app_update_download">다운로드 중</string>
+    <string name="dialog_app_update_download_complete">다운로드 완료</string>
 
     <!--공통-->
     <string name="id">아이디</string>
@@ -84,7 +88,7 @@
     <string name="main_research_registration">조사 등록</string>
     <string name="main_research_count">%d/%d개소</string>
     <string name="main_research_list_none">등록된 조사가 없습니다.\n조사 등록을 선택하여 조사를 진행하세요!</string>
-    <string name="dialog_permission_content_image">도면 이미지를 가져오기 위해\n[저장공간, 카메라] 권한을 허용해 주십시오</string>
+    <string name="dialog_permission_content_plan">도면 이미지를 가져오기 위해\n[저장공간, 카메라] 권한을 허용해 주십시오</string>
 
     <!--사이드 메뉴-->
     <string name="side_menu_grade">진단등급</string>
@@ -189,6 +193,7 @@
     <!--조사 데이터 등록 팝업 사진 Tab-->
     <string name="popup_reg_research_picture_hint">등록하세요</string>
     <string name="popup_reg_research_picture_count_title">등록 항목</string>
+    <string name="dialog_permission_content_image">이미지를 가져오기 위해\n[저장공간, 카메라] 권한을 허용해 주십시오</string>
 
     <!--조사 데이터 등록 팝업 음성 Tab-->
     <string name="popup_reg_research_record_click">클릭하여 녹음하세요</string>
@@ -200,6 +205,7 @@
     <string name="toast_popup_reg_research_record_tab_change">녹음을 종료한 후 이동해주세요</string>
     <string name="toast_popup_reg_research_record_register">녹음을 종료한 후 다시 시도해주세요</string>
     <string name="toast_popup_reg_research_record_register_save">저장되지 않은 녹음 파일이 있습니다. 저장을 완료한 후 다시 시도해주세요</string>
+    <string name="dialog_permission_content_record">음성 녹음을 위해\n[저장공간, 카메라] 권한을 허용해 주십시오</string>
 
     <!--조사 데이터 등록 팝업 메모 Tab-->
     <string name="popup_reg_research_memo_guide_text">현재 영역 내 드로잉하여 입력하세요.</string>

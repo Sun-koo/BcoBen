@@ -19,27 +19,27 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsActivity;
 import kr.co.bcoben.model.PointTableData;
 
-public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.TableHolder> {
+public class DrawingsDataListAdapter extends RecyclerView.Adapter<DrawingsDataListAdapter.DrawingsDataHolder> {
 
     private DrawingsActivity activity;
     private List<PointTableData> list;
     private boolean checkable = false;
     private boolean isAllChecked = false;
 
-    public TableListAdapter(DrawingsActivity activity, List<PointTableData> list) {
+    public DrawingsDataListAdapter(DrawingsActivity activity, List<PointTableData> list) {
         this.activity = activity;
         this.list = list;
     }
 
     @NonNull
     @Override
-    public TableHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public DrawingsDataHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_table_list ,viewGroup, false);
-        return new TableListAdapter.TableHolder(view);
+        return new DrawingsDataHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TableHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DrawingsDataHolder holder, int position) {
         holder.onBind(list.get(position));
     }
 
@@ -72,7 +72,7 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.Tabl
         return checkedList;
     }
 
-    class TableHolder extends RecyclerView.ViewHolder {
+    class DrawingsDataHolder extends RecyclerView.ViewHolder {
 
         private View view ;
         private TextView txtNumber;
@@ -82,7 +82,7 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.Tabl
         private TextView txtCount;
         private CheckBox checkBoxNumber;
 
-        TableHolder(View view) {
+        DrawingsDataHolder(View view) {
             super(view);
             this.view = view;
 
@@ -107,6 +107,16 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.Tabl
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     data.setChecked(isChecked);
+                }
+            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (checkable) {
+                        checkBoxNumber.performClick();
+                    } else {
+                        activity.selectTableData(data.getPointId());
+                    }
                 }
             });
         }

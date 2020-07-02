@@ -115,7 +115,7 @@ public interface RetrofitApi {
 
     @FormUrlEncoded
     @POST("/app/research/delete_point")
-    Call<ResponseData<PointListData>> researchDeletePoint(@Field("user_id") int userId, @Field("point_id_list") List<Integer> deletePointList);
+    Call<ResponseData<PointListData>> researchDeletePoint(@Field("user_id") int userId, @Field("point_id_list") String deletePointList);
 
     @POST("/app/update")
     Call<ResponseData<AppUpdateData>> appUpdate();

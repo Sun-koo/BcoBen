@@ -2,6 +2,7 @@ package kr.co.bcoben.util;
 
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.File;
@@ -54,10 +55,7 @@ public class RecordUtil {
 
     // 오디오 파일 재생
     public static void playAudio(String filename) {
-        if (player != null) {
-            player.stop();
-            player = null;
-        }
+        stopAudio();
 
         try {
             player = new MediaPlayer();
@@ -73,7 +71,7 @@ public class RecordUtil {
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    Log.e(TAG, mp.getCurrentPosition() + "");
+                    Log.e(TAG, "Complete : " + mp.getCurrentPosition());
                     playPosition = 0;
                     if (playCompleteListener != null) {
                         playCompleteListener.onComplete();
@@ -96,6 +94,9 @@ public class RecordUtil {
     // 오디오 파일 다시재생
     public static void resumeAudio() {
         if (player != null && !player.isPlaying()) {
+            if (playPosition == player.getDuration()) {
+                playPosition = 0;
+            }
             player.seekTo(playPosition);
             player.start();
         }
@@ -110,13 +111,25 @@ public class RecordUtil {
         }
     }
 
+    // 오디오 재생위치 가져오기
+    public static int getPlayPosition() {
+        if (player != null) {
+            try {
+                return player.getCurrentPosition();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
     // 오디오 재생위치 변경
     public static void setPlayPosition(int sec) {
-        int msec = player.getCurrentPosition() + sec;
-        if (msec > player.getDuration()) {
-            msec = player.getDuration();
+        playPosition = player.getCurrentPosition() + sec;
+        if (playPosition > player.getDuration()) {
+            playPosition = player.getDuration();
         }
-        player.seekTo(msec);
+        player.seekTo(playPosition);
     }
 
     // 오디오 파일 재생 플래그

@@ -11,6 +11,7 @@ import java.util.List;
 public class PointData {
     private int point_id;
     private int point_num;
+    private int voice_num;
     private int point_type;
     private int point_x;
     private int point_y;
@@ -35,6 +36,12 @@ public class PointData {
     }
     public int getPoint_num() {
         return point_num;
+    }
+    public int getVoice_num() {
+        return voice_num;
+    }
+    public void setVoice_num(int voice_num) {
+        this.voice_num = voice_num;
     }
     public int getPoint_type() {
         return point_type;

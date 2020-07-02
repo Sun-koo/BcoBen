@@ -208,15 +208,13 @@ public class CommonUtil {
             String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg");
             switch (requestCode) {
                 case IMAGE_FROM_CAMERA: {
-//                    MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
-//                        @Override
-//                        public void onScanCompleted(String path, Uri uri) {
-//                            Log.e("getImageResult", path);
-//                        }
-//                    });
-                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    mediaScanIntent.setData(photoUri);
-                    act.sendBroadcast(mediaScanIntent);
+                    String path = getImagePath().getPath() + "/" + photoUri.getLastPathSegment();
+                    MediaScannerConnection.scanFile(act, new String[]{path}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.e("getImageResult", path);
+                        }
+                    });
                     return photoUri;
                 }
                 case IMAGE_FROM_GALLERY: {
@@ -227,15 +225,13 @@ public class CommonUtil {
                     if (data != null && data.getData() != null) {
                         photoUri = data.getData();
                     } else {
-//                        MediaScannerConnection.scanFile(act, new String[]{photoUri.getPath()}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
-//                            @Override
-//                            public void onScanCompleted(String path, Uri uri) {
-//                                Log.e("getImageResult", path);
-//                            }
-//                        });
-                        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                        mediaScanIntent.setData(photoUri);
-                        act.sendBroadcast(mediaScanIntent);
+                        String path = getImagePath().getPath() + "/" + photoUri.getLastPathSegment();
+                        MediaScannerConnection.scanFile(act, new String[]{path}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(String path, Uri uri) {
+                                Log.e("getImageResult", path);
+                            }
+                        });
                     }
                     return photoUri;
                 }

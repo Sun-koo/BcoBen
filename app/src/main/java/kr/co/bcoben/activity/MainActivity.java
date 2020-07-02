@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
 import kr.co.bcoben.adapter.Dir;
@@ -53,6 +55,7 @@ import kr.co.bcoben.adapter.MenuDrawingsListAdapter;
 import kr.co.bcoben.adapter.MenuNodeBinder;
 import kr.co.bcoben.adapter.ProjectDataPageAdapter;
 import kr.co.bcoben.adapter.ProjectListAdapter;
+import kr.co.bcoben.component.AppUpdateDialog;
 import kr.co.bcoben.component.BaseActivity;
 import kr.co.bcoben.component.CameraDialog;
 import kr.co.bcoben.component.PermissionDialog;
@@ -173,7 +176,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.mainContents.pagerProjectData.setAdapter(projectPageAdapter);
         dataBinding.mainDrawer.mainContents.pagerProjectData.setOffscreenPageLimit(5);
 
+        Log.e(TAG, "Update : " + AppApplication.getInstance().getUpdateData().isUpdate());
         dataBinding.txtVersion.setText(getAppVersion());
+        dataBinding.btnUpdate.setVisibility(AppApplication.getInstance().getUpdateData().isUpdate() ? View.VISIBLE : View.GONE);
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
 
         requestRegProjectCheckData();
@@ -243,7 +248,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             showCameraDialog();
         } else {
             PermissionDialog.builder(this)
-                    .setTxtPermissionContent(R.string.dialog_permission_content_image)
+                    .setTxtPermissionContent(R.string.dialog_permission_content_plan)
                     .setBtnConfirmListener(new PermissionDialog.BtnClickListener() {
                         @Override
                         public void onClick(PermissionDialog dialog) {
@@ -346,8 +351,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                                 File file = FileUtil.from(this, data.getUri());
 
                                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-//                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("plan" + facility, file.getName(), requestBody);
-                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData(URLEncoder.encode("plan" + facility, "utf-8"), file.getName(), requestBody);
+                                MultipartBody.Part multipartBody = MultipartBody.Part.createFormData(URLEncoder.encode("plan" + facility, "utf-8"), URLEncoder.encode(file.getName(), "utf-8"), requestBody);
                                 requestBodyList.add(multipartBody);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -409,6 +413,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 finish();
                 break;
             case R.id.btn_update:
+                AppUpdateDialog.builder(this).show();
                 break;
             case R.id.layout_register_research:
                 openDrawerResearch(0);

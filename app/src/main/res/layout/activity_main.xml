@@ -120,8 +120,7 @@
                         android:text="@string/main_update"
                         android:textSize="17dp"
                         android:textColor="@color/colorTextPrimary"
-                        android:background="@drawable/btn_round_white"
-                        android:visibility="gone"/>
+                        android:background="@drawable/btn_round_white"/>
                 </LinearLayout>
 
             </LinearLayout>

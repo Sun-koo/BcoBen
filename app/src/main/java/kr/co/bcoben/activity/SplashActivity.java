@@ -3,28 +3,36 @@ package kr.co.bcoben.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
 import kr.co.bcoben.R;
+import kr.co.bcoben.component.AppUpdateDialog;
 import kr.co.bcoben.component.PermissionDialog;
 import kr.co.bcoben.model.AppUpdateData;
 import kr.co.bcoben.service.retrofit.RetrofitCallbackModel;
 import kr.co.bcoben.service.retrofit.RetrofitClient;
 import kr.co.bcoben.util.CommonUtil.PermissionState;
 
+import static kr.co.bcoben.util.CommonUtil.getAppVersion;
 import static kr.co.bcoben.util.CommonUtil.requestPermission;
 import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private final String TAG = "SplashActivity";
     private final String[] PERMISSION = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_PHONE_STATE};
+    private final int INSTALL_PERMISSION_CODE = 102;
 
     private Handler handler = new Handler();
     private Runnable runnable;
@@ -34,10 +42,9 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        requestAppUpdate();
-//        if (requestPermission(this, PERMISSION)) {
-//            startApp();
-//        }
+        if (requestPermission(SplashActivity.this, PERMISSION)) {
+            requestAppUpdate();
+        }
     }
 
     @Override
@@ -47,6 +54,18 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void startApp() {
+        AppUpdateData.UpdateData updateData = AppApplication.getInstance().getUpdateData();
+        if (updateData.isUpdate() && updateData.getType().equals("F")) {
+            AppUpdateDialog.builder(this)
+                    .setBtnCloseListener(new AppUpdateDialog.BtnClickListener() {
+                        @Override
+                        public void onClick() {
+                            finishAffinity();
+                        }
+                    })
+                    .show();
+            return;
+        }
         runnable = new Runnable() {
             @Override
             public void run() {
@@ -60,12 +79,24 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CANCELED) {
+            if (requestCode == 1000) {
+                Log.e(TAG, "Install Permission Cancel");
+            } else if (requestCode == 1001) {
+                startApp();
+            }
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         final PermissionState state = resultRequestPermission(this, permissions, grantResults);
 
         if (state == PermissionState.GRANT) {
-            startApp();
+            requestAppUpdate();
         } else {
             PermissionDialog.builder(this)
                     .setTxtPermissionContent(R.string.dialog_permission_content)
@@ -86,7 +117,7 @@ public class SplashActivity extends AppCompatActivity {
                     .setBtnCloseListener(new PermissionDialog.BtnClickListener() {
                         @Override
                         public void onClick(PermissionDialog dialog) {
-                            startApp();
+                            requestAppUpdate();
                             dialog.dismiss();
                         }
                     }).show();
@@ -97,17 +128,11 @@ public class SplashActivity extends AppCompatActivity {
         RetrofitClient.getRetrofitApi().appUpdate().enqueue(new RetrofitCallbackModel<AppUpdateData>() {
             @Override
             public void onResponseData(AppUpdateData data) {
-                AppApplication.setUpdateData(data.getUpdate_data());
-
-                if (requestPermission(SplashActivity.this, PERMISSION)) {
-                    startApp();
-                }
+                AppApplication.getInstance().setUpdateData(data.getUpdate_data());
+                startApp();
             }
-
             @Override
-            public void onCallbackFinish() {
-
-            }
+            public void onCallbackFinish() {}
         });
     }
 }

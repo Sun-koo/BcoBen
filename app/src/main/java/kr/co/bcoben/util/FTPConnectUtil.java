@@ -20,9 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.bcoben.adapter.DrawingsListAdapter;
+import kr.co.bcoben.component.AppUpdateDialog;
 import kr.co.bcoben.model.PlanDataList;
 
 import static kr.co.bcoben.util.CommonUtil.getCachePath;
+import static kr.co.bcoben.util.CommonUtil.getFilePath;
 
 public class FTPConnectUtil {
     private final String TAG = "Connect FTP";
@@ -171,6 +173,43 @@ public class FTPConnectUtil {
                         adapter.setData(position, planData, DrawingsListAdapter.DOWNLOADING);
                     }
                 }
+                output.close();
+                input.close();
+                result = client.completePendingCommand();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ftpDisconnect();
+        }
+        return result;
+    }
+
+    public boolean ftpApkDownload(String path, AppUpdateDialog dialog) {
+        boolean result = false;
+        if (ftpConnect()) {
+            try {
+                long size = ftpFileSize(path);
+                String filename = path.substring(path.lastIndexOf("/") + 1);
+
+                File file = new File(getFilePath(), filename);
+                boolean isCreate = file.createNewFile();
+                Log.e(TAG, "isCreate : " + isCreate);
+                FileOutputStream output = new FileOutputStream(file);
+
+                InputStream input = client.retrieveFileStream(path);
+                byte[] data = new byte[4096];
+
+                double download = 0;
+                int len;
+                while ((len = input.read(data)) != -1) {
+                    output.write(data, 0, len);
+                    if (dialog != null) {
+                        download += len;
+                        int percent = (int) (download / size * 100);
+                        dialog.setDownloadProgress(percent);
+                    }
+                }
+
                 output.close();
                 input.close();
                 result = client.completePendingCommand();
