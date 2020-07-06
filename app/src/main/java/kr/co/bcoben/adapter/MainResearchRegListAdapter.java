@@ -18,6 +18,8 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.MenuCheckData;
 
+import static kr.co.bcoben.util.CommonUtil.showToast;
+
 public class MainResearchRegListAdapter extends RecyclerView.Adapter<MainResearchRegListAdapter.MenuSelectHolder> {
 
     private MainActivity activity;
@@ -122,6 +124,19 @@ public class MainResearchRegListAdapter extends RecyclerView.Adapter<MainResearc
                 btnReg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if (!getEditName().trim().equals("")) {
+                            for (MenuCheckData checkData : list) {
+                                if (checkData.getItem_name().equals(getEditName().trim())) {
+                                    switch (activity.getCurrentResearchStep()) {
+                                        case FACILITY: showToast(R.string.toast_input_duplicate_facility); break;
+                                        case FACILITY_CATEGORY: showToast(R.string.toast_input_duplicate_fac_cate); break;
+                                        case ARCHITECTURE: showToast(R.string.toast_input_duplicate_architecture); break;
+                                        case RESEARCH: showToast(R.string.toast_input_duplicate_research); break;
+                                    }
+                                    return;
+                                }
+                            }
+                        }
                         activity.researchNextStep();
                     }
                 });

@@ -3,6 +3,7 @@ package kr.co.bcoben.activity;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
@@ -173,10 +174,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.recyclerProject.setLayoutManager(new LinearLayoutManager(this));
 
         projectPageAdapter = new ProjectDataPageAdapter(getSupportFragmentManager(), projectDataList);
+        projectPageAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                dataBinding.mainDrawer.mainContents.tabProjectFacility.selectTab(dataBinding.mainDrawer.mainContents.tabProjectFacility.getTabAt(0));
+            }
+        });
         dataBinding.mainDrawer.mainContents.pagerProjectData.setAdapter(projectPageAdapter);
         dataBinding.mainDrawer.mainContents.pagerProjectData.setOffscreenPageLimit(5);
 
-        Log.e(TAG, "Update : " + AppApplication.getInstance().getUpdateData().isUpdate());
         dataBinding.txtVersion.setText(getAppVersion());
         dataBinding.btnUpdate.setVisibility(AppApplication.getInstance().getUpdateData().isUpdate() ? View.VISIBLE : View.GONE);
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
@@ -189,6 +196,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         super.onResume();
         if (UserData.getInstance().getUserId() == 0){
             finish();
+            return;
         }
         if (!isImageIntent) {
             requestProjectList();
@@ -1118,6 +1126,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         RetrofitClient.getRetrofitApi().projectList(UserData.getInstance().getUserId()).enqueue(new RetrofitCallbackModel<ProjectListData>() {
             @Override
             public void onResponseData(ProjectListData data) {
+                int projectId = 0;
+                if (!projectList.isEmpty()) {
+                    for (ProjectListData.ProjectList p : projectList) {
+                        if (p.isSelected()) {
+                            projectId = p.getProject_id();
+                            break;
+                        }
+                    }
+                }
                 projectList = data.getProject_list();
 
                 if (projectList.isEmpty()) {
@@ -1131,11 +1148,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     dataBinding.mainDrawer.mainContents.layoutTabProjectFacility.setVisibility(View.VISIBLE);
                     dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.VISIBLE);
 
-                    projectList.get(0).setSelected(true);
-                    setTextGrade(projectList.get(0).getGrade_name());
+                    int index = -1;
+                    if (projectId != 0) {
+                        for (int i = 0; i < projectList.size(); i++) {
+                            if (projectList.get(i).getProject_id() == projectId) {
+                                index = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    projectList.get(index == -1 ? 0 : index).setSelected(true);
+                    setTextGrade(projectList.get(index == -1 ? 0 : index).getGrade_name());
 
                     projectListAdapter.setList(projectList);
-                    setCurrentProjectId(projectList.get(0).getProject_id());
+                    setCurrentProjectId(projectList.get(index == -1 ? 0 : index).getProject_id());
+
                     requestProjectDataList();
                 }
             }

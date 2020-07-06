@@ -65,6 +65,10 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     @Override
     public void onStart() {
         super.onStart();
+        Log.e(TAG, "onStart : " + projectData.getFacility_name() + " " + isFirst);
+        if (isFirst) {
+            dataBinding.spnResearchOrder.setSelection(0);
+        }
         if (!isFirst && !activity.isImageIntent) {
             requestResearchList();
         }
@@ -76,6 +80,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
     }
     @Override
     protected void initView() {
+        Log.e(TAG, "initView : " + projectData.getFacility_name() + " " + isFirst);
         adapter = new ResearchDataListAdapter(activity, researchList);
         dataBinding.recyclerResearch.setLayoutManager(new GridLayoutManager(getContext(), 2));
         dataBinding.recyclerResearch.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -96,6 +101,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
         dataBinding.spnResearchOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e(TAG, "onItemSelected : " + projectData.getFacility_name() + " " + isFirst);
                 if (isFirst || !researchList.isEmpty()) {
                     requestResearchList();
                     isFirst = false;
