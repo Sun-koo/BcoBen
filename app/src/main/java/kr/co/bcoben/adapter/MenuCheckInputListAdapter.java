@@ -28,6 +28,7 @@ import kr.co.bcoben.R;
 import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.MenuCheckData;
 
+import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInputListAdapter.MenuCheckInputHolder> {
@@ -60,8 +61,8 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
             holder.btnReg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String name = holder.editNameSelf.getText().toString();
-                    String count = holder.editCountSelf.getText().toString();
+                    String name = holder.editNameSelf.getText().toString().trim().toUpperCase();
+                    String count = holder.editCountSelf.getText().toString().trim();
 
                     if (name.isEmpty()) {
                         showToast(R.string.toast_input_research);
@@ -71,11 +72,20 @@ public class MenuCheckInputListAdapter extends RecyclerView.Adapter<MenuCheckInp
                         showToast(R.string.toast_input_research_count);
                         return;
                     }
+
+                    for (MenuCheckData data : list) {
+                        if (name.equals(data.getItem_name())) {
+                            showToast(R.string.toast_input_duplicate_research);
+                            return;
+                        }
+                    }
+
                     MenuCheckData data = new MenuCheckData(0, name);
                     data.setTot_count(Integer.parseInt(count));
                     data.setChecked(true);
                     list.add(data);
                     notifyDataSetChanged();
+                    hideKeyboard(activity);
                 }
             });
 
