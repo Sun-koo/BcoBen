@@ -28,6 +28,7 @@ import kr.co.bcoben.model.MenuCheckData;
 import tellh.com.recyclertreeview_lib.TreeNode;
 import tellh.com.recyclertreeview_lib.TreeViewBinder;
 
+import static kr.co.bcoben.util.CommonUtil.hideKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
 
 public class MenuCheckListAdapter extends RecyclerView.Adapter {
@@ -84,12 +85,18 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
             view.btnReg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String name = view.editName.getText().toString();
+                    String name = view.editName.getText().toString().trim();
                     if (name.isEmpty()) {
                         showToast(R.string.toast_input_grade);
                         return;
                     }
 
+                    for (MenuCheckData data : list) {
+                        if (name.equals(data.getItem_name())) {
+                            showToast(R.string.toast_input_duplicate_grade);
+                            return;
+                        }
+                    }
                     for (MenuCheckData data : list) {
                         data.setChecked(false);
                     }
@@ -97,6 +104,7 @@ public class MenuCheckListAdapter extends RecyclerView.Adapter {
                     data.setChecked(true);
                     list.add(data);
                     notifyDataSetChanged();
+                    hideKeyboard(activity);
                 }
             });
 

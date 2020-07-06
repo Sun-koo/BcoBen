@@ -1306,15 +1306,34 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.layoutRegProject.recyclerMenuTree.setAdapter(treeViewAdapter);
     }
 
-    public void updateFacilityTreeData(String name, int id) {
+    public boolean updateFacilityTreeData(String name, int id) {
         if (id == -1) {
+            for (MenuCheckData data : projectFacilityList) {
+                if (name.equals(data.getItem_name())) {
+                    showToast(R.string.toast_input_duplicate_facility);
+                    return false;
+                }
+            }
             projectFacilityList.add(new MenuCheckData(0, name));
         } else if (id == -2){
+            for (MenuCheckData data : projectFacCateList) {
+                if (name.equals(data.getItem_name())) {
+                    showToast(R.string.toast_input_duplicate_fac_cate);
+                    return false;
+                }
+            }
             projectFacCateList.add(new MenuCheckData(0, name));
         } else {
+            for (MenuCheckData data : projectArchitectureList) {
+                if (name.equals(data.getItem_name())) {
+                    showToast(R.string.toast_input_duplicate_architecture);
+                    return false;
+                }
+            }
             projectArchitectureList.add(new MenuCheckData(0, name));
         }
         initMenuFacilityTreeData();
+        return true;
     }
 
     private void facilityCheckListItemAdd(String item) {

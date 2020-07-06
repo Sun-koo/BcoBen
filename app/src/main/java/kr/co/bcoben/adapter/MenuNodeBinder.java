@@ -65,14 +65,15 @@ public class MenuNodeBinder extends TreeViewBinder<MenuNodeBinder.ViewHolder> {
             holder.btnRegSelf.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String inputSelf = holder.editSelf.getText().toString();
+                    String inputSelf = holder.editSelf.getText().toString().trim().toUpperCase();
                     if (inputSelf.isEmpty()) {
                         return;
                     }
-                    ((MainActivity) activity).updateFacilityTreeData(inputSelf, dirNode.getId());
 
-                    holder.editSelf.getText().clear();
-                    hideKeyboard(activity);
+                    if(((MainActivity) activity).updateFacilityTreeData(inputSelf, dirNode.getId())) {
+                        holder.editSelf.getText().clear();
+                        hideKeyboard(activity);
+                    }
                 }
             });
         } else {
