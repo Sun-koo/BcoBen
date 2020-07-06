@@ -42,6 +42,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import kr.co.bcoben.AppApplication;
 import kr.co.bcoben.BuildConfig;
@@ -146,6 +148,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<ProjectData> projectDataList = new ArrayList<>();
     private int currentProjectId;
 
+    private Timer sessionCheckTimer;
+    private final int SESSION_TIMER = 9 * 60 * 1000;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_main;
@@ -189,6 +194,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
 
         requestRegProjectCheckData();
+
+        sessionCheckTimer = new Timer();
+        sessionCheckTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                RetrofitClient.getRetrofitApi().sessionCheck(UserData.getInstance().getUserId()).enqueue(new RetrofitCallback() {
+                    @Override
+                    public void onResponseData() {}
+                    @Override
+                    public void onCallbackFinish() {}
+                });
+            }
+        }, SESSION_TIMER, SESSION_TIMER);
     }
 
     @Override

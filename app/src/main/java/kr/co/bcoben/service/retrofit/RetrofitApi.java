@@ -119,4 +119,12 @@ public interface RetrofitApi {
 
     @POST("/app/update")
     Call<ResponseData<AppUpdateData>> appUpdate();
+
+    @FormUrlEncoded
+    @POST("/app/download_plan")
+    Call<ResponseData> downloadPlan(@Field("user_id") int userId, @Field("plan_id") int plan_id);
+
+    @FormUrlEncoded
+    @POST("/app/session_check")
+    Call<ResponseData> sessionCheck(@Field("user_id") int userId);
 }

@@ -21,6 +21,7 @@ import kr.co.bcoben.databinding.ActivityDrawingsListBinding;
 import kr.co.bcoben.model.MenuCheckData;
 import kr.co.bcoben.model.ResearchCheckData;
 import kr.co.bcoben.model.ResearchSpinnerData;
+import kr.co.bcoben.service.retrofit.RetrofitCallback;
 import kr.co.bcoben.util.FTPConnectUtil;
 import kr.co.bcoben.model.PlanDataList;
 import kr.co.bcoben.model.UserData;
@@ -264,6 +265,12 @@ public class DrawingsListActivity extends BaseActivity<ActivityDrawingsListBindi
         boolean isComplete = FTPConnectUtil.getInstance().ftpPlanDownload(position, data, drawingsListAdapter);
         if (isComplete) {
             SharedPrefUtil.putBoolean(data.getPlan_img_file(), true);
+            RetrofitClient.getRetrofitApi().downloadPlan(UserData.getInstance().getUserId(), data.getPlan_id()).enqueue(new RetrofitCallback() {
+                @Override
+                public void onResponseData() {}
+                @Override
+                public void onCallbackFinish() {}
+            });
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

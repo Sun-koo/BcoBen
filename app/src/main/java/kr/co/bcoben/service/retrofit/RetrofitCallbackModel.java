@@ -29,7 +29,11 @@ public abstract class RetrofitCallbackModel<T extends DataModel> implements Call
                 onResponseData(response.body().getData());
             } else {
                 onCallbackFinish();
-                showErrorMsg((url.endsWith("login") ? "login_" : "") + response.body().getError());
+                if (url.endsWith("login")) {
+                    showErrorMsg("login_" + response.body().getError());
+                } else {
+                    showErrorMsg(response.body().getError());
+                }
             }
         } else {
             if (response.errorBody() != null) {

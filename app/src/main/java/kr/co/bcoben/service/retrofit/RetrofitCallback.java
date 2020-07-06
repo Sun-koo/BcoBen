@@ -18,26 +18,38 @@ public abstract class RetrofitCallback implements Callback<ResponseData> {
 
     public abstract void onResponseData();
     public abstract void onCallbackFinish();
+    public void onUnauthorized() {}
 
     @Override
     public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
-        Log.e(TAG, response.raw().request().url().url().toString());
+        String url = response.raw().request().url().url().toString();
+        Log.e(TAG, url);
         if (response.body() != null) {
             if (response.body().isResult()) {
                 onResponseData();
             } else {
                 onCallbackFinish();
+                if (url.endsWith("update_password")) {
+                    showErrorMsg("password_" + response.body().getError());
+                } else {
+                    showErrorMsg(response.body().getError());
+                }
                 showErrorMsg(response.body().getError());
             }
         } else {
-            if (response.errorBody() != null) {
-                try {
-                    JSONObject errorObj = new JSONObject(response.errorBody().string());
-                    String error = errorObj.optString("error", "");
-                    if (!error.equals("")) {
-                        showErrorMsg(error);
+            if (response.code() == 403) {
+                onUnauthorized();
+            } else {
+                if (response.errorBody() != null) {
+                    try {
+                        JSONObject errorObj = new JSONObject(response.errorBody().string());
+                        String error = errorObj.optString("error", "");
+                        if (!error.equals("")) {
+                            showErrorMsg(error);
+                        }
+                    } catch (Exception e) {
                     }
-                } catch (Exception e) {}
+                }
             }
             onCallbackFinish();
         }

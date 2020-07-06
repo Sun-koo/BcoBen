@@ -225,6 +225,7 @@
     <string name="login_not_found_user_data">아이디, 비밀번호를 확인해주세요</string>
     <string name="not_found_user_data">계정정보가 확인되지 않습니다</string>
     <string name="login_no_match_device">디바이스에 등록된 계정이 아닙니다</string>
+    <string name="timeout_auth">인증시간이 경과하였습니다. 재발송하세요</string>
     <string name="no_match_device">디바이스에 등록된 계정이 아닙니다</string>
     <string name="login_expire_device">디바이스 사용기간이 만료 되었습니다</string>
     <string name="expire_device">디바이스 사용기간이 만료 되었습니다</string>
@@ -237,5 +238,7 @@
     <string name="duplicate_project_name">이미 등록된 프로젝트명입니다</string>
     <string name="order_error_date">시작일이 종료일보다 앞선 날짜로 선택해주세요</string>
     <string name="out_of_volume_size">업로드 용량이 부족합니다</string>
-    <string name="OVERFLOW_TOT_COUNT">목표개소를 초과하였습니다</string>
+    <string name="overflow_tot_count">목표개소를 초과하였습니다</string>
+    <string name="session_over">동시 접속중인 태블릿수가 너무 많아 로그인에 실패하였습니다</string>
+    <string name="password_session_over">비밀번호 변경이 완료되었습니다.\n동시 접속중인 태블릿수가 너무 많아 로그인에 실패하였습니다</string>
 </resources>
