@@ -235,6 +235,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 public void onCallbackFinish() {}
             });
         }
+        sessionCheckTimer.cancel();
+        sessionCheckTimer.purge();
     }
 
     @Override
