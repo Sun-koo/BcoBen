@@ -55,7 +55,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void startApp() {
         AppUpdateData.UpdateData updateData = AppApplication.getInstance().getUpdateData();
-        if (updateData.isUpdate() && updateData.getType().equals("F")) {
+        if (updateData != null && updateData.isUpdate() && updateData.getType().equals("F")) {
             AppUpdateDialog.builder(this)
                     .setBtnCloseListener(new AppUpdateDialog.BtnClickListener() {
                         @Override

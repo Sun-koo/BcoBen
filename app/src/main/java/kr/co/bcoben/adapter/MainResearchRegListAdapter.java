@@ -126,7 +126,7 @@ public class MainResearchRegListAdapter extends RecyclerView.Adapter<MainResearc
                     public void onClick(View v) {
                         if (!getEditName().trim().equals("")) {
                             for (MenuCheckData checkData : list) {
-                                if (checkData.getItem_name().equals(getEditName().trim())) {
+                                if (checkData.getItem_name().equals(getEditName().trim().toUpperCase())) {
                                     switch (activity.getCurrentResearchStep()) {
                                         case FACILITY: showToast(R.string.toast_input_duplicate_facility); break;
                                         case FACILITY_CATEGORY: showToast(R.string.toast_input_duplicate_fac_cate); break;

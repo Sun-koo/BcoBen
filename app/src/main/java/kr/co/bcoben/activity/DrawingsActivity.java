@@ -95,6 +95,7 @@ import static kr.co.bcoben.util.CommonUtil.requestPermission;
 import static kr.co.bcoben.util.CommonUtil.resultRequestPermission;
 import static kr.co.bcoben.util.CommonUtil.showKeyboard;
 import static kr.co.bcoben.util.CommonUtil.showToast;
+import static kr.co.bcoben.util.RecordUtil.isPlaying;
 import static kr.co.bcoben.util.RecordUtil.isRecording;
 import static kr.co.bcoben.util.RecordUtil.startRecord;
 import static kr.co.bcoben.util.RecordUtil.stopAudio;
@@ -282,6 +283,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
                     setMemoCount();
                 } else {
+                    if (isPlaying()) {
+                        showToast(R.string.toast_popup_reg_research_record_playing_register);
+                        return;
+                    }
                     if (isRecording()) {
                         showToast(R.string.toast_popup_reg_research_record_register);
                         return;
@@ -303,6 +308,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     dataBinding.researchPopup.memoView.txtGuide.setVisibility(View.VISIBLE);
                     setMemoCount();
                 } else {
+                    if (isPlaying()) {
+                        showToast(R.string.toast_popup_reg_research_record_playing_register);
+                        return;
+                    }
                     if (isRecording()) {
                         showToast(R.string.toast_popup_reg_research_record_register);
                         return;
@@ -1028,7 +1037,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     // 도면 선택 다이얼로그 출력
     private void showDrawingsSelectDialog() {
         if (dataBinding.layoutResearchPopup.getVisibility() == View.VISIBLE) {
-            dataBinding.btnClose.performClick();
+            dataBinding.researchPopup.btnPopupClose.performClick();
+//            dataBinding.btnClose.performClick();
         }
         DrawingsSelectDialog.builder(this)
                 .setBtnResetListener(new DrawingsSelectDialog.BtnClickListener() {
@@ -1223,7 +1233,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
             String width = dataBinding.researchPopup.inputView.editWidth.getText().toString().trim();
             String heightUnit = dataBinding.researchPopup.inputView.txtHeight.getText().toString().trim();
             String height = dataBinding.researchPopup.inputView.editHeight.getText().toString().trim();
-            String count = dataBinding.researchPopup.inputView.editCount.getText().toString().trim();
+            final String count = dataBinding.researchPopup.inputView.editCount.getText().toString().trim();
 
             if (!pointRegDataList.getDefect_list().isEmpty() && defect.equals("")) {
                 showToast(R.string.toast_popup_reg_research_not_defect);
@@ -1273,6 +1283,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         @Override
                         public void onResponseData(PointListData data) {
                             dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE);
+                            researchSelectData.setReg_count(data.getReg_count());
                             responsePointList(data);
                         }
                         @Override
@@ -1351,6 +1362,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         @Override
                         public void onResponseData(PointListData data) {
                             dataBinding.layoutResearchPopup.setVisibility(View.INVISIBLE);
+                            researchSelectData.setReg_count(data.getReg_count());
                             responsePointList(data);
                         }
                         @Override
@@ -1362,7 +1374,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     }
 
     // 도면 입력 삭제
-    private void requestDeletePoint(List<Integer> deletePointList) {
+    private void requestDeletePoint(final List<Integer> deletePointList) {
         if (deletePointList.size() > 0) {
             startLoading();
             RetrofitClient.getRetrofitApi().researchDeletePoint(UserData.getInstance().getUserId(), deletePointList.toString())
@@ -1380,7 +1392,7 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                                 dataBinding.checkboxNumber.setChecked(false);
                                 drawingsDataListAdapter.setCheckable(false);
                             }
-
+                            researchSelectData.setReg_count(data.getReg_count());
                             responsePointList(data);
                         }
                         @Override

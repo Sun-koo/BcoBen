@@ -209,6 +209,7 @@
     <string name="popup_reg_research_record_save">저장</string>
     <string name="toast_popup_reg_research_record_tab_change">녹음을 종료한 후 이동해주세요</string>
     <string name="toast_popup_reg_research_record_register">녹음을 종료한 후 다시 시도해주세요</string>
+    <string name="toast_popup_reg_research_record_playing_register">녹음재생을 일시중지한 후 다시 시도해주세요</string>
     <string name="toast_popup_reg_research_record_register_save">저장되지 않은 녹음 파일이 있습니다. 저장을 완료한 후 다시 시도해주세요</string>
     <string name="dialog_permission_content_record">음성 녹음을 위해\n[저장공간, 카메라] 권한을 허용해 주십시오</string>
 
@@ -226,6 +227,7 @@
     <string name="login_not_found_user_data">아이디, 비밀번호를 확인해주세요</string>
     <string name="not_found_user_data">계정정보가 확인되지 않습니다</string>
     <string name="login_no_match_device">디바이스에 등록된 계정이 아닙니다</string>
+    <string name="block_account">접속이 제한된 계정입니다</string>
     <string name="timeout_auth">인증시간이 경과하였습니다. 재발송하세요</string>
     <string name="no_match_device">디바이스에 등록된 계정이 아닙니다</string>
     <string name="login_expire_device">디바이스 사용기간이 만료 되었습니다</string>

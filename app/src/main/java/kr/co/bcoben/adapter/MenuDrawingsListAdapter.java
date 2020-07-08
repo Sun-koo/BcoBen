@@ -24,6 +24,7 @@ import java.util.List;
 
 import kr.co.bcoben.R;
 import kr.co.bcoben.activity.DrawingsListActivity;
+import kr.co.bcoben.activity.MainActivity;
 import kr.co.bcoben.model.MenuDrawingsData;
 
 public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsListAdapter.MenuDrawingsHolder> {
@@ -56,6 +57,7 @@ public class MenuDrawingsListAdapter extends RecyclerView.Adapter<MenuDrawingsLi
             @Override
             public void onClick(View v) {
                 list.remove(position);
+                ((MainActivity) activity).setTextDrawingsCount();
                 notifyDataSetChanged();
             }
         });

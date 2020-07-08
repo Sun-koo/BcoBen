@@ -1,6 +1,7 @@
 package kr.co.bcoben.activity;
 
 import android.Manifest;
+import android.app.Application;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -139,6 +140,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private List<MenuDrawingsData> regDrawingsList = new ArrayList<>();
     private List<CheckBox> cbList = new ArrayList<>();
     private String checkedFacility = "";
+    private List<String> checkboxFacilityList = new ArrayList<>();
     public boolean isImageIntent = false;
 
     // main
@@ -190,7 +192,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         dataBinding.mainDrawer.mainContents.pagerProjectData.setOffscreenPageLimit(5);
 
         dataBinding.txtVersion.setText(getAppVersion());
-        dataBinding.btnUpdate.setVisibility(AppApplication.getInstance().getUpdateData().isUpdate() ? View.VISIBLE : View.GONE);
+        dataBinding.btnUpdate.setVisibility(AppApplication.getInstance().getUpdateData() != null && AppApplication.getInstance().getUpdateData().isUpdate() ? View.VISIBLE : View.GONE);
         dataBinding.mainDrawer.mainContents.tabProjectFacility.setupWithViewPager(dataBinding.mainDrawer.mainContents.pagerProjectData);
 
         requestRegProjectCheckData();
@@ -252,7 +254,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
             regDrawingsList.add(new MenuDrawingsData(filename, checkedFacility, uri));
             menuDrawingsListAdapter.setList(regDrawingsList);
-            dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("(" + menuDrawingsListAdapter.getItemCount() + "건)");
+            setTextDrawingsCount();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -368,6 +370,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     showToast(R.string.toast_input_select_drawings);
                     return;
                 }
+                for (String facility : checkboxFacilityList) {
+                    if (!facilityNameList.contains(facility)) {
+                        showToast(facility + " 도면을 등록해주세요");
+                        return;
+                    }
+                }
+
                 List<MultipartBody.Part> requestBodyList = new ArrayList<>();
                 for (String facility : facilityNameList) {
 
@@ -403,22 +412,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         projectList = data.getProject_list();
 
                         if (projectList.isEmpty()) {
-                            dataBinding.mainDrawer.mainContents.txtSubTitle.setVisibility(View.GONE);
-                            dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.GONE);
+                            dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.INVISIBLE);
+                            dataBinding.mainDrawer.mainContents.layoutTabProjectFacility.setVisibility(View.GONE);
                             dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.GONE);
-                            return;
-                        }
-                        dataBinding.mainDrawer.mainContents.txtSubTitle.setVisibility(View.VISIBLE);
-                        dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.VISIBLE);
-                        dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.VISIBLE);
+                            setTextGrade("");
+                        } else {
+                            dataBinding.mainDrawer.mainContents.layoutRegisterResearch.setVisibility(View.VISIBLE);
+                            dataBinding.mainDrawer.mainContents.layoutTabProjectFacility.setVisibility(View.VISIBLE);
+                            dataBinding.mainDrawer.mainContents.pagerProjectData.setVisibility(View.VISIBLE);
 
-                        for (ProjectListData.ProjectList projectListData : projectList) {
-                            if (projectListData.getProject_id() == currentProjectId) {
-                                projectListData.setSelected(true);
-                                setTextGrade(projectListData.getGrade_name());
+                            for (ProjectListData.ProjectList projectListData : projectList) {
+                                if (projectListData.getProject_id() == currentProjectId) {
+                                    projectListData.setSelected(true);
+                                    setTextGrade(projectListData.getGrade_name());
+                                }
                             }
+                            projectListAdapter.setList(projectList);
                         }
-                        projectListAdapter.setList(projectList);
                         endLoading();
                     }
                     @Override
@@ -632,7 +642,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     // 조사등록 직접입력
     public void researchNextStep() {
-        String name = mainResearchRegListAdapter.getEditName().trim();
+        String name = mainResearchRegListAdapter.getEditName().trim().toUpperCase();
         switch (currentResearchStep) {
             case FACILITY: {
                 if (name.isEmpty()) { showToast(R.string.toast_input_facility); return; }
@@ -965,16 +975,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.removeAllViews();
 
                 List<String> facilityList = new ArrayList<>();
-//                List<Integer> facilityIdList = new ArrayList<>();
                 for (MenuSelectFacilityData data : regProjectFacility) {
                     facilityList.add(data.getFacility());
-//                    facilityIdList.add(data.getIdList().get(0));
                 }
                 facilityList = new ArrayList<>(new HashSet<>(facilityList));
-//                facilityIdList = new ArrayList<>(new HashSet<>(facilityIdList));
 
+                checkboxFacilityList.clear();
+                checkedFacility = "";
                 for (int i=0;i < facilityList.size();i++) {
-//                    facilityCheckListItemAdd(facilityList.get(i), facilityIdList.get(i));
                     facilityCheckListItemAdd(facilityList.get(i));
                 }
 
@@ -1263,7 +1271,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                projectFacilityList = data.getFacility_list();
                projectFacCateList = data.getFac_cate_list();
                projectArchitectureList = data.getStructure_list();
-//               initMenuFacilityTreeData(data.getFacility_list(), data.getFac_cate_list(), data.getStructure_list());
                initMenuFacilityTreeData();
            }
            @Override
@@ -1271,8 +1278,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
        });
     }
 
-//    private void initMenuFacilityTreeData(List<MenuCheckData> facilityList, List<MenuCheckData> facCateList, List<MenuCheckData> archList) {
     private void initMenuFacilityTreeData() {
+        checkedFacility = "";
+
         final List<TreeNode> nodes = new ArrayList<>();
 
         for (MenuCheckData facilityData : projectFacilityList) {
@@ -1365,8 +1373,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         cbList.add(cbFacility);
 
         facilityName.setText(item);
-//        facilityName.setTag(id);
         cbFacility.setChecked(false);
+
+        checkboxFacilityList.add(item);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1375,9 +1384,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     cb.setChecked(cb == cbFacility);
                 }
                 checkedFacility = facilityName.getText().toString();
-//                checkedFacilityId = (int) facilityName.getTag();
             }
         });
         dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.flexLayoutFacility.addView(view);
+    }
+    // 프로젝트 생성 > 도면 > 등록 도면 이미지 개수
+    public void setTextDrawingsCount() {
+        dataBinding.mainDrawer.layoutRegProject.layoutDrawingsInput.txtDrawingsCount.setText("(" + menuDrawingsListAdapter.getItemCount() + "건)");
     }
 }
