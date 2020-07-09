@@ -1,5 +1,6 @@
 package kr.co.bcoben.adapter;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ public class DrawingsListAdapter extends RecyclerView.Adapter<DrawingsListAdapte
     public static final String START_DOWNLOAD = "start_download";
     public static final String DOWNLOADING = "downloading";
     public static final String COMPLETE_DOWNLOAD = "complete_download";
+    private long lastClickTime = 0;
 
     public DrawingsListAdapter(DrawingsListActivity activity, List<PlanDataList.PlanData> list) {
         this.activity = activity;
@@ -118,6 +120,10 @@ public class DrawingsListAdapter extends RecyclerView.Adapter<DrawingsListAdapte
             btnDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+                        return;
+                    }
+                    lastClickTime = SystemClock.elapsedRealtime();
                     activity.downloadFile(position);
                 }
             });

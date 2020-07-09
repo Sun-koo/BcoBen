@@ -614,16 +614,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             case GRADE:
                 dataBinding.mainDrawer.layoutRegResearch.txtGrade.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutFacility.setClickable(true);
+                dataBinding.mainDrawer.layoutRegResearch.layoutFacilityCategory.setClickable(false);
+                dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setClickable(false);
+                dataBinding.mainDrawer.layoutRegResearch.layoutResearch.setClickable(false);
                 updateStepResearchMenuUI(ResearchStep.FACILITY);
                 break;
             case FACILITY:
                 dataBinding.mainDrawer.layoutRegResearch.txtFacility.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutFacilityCategory.setClickable(true);
+                dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setClickable(false);
+                dataBinding.mainDrawer.layoutRegResearch.layoutResearch.setClickable(false);
                 updateStepResearchMenuUI(ResearchStep.FACILITY_CATEGORY);
                 break;
             case FACILITY_CATEGORY:
                 dataBinding.mainDrawer.layoutRegResearch.txtFacilityCategory.setText(value);
                 dataBinding.mainDrawer.layoutRegResearch.layoutArchitecture.setClickable(true);
+                dataBinding.mainDrawer.layoutRegResearch.layoutResearch.setClickable(false);
                 updateStepResearchMenuUI(ResearchStep.ARCHITECTURE);
                 break;
             case ARCHITECTURE:
