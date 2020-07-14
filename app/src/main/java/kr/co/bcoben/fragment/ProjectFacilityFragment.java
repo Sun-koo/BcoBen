@@ -123,7 +123,7 @@ public class ProjectFacilityFragment extends BaseFragment<FragmentProjectFacilit
             @Override
             public void onResponseData(ProjectResearchList data) {
                 activity.endLoading();
-                data.setCount();
+//                data.setCount();
                 researchList = data.getResearch_list();
                 adapter.setList(researchList);
 

@@ -25,14 +25,20 @@ public class ProjectResearchList implements DataModel {
     public int getReg_count() {
         return reg_count;
     }
-    public void setCount() {
-        tot_count = 0;
-        reg_count = 0;
-        for (ProjectResearchData data : research_list) {
-            tot_count += data.getTot_count();
-            reg_count += data.getReg_count();
-        }
+    public void setTot_count(int tot_count) {
+        this.tot_count = tot_count;
     }
+    public void setReg_count(int reg_count) {
+        this.reg_count = reg_count;
+    }
+//    public void setCount() {
+//        tot_count = 0;
+//        reg_count = 0;
+//        for (ProjectResearchData data : research_list) {
+//            tot_count += data.getTot_count();
+//            reg_count += data.getReg_count();
+//        }
+//    }
 
     public static class ProjectResearchData implements Parcelable {
         private int research_id;
