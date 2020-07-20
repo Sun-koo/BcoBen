@@ -124,6 +124,8 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
     private ResearchSpinnerData.ResearchSelectData researchSelectData;
     private ResearchSpinnerData.ProjectFacData projectFacData;
     private List<PlanDataList.PlanData> planList;
+    private boolean isFirst = true;
+    private boolean isShowingDrawingsSelectDialog = false;
 
     // table
     private DrawingsDataListAdapter drawingsDataListAdapter;
@@ -232,7 +234,14 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         hideKeyboard(this);
         switch (v.getId()) {
             case R.id.btn_home: DrawingsListActivity.isHomeReturn = true;
-            case R.id.btn_close: finish(); break;
+            case R.id.btn_close:
+                Intent intent = new Intent();
+                intent.putExtra("fac_cate_id", researchSelectData.getFac_cate_id());
+                intent.putExtra("structure_id", researchSelectData.getStructure_id());
+                intent.putExtra("research_type_id", researchSelectData.getResearch_type_id());
+                setResult(RESULT_OK, intent);
+                finish();
+                break;
             case R.id.layout_picture_popup: dataBinding.layoutPicturePopup.setVisibility(View.INVISIBLE); break;
             case R.id.btn_zoom_in: calculateScale(true); break;
             case R.id.btn_zoom_out: calculateScale(false); break;
@@ -409,6 +418,30 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                MenuCheckData data = (MenuCheckData) spinner.getSelectedItem();
+//                int itemId = -1;
+//                if (spinner == dataBinding.spnCategory) {
+//                    itemId = researchSelectData.getFac_cate_id();
+//                    List<MenuCheckData> architectureList = projectFacData.getFacCateDataID(data.getItem_id()).getArchitectureList();
+//                    dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(activity, R.layout.item_spinner, architectureList));
+//                    if (data.getItem_id() != itemId) {
+//                        showDrawingsSelectDialog();
+//                    }
+//
+//                } else if (spinner == dataBinding.spnArchitecture) {
+//                    itemId = researchSelectData.getStructure_id();
+//                    if (data.getItem_id() != itemId) {
+//                        showDrawingsSelectDialog();
+////                        isFirst = false;
+//                    }
+//
+//                } else if (spinner == dataBinding.spnResearch) {
+//                    itemId = researchSelectData.getResearch_type_id();
+//                    if (data.getItem_id() != itemId) {
+//                        showDrawingsSelectDialog();
+//                    }
+//                }
+
                 MenuCheckData data = (MenuCheckData) spinner.getSelectedItem();
                 int itemId = -1;
                 if (spinner == dataBinding.spnCategory) { itemId = researchSelectData.getFac_cate_id(); }
@@ -417,7 +450,13 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
                 if (data.getItem_id() != itemId) {
                     showDrawingsSelectDialog();
+                    if (spinner == dataBinding.spnCategory) {
+                        List<MenuCheckData> architectureList = projectFacData.getFacCateDataID(data.getItem_id()).getArchitectureList();
+                        dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(activity, R.layout.item_spinner, architectureList));
+                    }
                 }
+
+
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -1036,6 +1075,9 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
 
     // 도면 선택 다이얼로그 출력
     private void showDrawingsSelectDialog() {
+        if (isShowingDrawingsSelectDialog) {
+            return;
+        }
         if (dataBinding.layoutResearchPopup.getVisibility() == View.VISIBLE) {
             dataBinding.researchPopup.btnPopupClose.performClick();
 //            dataBinding.btnClose.performClick();
@@ -1070,9 +1112,16 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                     @Override
                     public void onClick(DrawingsSelectDialog dialog) {
                         initSpinner();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                isShowingDrawingsSelectDialog = false;
+                            }
+                        },100);
                     }
                 })
                 .show();
+        isShowingDrawingsSelectDialog = true;
     }
 
     // 도면 입력 데이터 리스트
@@ -1212,6 +1261,12 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         researchSelectData = data.getResearch_data();
                         requestPointList();
                         requestPointRegisterData();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                isShowingDrawingsSelectDialog = false;
+                            }
+                        }, 100);
                     }
                     @Override
                     public void onCallbackFinish() { endLoading(); }
