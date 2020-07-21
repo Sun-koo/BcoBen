@@ -226,7 +226,7 @@ public class FTPConnectUtil {
         if (ftpConnect()) {
             try {
                 for (String path : pathList) {
-                    String filename = "voice_" + path.substring(path.lastIndexOf("/") + 1);
+                    String filename = path.substring(path.lastIndexOf("/") + 1);
                     File saveFile = new File(getCachePath(), filename);
                     if (!saveFile.exists()) {
                         if (saveFile.createNewFile()) {

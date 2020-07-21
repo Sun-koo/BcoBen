@@ -75,7 +75,6 @@ public class InputPopupRecordListAdapter extends RecyclerView.Adapter<InputPopup
                     setPlayCompleteListener(new RecordUtil.PlayCompleteListener() {
                         @Override
                         public void onComplete() {
-                            Log.e("RecordListAdapter", "onComplete");
                             holder.btnStop.setText(R.string.popup_reg_research_record_start);
                             data.setPlayTime(getPlayPosition());
 
