@@ -418,30 +418,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                MenuCheckData data = (MenuCheckData) spinner.getSelectedItem();
-//                int itemId = -1;
-//                if (spinner == dataBinding.spnCategory) {
-//                    itemId = researchSelectData.getFac_cate_id();
-//                    List<MenuCheckData> architectureList = projectFacData.getFacCateDataID(data.getItem_id()).getArchitectureList();
-//                    dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(activity, R.layout.item_spinner, architectureList));
-//                    if (data.getItem_id() != itemId) {
-//                        showDrawingsSelectDialog();
-//                    }
-//
-//                } else if (spinner == dataBinding.spnArchitecture) {
-//                    itemId = researchSelectData.getStructure_id();
-//                    if (data.getItem_id() != itemId) {
-//                        showDrawingsSelectDialog();
-////                        isFirst = false;
-//                    }
-//
-//                } else if (spinner == dataBinding.spnResearch) {
-//                    itemId = researchSelectData.getResearch_type_id();
-//                    if (data.getItem_id() != itemId) {
-//                        showDrawingsSelectDialog();
-//                    }
-//                }
-
                 MenuCheckData data = (MenuCheckData) spinner.getSelectedItem();
                 int itemId = -1;
                 if (spinner == dataBinding.spnCategory) { itemId = researchSelectData.getFac_cate_id(); }
@@ -455,8 +431,6 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                         dataBinding.spnArchitecture.setAdapter(new DrawingsSpinnerAdapter(activity, R.layout.item_spinner, architectureList));
                     }
                 }
-
-
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
