@@ -20,11 +20,11 @@ public class PointData {
     private String defect;
     private String architecture;
     private String length_unit;
-    private int length;
+    private double length;
     private String width_unit;
-    private int width;
+    private double width;
     private String height_unit;
-    private int height;
+    private double height;
     private int count;
     private List<PointImg> point_img;
     private List<PointVoice> point_voice;
@@ -67,19 +67,19 @@ public class PointData {
     public String getLength_unit() {
         return length_unit;
     }
-    public int getLength() {
+    public double getLength() {
         return length;
     }
     public String getWidth_unit() {
         return width_unit;
     }
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
     public String getHeight_unit() {
         return height_unit;
     }
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
     public int getCount() {
