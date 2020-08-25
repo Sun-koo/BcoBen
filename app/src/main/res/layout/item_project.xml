@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/layout_project"
         android:layout_width="match_parent"
-        android:layout_height="51dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="7dp"
         android:background="@drawable/bg_project_list">
 
@@ -20,8 +20,10 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:text="서초구청"
+            android:layout_marginTop="13dp"
+            android:layout_marginBottom="13dp"
+            android:text="보은군 보은읍 농촌중심지활성화사업 정밀안전진단"
             android:textColor="@color/text_project_list"
-            android:textSize="21dp" />
+            android:textSize="18dp" />
     </RelativeLayout>
 </LinearLayout>
