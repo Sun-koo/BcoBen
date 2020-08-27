@@ -143,17 +143,22 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> implements
         return true;
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "HardwareIds"})
     private boolean getDeviceId() {
         if (requestPermission(this, PERMISSION)) {
-            TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-            deviceId = tm != null ? tm.getDeviceId() : null;
-            if (deviceId == null) {
-                showToast(R.string.toast_not_check_device_id);
+            try {
+                TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+                deviceId = tm != null ? tm.getDeviceId() : null;
+                if (deviceId == null) {
+                    showToast(R.string.toast_not_check_device_id);
+                    return false;
+                } else {
+                    UserData.getInstance().setDeviceId(deviceId);
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
                 return false;
-            } else {
-                UserData.getInstance().setDeviceId(deviceId);
-                return true;
             }
         }
         return false;

@@ -1344,10 +1344,10 @@ public class DrawingsActivity extends BaseActivity<ActivityDrawingsBinding> impl
                 showToast(R.string.toast_popup_reg_research_not_count);
                 return;
             }
-            if (researchSelectData.getTot_count() < researchSelectData.getReg_count() - updateData.getCount() + Integer.parseInt(count)) {
-                showToast(R.string.toast_popup_reg_research_over_count);
-                return;
-            }
+//            if (researchSelectData.getTot_count() < researchSelectData.getReg_count() - updateData.getCount() + Integer.parseInt(count)) {
+//                showToast(R.string.toast_popup_reg_research_over_count);
+//                return;
+//            }
             if (!lengthUnit.equals("") && length.equals("")) {
                 showToast(R.string.toast_popup_reg_research_not_length);
                 return;
